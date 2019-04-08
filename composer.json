@@ -1,0 +1,24 @@
+{
+    "name": "zachweix/php-zmanim",
+    "type": "library",
+    "description": "Port of KosherJava to PHP",
+    "license": "LGPL-2.1-only",
+    "authors": [
+        {
+            "name": "Zachary Weixelbaum",
+            "email": "zachweix@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "nesbot/carbon": "^1.22"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpZmanim\\": "src/"
+        }
+    }
+}
