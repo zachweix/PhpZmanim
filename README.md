@@ -1,5 +1,5 @@
 # PhpZmanim
-PHP port of Kosher Java
+A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu Hershfeld. (code at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim))
 
 See Kosher Java documentation for how to use method names and comments for every method and variable. Any method name you see that starts with `get` (such as `getSunrise`) can also be called in the Zmanim class as `->get("Sunrise")`. This was done, so you can have an array of Zmanim names and loop through them. 
 
