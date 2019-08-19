@@ -22,7 +22,9 @@
 
 namespace PhpZmanim;
 
+use ArgumentCountError;
 use Carbon\Carbon;
+use Exception;
 use PhpZmanim\Calculator\NoaaCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\Calendar\ComplexZmanimCalendar;
@@ -41,7 +43,19 @@ class Zmanim extends ComplexZmanimCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	//
+	public function __get($arg) {
+		$response = null;
+
+		try {
+			$response = $this->get($arg);
+		} catch (ArgumentCountError $e) {
+			$response = null;
+		} catch (Exception $e) {
+			$response = null;
+		}
+
+		return $response;
+	}
 
 	/*
 	|--------------------------------------------------------------------------
@@ -49,7 +63,7 @@ class Zmanim extends ComplexZmanimCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	public static function create($year, $month, $day, $locationName = null,
+	public static function create($year = null, $month = null, $day = null, $locationName = null,
 		$latitude = 51.4772, $longitude = 0.0, $elevation = 0.0, $timeZone = "GMT") {
 		$geoLocation = new GeoLocation($locationName, $latitude, $longitude, $elevation, $timeZone);
 
@@ -84,12 +98,12 @@ class Zmanim extends ComplexZmanimCalendar {
 		$this->getCalendar()->subDays($value);
 	}
 
-	public function get($zman) {
+	public function get($zman, ...$args) {
 		$method_name = "get" . $zman;
 		if (method_exists($this, $method_name)) {
-			return $this->$method_name();
+			return $this->$method_name(...$args);
 		} else {
-			return null;
+			throw new \Exception("Requested Zman does not exist");
 		}
 	}
 }

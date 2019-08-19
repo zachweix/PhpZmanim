@@ -26,6 +26,11 @@ use Carbon\Carbon;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Geo\GeoLocation;
 
+/**
+ * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/ZmanimCalendar.java
+ * for more detailed explanations regarding the methods and variables on this page.
+ */
+
 class ZmanimCalendar extends AstronomicalCalendar {
 	/*
 	|--------------------------------------------------------------------------
@@ -33,7 +38,6 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	private $zman;
 	private $useElevation = true;
 	private $candleLightingOffset = 18;
 

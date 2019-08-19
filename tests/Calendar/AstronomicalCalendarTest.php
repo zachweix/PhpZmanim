@@ -405,4 +405,18 @@ class AstronomicalCalendarTest extends TestCase {
 			$this->assertEquals($sunTransit, $expected_dates[ $index ]);
 		}
 	}
+
+	/** 
+	 * @test
+	 */
+	public function testDefaultData() {
+		$geo = new GeoLocation();
+
+		$astronomicalCalendar1 = new AstronomicalCalendar();
+		$astronomicalCalendar2 = new AstronomicalCalendar(null, 1);
+		$astronomicalCalendar3 = new AstronomicalCalendar($geo, 1, 1);
+
+		$this->assertEquals($astronomicalCalendar1->getGeoLocation(), $geo);
+		$this->assertEquals($astronomicalCalendar2, $astronomicalCalendar3);
+	}
 }

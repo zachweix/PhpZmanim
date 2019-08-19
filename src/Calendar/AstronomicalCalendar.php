@@ -26,6 +26,11 @@ use Carbon\Carbon;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Geo\GeoLocation;
 
+/**
+ * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/AstronomicalCalendar.java
+ * for more detailed explanations regarding the methods and variables on this page.
+ */
+
 class AstronomicalCalendar {
 	/*
 	|--------------------------------------------------------------------------
@@ -83,6 +88,7 @@ class AstronomicalCalendar {
 	}
 
 	public function setCalendar(Carbon $calendar) {
+		$calendar->startOfDay();
 		$this->calendar = $calendar;
 	}
 

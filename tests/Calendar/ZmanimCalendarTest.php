@@ -129,8 +129,14 @@ class ZmanimCalendarTest extends TestCase {
 	 */
 	public function testGetZmanHelper() {
 		$zmanim = Zmanim::create(2019, 2, 18, 'Lakewood, NJ', 40.0721087, -74.2400243, 39.57, 'America/New_York');
+		$startOfDay = $zmanim->get("SunriseOffsetByDegrees", 90);
+		$endOfDay = $zmanim->get("SunsetOffsetByDegrees", 90);
 
 		$this->assertEquals($zmanim->get("Alos72")->format('Y-m-d\TH:i:sP'), "2019-02-18T05:33:13-05:00");
-		$this->assertNull($zmanim->get("InvalidName"));
+		$this->assertEquals($zmanim->Alos72->format('Y-m-d\TH:i:sP'), "2019-02-18T05:33:13-05:00");
+		$this->assertEquals($zmanim->get("SofZmanShma", $startOfDay, $endOfDay)->format('Y-m-d\TH:i:sP'), "2019-02-18T09:28:11-05:00");
+
+		$this->expectException(\Exception::class);
+		$zmanim->get("InvalidName");
 	}
 }
