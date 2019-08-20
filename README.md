@@ -15,7 +15,7 @@ $ composer require zachweix/php-zmanim
 ```json
 {
     "require": {
-        "zachweix/php-zmanim": "^1.0"
+        "zachweix/php-zmanim": "^1.1"
     }
 }
 ```
