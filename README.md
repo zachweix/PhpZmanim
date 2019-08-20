@@ -2,7 +2,7 @@
 A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu Hershfeld (code at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). See Kosher Java documentation for comments for every class variable and method. Only calculations for Zmanim times were ported, for a library with most calculations from KosherJava's JewishCalendar you can view [PHP Zman Library](https://github.com/zmanim/zman). See below for how to install and a more detailed list of what you can access and methods you can call. Once instantiated, you can ask for many Zmanim right out of the gate:
 
 ```php
-$zmanim = Zmanim::create(2019, 2, 22, 'Lakewood, NJ', 40.0721087, -74.2400243, 39.57, 'America/New_York');
+$zmanim = Zmanim::create(2019, 2, 22, 'Lakewood', 40.0721087, -74.2400243, 39.57, 'America/New_York');
 $zmanim->Tzais72->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
 ```
 
@@ -108,55 +108,209 @@ $zmanim->EndNauticalTwilight;        // The point when sun's zenith is at 102 de
 $zmanim->EndAstronomicalTwilight;    // The point when sun's zenith is at 108 degrees
 ```
 
+#### Length of Shaah Zmanim (in minutes)
+
+```php
+$zmanim->ShaahZmanis19Point8Degrees;
+$zmanim->ShaahZmanis18Degrees;
+$zmanim->ShaahZmanis26Degrees;
+$zmanim->ShaahZmanis16Point1Degrees;
+$zmanim->ShaahZmanis60Minutes;
+$zmanim->ShaahZmanis72Minutes;
+$zmanim->ShaahZmanis72MinutesZmanis;
+$zmanim->ShaahZmanis90Minutes;
+$zmanim->ShaahZmanis90MinutesZmanis;
+$zmanim->ShaahZmanis96MinutesZmanis;
+$zmanim->ShaahZmanisAteretTorah;     // See note 1 below
+$zmanim->ShaahZmanis96Minutes;
+$zmanim->ShaahZmanis120Minutes;
+$zmanim->ShaahZmanis120MinutesZmanis;
+$zmanim->ShaahZmanisBaalHatanya;     // See note 3 below
+```
+
 #### Alos Hashachar
 ```php
 $zmanim->AlosHashachar;              // Sunrise offset by 16.1 degrees
-$zmanim->Alos72;                     // 72 minutes before sunrise
+$zmanim->Alos72;
+$zmanim->Alos60;
+$zmanim->Alos72Zmanis;
+$zmanim->Alos96;
+$zmanim->Alos90Zmanis;
+$zmanim->Alos96Zmanis;
+$zmanim->Alos90;
+$zmanim->Alos120;
+$zmanim->Alos120Zmanis;
+$zmanim->Alos26Degrees;
+$zmanim->Alos18Degrees;
+$zmanim->Alos19Degrees;
+$zmanim->Alos19Point8Degrees;
+$zmanim->Alos16Point1Degrees;        // Same as default
+$zmanim->AlosBaalHatanya;            // See note 3 below
+```
+
+#### Misheyakir
+```php
+$zmanim->Misheyakir11Point5Degrees;
+$zmanim->Misheyakir11Degrees;
+$zmanim->Misheyakir10Point2Degrees;
+$zmanim->Misheyakir7Point65Degrees;
+$zmanim->Misheyakir9Point5Degrees;
 ```
 
 #### Sof Zman Shma
 ```php
-$zmanim->SofZmanShmaMA;              // Based on calculations of Magen Avraham
-$zmanim->SofZmanShmaGra;             // Based on calculations of the Gra
+$zmanim->SofZmanShmaMA;
+$zmanim->SofZmanShmaGra;
+$zmanim->SofZmanShmaMGA19Point8Degrees;
+$zmanim->SofZmanShmaMGA16Point1Degrees;
+$zmanim->SofZmanShmaMGA18Degrees;
+$zmanim->SofZmanShmaMGA72Minutes;
+$zmanim->SofZmanShmaMGA72MinutesZmanis;
+$zmanim->SofZmanShmaMGA90Minutes;
+$zmanim->SofZmanShmaMGA90MinutesZmanis;
+$zmanim->SofZmanShmaMGA96Minutes;
+$zmanim->SofZmanShmaMGA96MinutesZmanis;
+$zmanim->SofZmanShma3HoursBeforeChatzos;
+$zmanim->SofZmanShmaMGA120Minutes;
+$zmanim->SofZmanShmaAlos16Point1ToSunset;
+$zmanim->SofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees;
+$zmanim->SofZmanShmaAteretTorah;     // See note 1 below
+$zmanim->SofZmanShmaFixedLocal;      // See note 2 below
+$zmanim->SofZmanShmaBaalHatanya;     // See note 3 below
 ```
 
 #### Sof Zman Tfila
 ```php
-$zmanim->SofZmanTfilaMA;             // Based on calculations of Magen Avraham
-$zmanim->SofZmanTfilaGra;            // Based on calculations of the Gra
+$zmanim->SofZmanTfilaMA;
+$zmanim->SofZmanTfilaGra;
+$zmanim->SofZmanTfilaMGA19Point8Degrees;
+$zmanim->SofZmanTfilaMGA16Point1Degrees;
+$zmanim->SofZmanTfilaMGA18Degrees;
+$zmanim->SofZmanTfilaMGA72Minutes;
+$zmanim->SofZmanTfilaMGA72MinutesZmanis;
+$zmanim->SofZmanTfilaMGA90Minutes;
+$zmanim->SofZmanTfilaMGA90MinutesZmanis;
+$zmanim->SofZmanTfilaMGA96Minutes;
+$zmanim->SofZmanTfilaMGA96MinutesZmanis;
+$zmanim->SofZmanTfilaMGA120Minutes;
+$zmanim->SofZmanTfila2HoursBeforeChatzos;
+$zmanim->SofZmanTfilahAteretTorah;   // See note 1 below
+$zmanim->SofZmanTfilaFixedLocal;     // See note 2 below
+$zmanim->SofZmanTfilaBaalHatanya;    // See note 3 below
+```
+
+#### Erev Pesach
+```php
+$zmanim->SofZmanAchilasChametzGRA;
+$zmanim->SofZmanAchilasChametzMGA72Minutes;
+$zmanim->SofZmanAchilasChametzMGA16Point1Degrees;
+$zmanim->SofZmanAchilasChametzBaalHatanya; // See note 3 below
+
+$zmanim->SofZmanBiurChametzGRA;
+$zmanim->SofZmanBiurChametzMGA72Minutes;
+$zmanim->SofZmanBiurChametzMGA16Point1Degrees;
+$zmanim->SofZmanBiurChametzBaalHatanya; // See note 3 below
 ```
 
 #### Chatzos
 ```php
-$zmanim->Chatzos;                    // Midpoint between sunrise and sunset
+$zmanim->Chatzos;
+$zmanim->FixedLocalChatzos;          // See note 2 below
 ```
 
 #### Mincha Gedola
 ```php
-$zmanim->MinchaGedolaGra;            // Based on calculations of the Gra
+$zmanim->MinchaGedolaGra;
+$zmanim->MinchaGedola30Minutes;
+$zmanim->MinchaGedola72Minutes;
+$zmanim->MinchaGedola16Point1Degrees;
+$zmanim->MinchaGedolaGreaterThan30;  // Fixed 30 minutes or degrees, whichever is later
+$zmanim->MinchaGedolaAteretTorah;    // See note 1 below
+$zmanim->MinchaGedolaBaalHatanya;    // See note 3 below
+$zmanim->MinchaGedolaBaalHatanyaGreaterThan30;
 ```
 
 #### Mincha Ketana
 ```php
-$zmanim->MinchaKetanaGra;            // Based on calculations of the Gra
+$zmanim->MinchaKetanaGra;
+$zmanim->MinchaKetana16Point1Degrees;
+$zmanim->MinchaKetana72Minutes;
+$zmanim->MinchaKetanaAteretTorah;    // Set note 1 below
+$zmanim->MinchaKetanaBaalHatanya;    // See note 3 below
 ```
 
 #### Plag Hamincha
 ```php
-$zmanim->PlagHaminchaGra;            // Based on calculations of the Gra
+$zmanim->PlagHaminchaGra;
+$zmanim->PlagHamincha120MinutesZmanis;
+$zmanim->PlagHamincha120Minutes;
+$zmanim->PlagHamincha60Minutes;
+$zmanim->PlagHamincha72Minutes;
+$zmanim->PlagHamincha90Minutes;
+$zmanim->PlagHamincha96Minutes;
+$zmanim->PlagHamincha96MinutesZmanis;
+$zmanim->PlagHamincha90MinutesZmanis;
+$zmanim->PlagHamincha72MinutesZmanis;
+$zmanim->PlagHamincha16Point1Degrees;
+$zmanim->PlagHamincha19Point8Degrees;
+$zmanim->PlagHamincha26Degrees;
+$zmanim->PlagHamincha18Degrees;
+$zmanim->PlagAlosToSunset;
+$zmanim->PlagAlos16Point1ToTzaisGeonim7Point083Degrees;
+$zmanim->PlagHaminchaAteretTorah;    // Set note 1 below
+$zmanim->PlagHaminchaBaalHatanya;    // See note 3 below
 ```
 
 #### Candle Lighting
 ```php
 $zmanim->CandleLighting; // Get sea level sunset minus candle lighting offset. Default is 18 minutes
-$zmanim->setCandleLightingOffset($candleLightingOffset); // Change the offset for candle lighting
+$zmanim->setCandleLightingOffset($candleLightingOffset);
 ```
 
 #### Tzais
 ```php
 $zmanim->Tzais;                      // Sunset offset by 8.5 degrees
-$zmanim->Tzais72;                    // 72 minutes after sunset
+$zmanim->Tzais72;
+$zmanim->TzaisGeonim3Point7Degrees;
+$zmanim->TzaisGeonim3Point8Degrees;
+$zmanim->TzaisGeonim5Point95Degrees;
+$zmanim->TzaisGeonim3Point65Degrees;
+$zmanim->TzaisGeonim3Point676Degrees;
+$zmanim->TzaisGeonim4Point61Degrees;
+$zmanim->TzaisGeonim4Point37Degrees;
+$zmanim->TzaisGeonim5Point88Degrees;
+$zmanim->TzaisGeonim4Point8Degrees;
+$zmanim->TzaisGeonim6Point45Degrees;
+$zmanim->TzaisGeonim7Point083Degrees;
+$zmanim->TzaisGeonim7Point67Degrees;
+$zmanim->TzaisGeonim8Point5Degrees;
+$zmanim->TzaisGeonim9Point3Degrees;
+$zmanim->TzaisGeonim9Point75Degrees;
+$zmanim->Tzais60;
+$zmanim->TzaisAteretTorah;           // Set note 1 below
+$zmanim->Tzais72Zmanis;
+$zmanim->Tzais90Zmanis;
+$zmanim->Tzais96Zmanis;
+$zmanim->Tzais90;
+$zmanim->Tzais120;
+$zmanim->Tzais120Zmanis;
+$zmanim->Tzais16Point1Degrees;
+$zmanim->Tzais26Degrees;
+$zmanim->Tzais18Degrees;
+$zmanim->Tzais19Point8Degrees;
+$zmanim->Tzais96;
+$zmanim->TzaisBaalHatanya;           // Set note 3 below
 ```
+
+#### Chatzos Halayla (Midnight)
+```php
+$zmanim->SolarMidnight;
+```
+
+#### Notes
+1 AteretTorah Zman is calculated based on a day being from Alos72Zmanis until 40 minutes after sunset. However, the exact time offset can be changed by calling `$zmanim->setAteretTorahSunsetOffset($ateretTorahSunsetOffset)`.
+1 FixedLocalChatzos is based on a fixed time for Chatzos throughout the year, see KosherJava's documentation for more details.
+1 Baal Hatanya calculates Zmanim based on a zenith of 1.583 degrees below the 90 degree geometric zenith.
 
 ### Alternative Zmanim
 

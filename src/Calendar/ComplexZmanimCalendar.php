@@ -331,11 +331,12 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getMinchaGedolaGreaterThan30() {
-		if ($this->getMinchaGedola30Minutes() == null || $this->getMinchaGedola() == null) {
+		$fixed = $this->getMinchaGedola30Minutes();
+		$gra = $this->getMinchaGedolaGra();
+		if ($fixed == null || $gra == null) {
 			return null;
 		} else {
-			return $this->getMinchaGedola30Minutes()->gt($this->getMinchaGedola()) ? $this->getMinchaGedola30Minutes()
-					: $this->getMinchaGedola();
+			return $fixed->gt($gra) ? $fixed : $gra;
 		}
 	}
 
@@ -662,11 +663,12 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getMinchaGedolaBaalHatanyaGreaterThan30() {
-		if ($this->getMinchaGedola30Minutes() == null || $this->getMinchaGedolaBaalHatanya() == null) {
+		$fixed = $this->getMinchaGedola30Minutes();
+		$tanya = $this->getMinchaGedolaBaalHatanya();
+		if ($fixed == null || $tanya == null) {
 			return null;
 		} else {
-			return $this->getMinchaGedola30Minutes()->gt($this->getMinchaGedolaBaalHatanya()) 
-					? $this->getMinchaGedola30Minutes() : $this->getMinchaGedolaBaalHatanya();
+			return $fixed->gt($tanya) ? $fixed : $tanya;
 		}
 	}
 
