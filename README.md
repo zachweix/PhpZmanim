@@ -3,7 +3,7 @@ A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu H
 
 ```php
 $zmanim = Zmanim::create(2019, 2, 22, 'Lakewood', 40.0721087, -74.2400243, 39.57, 'America/New_York');
-$zmanim->Tzais72->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
+$zmanim->tzais72->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
 ```
 
 ## Installation (with Composer)
@@ -67,10 +67,10 @@ $complexZmanimCalendar = new ComplexZmanimCalendar($geoLocation, 2019, 2, 21);
 
 ## Usage
 
-Any parameter called like `$zmanim->Sunrise` or a method name you see that is called like `$zmanim->get("Sunrise")` can be called by concatenating `get` to the zman, so you would get `$zmanim->getSunrise()`, so the following three will return identical results, all of which are a Carbon object.
+Any parameter called like `$zmanim->Sunrise` or a method name you see that is called like `$zmanim->get("Sunrise")` can be called by concatenating `get` to the zman and making sure to capitalize the first letter, so you would get `$zmanim->getSunrise()`; the following three will return identical results, all of which are a Carbon object.
 
 ```php
-$sunrise = $zmanim->Sunrise;
+$sunrise = $zmanim->sunrise;
 $sunrise = $zmanim->get("Sunrise");
 $sunrise = $zmanim->getSunrise();
 ```
@@ -92,228 +92,228 @@ Here is a list of many possible Zmanim you can request, all of them will return 
 
 #### Sunrise:
 ```php
-$zmanim->Sunrise;                    // Get sunrise based on current elevation
-$zmanim->SeaLevelSunrise;            // Get sunrise at zero elevation
-$zmanim->BeginCivilTwilight;         // The point when sun's zenith is at 96 degrees
-$zmanim->BeginNauticalTwilight;      // The point when sun's zenith is at 102 degrees
-$zmanim->BeginAstronomicalTwilight;  // The point when sun's zenith is at 108 degrees
+$zmanim->sunrise;                    // Get sunrise based on current elevation
+$zmanim->seaLevelSunrise;            // Get sunrise at zero elevation
+$zmanim->beginCivilTwilight;         // The point when sun's zenith is at 96 degrees
+$zmanim->beginNauticalTwilight;      // The point when sun's zenith is at 102 degrees
+$zmanim->beginAstronomicalTwilight;  // The point when sun's zenith is at 108 degrees
 ```
 
 #### Sunset
 ```php
-$zmanim->Sunset;                     // Sunset based on current elevation
-$zmanim->SeaLevelSunset;             // Sunset at zero elevation
-$zmanim->EndCivilTwilight;           // The point when sun's zenith is at 96 degrees
-$zmanim->EndNauticalTwilight;        // The point when sun's zenith is at 102 degrees
-$zmanim->EndAstronomicalTwilight;    // The point when sun's zenith is at 108 degrees
+$zmanim->sunset;                     // Sunset based on current elevation
+$zmanim->seaLevelSunset;             // Sunset at zero elevation
+$zmanim->endCivilTwilight;           // The point when sun's zenith is at 96 degrees
+$zmanim->endNauticalTwilight;        // The point when sun's zenith is at 102 degrees
+$zmanim->endAstronomicalTwilight;    // The point when sun's zenith is at 108 degrees
 ```
 
 #### Length of Shaah Zmanim (in minutes)
 
 ```php
-$zmanim->ShaahZmanis19Point8Degrees;
-$zmanim->ShaahZmanis18Degrees;
-$zmanim->ShaahZmanis26Degrees;
-$zmanim->ShaahZmanis16Point1Degrees;
-$zmanim->ShaahZmanis60Minutes;
-$zmanim->ShaahZmanis72Minutes;
-$zmanim->ShaahZmanis72MinutesZmanis;
-$zmanim->ShaahZmanis90Minutes;
-$zmanim->ShaahZmanis90MinutesZmanis;
-$zmanim->ShaahZmanis96MinutesZmanis;
-$zmanim->ShaahZmanisAteretTorah;     // See note 1 below
-$zmanim->ShaahZmanis96Minutes;
-$zmanim->ShaahZmanis120Minutes;
-$zmanim->ShaahZmanis120MinutesZmanis;
-$zmanim->ShaahZmanisBaalHatanya;     // See note 3 below
+$zmanim->shaahZmanis19Point8Degrees;
+$zmanim->shaahZmanis18Degrees;
+$zmanim->shaahZmanis26Degrees;
+$zmanim->shaahZmanis16Point1Degrees;
+$zmanim->shaahZmanis60Minutes;
+$zmanim->shaahZmanis72Minutes;
+$zmanim->shaahZmanis72MinutesZmanis;
+$zmanim->shaahZmanis90Minutes;
+$zmanim->shaahZmanis90MinutesZmanis;
+$zmanim->shaahZmanis96MinutesZmanis;
+$zmanim->shaahZmanisAteretTorah;     // See note 1 below
+$zmanim->shaahZmanis96Minutes;
+$zmanim->shaahZmanis120Minutes;
+$zmanim->shaahZmanis120MinutesZmanis;
+$zmanim->shaahZmanisBaalHatanya;     // See note 3 below
 ```
 
 #### Alos Hashachar
 ```php
-$zmanim->AlosHashachar;              // Sunrise offset by 16.1 degrees
-$zmanim->Alos72;
-$zmanim->Alos60;
-$zmanim->Alos72Zmanis;
-$zmanim->Alos96;
-$zmanim->Alos90Zmanis;
-$zmanim->Alos96Zmanis;
-$zmanim->Alos90;
-$zmanim->Alos120;
-$zmanim->Alos120Zmanis;
-$zmanim->Alos26Degrees;
-$zmanim->Alos18Degrees;
-$zmanim->Alos19Degrees;
-$zmanim->Alos19Point8Degrees;
-$zmanim->Alos16Point1Degrees;        // Same as default
-$zmanim->AlosBaalHatanya;            // See note 3 below
+$zmanim->alosHashachar;              // Sunrise offset by 16.1 degrees
+$zmanim->alos72;
+$zmanim->alos60;
+$zmanim->alos72Zmanis;
+$zmanim->alos96;
+$zmanim->alos90Zmanis;
+$zmanim->alos96Zmanis;
+$zmanim->alos90;
+$zmanim->alos120;
+$zmanim->alos120Zmanis;
+$zmanim->alos26Degrees;
+$zmanim->alos18Degrees;
+$zmanim->alos19Degrees;
+$zmanim->alos19Point8Degrees;
+$zmanim->alos16Point1Degrees;        // Same as default
+$zmanim->alosBaalHatanya;            // See note 3 below
 ```
 
 #### Misheyakir
 ```php
-$zmanim->Misheyakir11Point5Degrees;
-$zmanim->Misheyakir11Degrees;
-$zmanim->Misheyakir10Point2Degrees;
-$zmanim->Misheyakir7Point65Degrees;
-$zmanim->Misheyakir9Point5Degrees;
+$zmanim->misheyakir11Point5Degrees;
+$zmanim->misheyakir11Degrees;
+$zmanim->misheyakir10Point2Degrees;
+$zmanim->misheyakir7Point65Degrees;
+$zmanim->misheyakir9Point5Degrees;
 ```
 
 #### Sof Zman Shma
 ```php
-$zmanim->SofZmanShmaMA;
-$zmanim->SofZmanShmaGra;
-$zmanim->SofZmanShmaMGA19Point8Degrees;
-$zmanim->SofZmanShmaMGA16Point1Degrees;
-$zmanim->SofZmanShmaMGA18Degrees;
-$zmanim->SofZmanShmaMGA72Minutes;
-$zmanim->SofZmanShmaMGA72MinutesZmanis;
-$zmanim->SofZmanShmaMGA90Minutes;
-$zmanim->SofZmanShmaMGA90MinutesZmanis;
-$zmanim->SofZmanShmaMGA96Minutes;
-$zmanim->SofZmanShmaMGA96MinutesZmanis;
-$zmanim->SofZmanShma3HoursBeforeChatzos;
-$zmanim->SofZmanShmaMGA120Minutes;
-$zmanim->SofZmanShmaAlos16Point1ToSunset;
-$zmanim->SofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees;
-$zmanim->SofZmanShmaAteretTorah;     // See note 1 below
-$zmanim->SofZmanShmaFixedLocal;      // See note 2 below
-$zmanim->SofZmanShmaBaalHatanya;     // See note 3 below
+$zmanim->sofZmanShmaMA;
+$zmanim->sofZmanShmaGra;
+$zmanim->sofZmanShmaMGA19Point8Degrees;
+$zmanim->sofZmanShmaMGA16Point1Degrees;
+$zmanim->sofZmanShmaMGA18Degrees;
+$zmanim->sofZmanShmaMGA72Minutes;
+$zmanim->sofZmanShmaMGA72MinutesZmanis;
+$zmanim->sofZmanShmaMGA90Minutes;
+$zmanim->sofZmanShmaMGA90MinutesZmanis;
+$zmanim->sofZmanShmaMGA96Minutes;
+$zmanim->sofZmanShmaMGA96MinutesZmanis;
+$zmanim->sofZmanShma3HoursBeforeChatzos;
+$zmanim->sofZmanShmaMGA120Minutes;
+$zmanim->sofZmanShmaAlos16Point1ToSunset;
+$zmanim->sofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees;
+$zmanim->sofZmanShmaAteretTorah;     // See note 1 below
+$zmanim->sofZmanShmaFixedLocal;      // See note 2 below
+$zmanim->sofZmanShmaBaalHatanya;     // See note 3 below
 ```
 
 #### Sof Zman Tfila
 ```php
-$zmanim->SofZmanTfilaMA;
-$zmanim->SofZmanTfilaGra;
-$zmanim->SofZmanTfilaMGA19Point8Degrees;
-$zmanim->SofZmanTfilaMGA16Point1Degrees;
-$zmanim->SofZmanTfilaMGA18Degrees;
-$zmanim->SofZmanTfilaMGA72Minutes;
-$zmanim->SofZmanTfilaMGA72MinutesZmanis;
-$zmanim->SofZmanTfilaMGA90Minutes;
-$zmanim->SofZmanTfilaMGA90MinutesZmanis;
-$zmanim->SofZmanTfilaMGA96Minutes;
-$zmanim->SofZmanTfilaMGA96MinutesZmanis;
-$zmanim->SofZmanTfilaMGA120Minutes;
-$zmanim->SofZmanTfila2HoursBeforeChatzos;
-$zmanim->SofZmanTfilahAteretTorah;   // See note 1 below
-$zmanim->SofZmanTfilaFixedLocal;     // See note 2 below
-$zmanim->SofZmanTfilaBaalHatanya;    // See note 3 below
+$zmanim->sofZmanTfilaMA;
+$zmanim->sofZmanTfilaGra;
+$zmanim->sofZmanTfilaMGA19Point8Degrees;
+$zmanim->sofZmanTfilaMGA16Point1Degrees;
+$zmanim->sofZmanTfilaMGA18Degrees;
+$zmanim->sofZmanTfilaMGA72Minutes;
+$zmanim->sofZmanTfilaMGA72MinutesZmanis;
+$zmanim->sofZmanTfilaMGA90Minutes;
+$zmanim->sofZmanTfilaMGA90MinutesZmanis;
+$zmanim->sofZmanTfilaMGA96Minutes;
+$zmanim->sofZmanTfilaMGA96MinutesZmanis;
+$zmanim->sofZmanTfilaMGA120Minutes;
+$zmanim->sofZmanTfila2HoursBeforeChatzos;
+$zmanim->sofZmanTfilahAteretTorah;   // See note 1 below
+$zmanim->sofZmanTfilaFixedLocal;     // See note 2 below
+$zmanim->sofZmanTfilaBaalHatanya;    // See note 3 below
 ```
 
 #### Erev Pesach
 ```php
-$zmanim->SofZmanAchilasChametzGRA;
-$zmanim->SofZmanAchilasChametzMGA72Minutes;
-$zmanim->SofZmanAchilasChametzMGA16Point1Degrees;
-$zmanim->SofZmanAchilasChametzBaalHatanya; // See note 3 below
+$zmanim->sofZmanAchilasChametzGRA;
+$zmanim->sofZmanAchilasChametzMGA72Minutes;
+$zmanim->sofZmanAchilasChametzMGA16Point1Degrees;
+$zmanim->sofZmanAchilasChametzBaalHatanya; // See note 3 below
 
-$zmanim->SofZmanBiurChametzGRA;
-$zmanim->SofZmanBiurChametzMGA72Minutes;
-$zmanim->SofZmanBiurChametzMGA16Point1Degrees;
-$zmanim->SofZmanBiurChametzBaalHatanya; // See note 3 below
+$zmanim->sofZmanBiurChametzGRA;
+$zmanim->sofZmanBiurChametzMGA72Minutes;
+$zmanim->sofZmanBiurChametzMGA16Point1Degrees;
+$zmanim->sofZmanBiurChametzBaalHatanya; // See note 3 below
 ```
 
 #### Chatzos
 ```php
-$zmanim->Chatzos;
-$zmanim->FixedLocalChatzos;          // See note 2 below
+$zmanim->chatzos;
+$zmanim->fixedLocalChatzos;          // See note 2 below
 ```
 
 #### Mincha Gedola
 ```php
-$zmanim->MinchaGedolaGra;
-$zmanim->MinchaGedola30Minutes;
-$zmanim->MinchaGedola72Minutes;
-$zmanim->MinchaGedola16Point1Degrees;
-$zmanim->MinchaGedolaGreaterThan30;  // Fixed 30 minutes or degrees, whichever is later
-$zmanim->MinchaGedolaAteretTorah;    // See note 1 below
-$zmanim->MinchaGedolaBaalHatanya;    // See note 3 below
-$zmanim->MinchaGedolaBaalHatanyaGreaterThan30;
+$zmanim->minchaGedolaGra;
+$zmanim->minchaGedola30Minutes;
+$zmanim->minchaGedola72Minutes;
+$zmanim->minchaGedola16Point1Degrees;
+$zmanim->minchaGedolaGreaterThan30;  // Fixed 30 minutes or degrees, whichever is later
+$zmanim->minchaGedolaAteretTorah;    // See note 1 below
+$zmanim->minchaGedolaBaalHatanya;    // See note 3 below
+$zmanim->minchaGedolaBaalHatanyaGreaterThan30;
 ```
 
 #### Mincha Ketana
 ```php
-$zmanim->MinchaKetanaGra;
-$zmanim->MinchaKetana16Point1Degrees;
-$zmanim->MinchaKetana72Minutes;
-$zmanim->MinchaKetanaAteretTorah;    // Set note 1 below
-$zmanim->MinchaKetanaBaalHatanya;    // See note 3 below
+$zmanim->minchaKetanaGra;
+$zmanim->minchaKetana16Point1Degrees;
+$zmanim->minchaKetana72Minutes;
+$zmanim->minchaKetanaAteretTorah;    // Set note 1 below
+$zmanim->minchaKetanaBaalHatanya;    // See note 3 below
 ```
 
 #### Plag Hamincha
 ```php
-$zmanim->PlagHaminchaGra;
-$zmanim->PlagHamincha120MinutesZmanis;
-$zmanim->PlagHamincha120Minutes;
-$zmanim->PlagHamincha60Minutes;
-$zmanim->PlagHamincha72Minutes;
-$zmanim->PlagHamincha90Minutes;
-$zmanim->PlagHamincha96Minutes;
-$zmanim->PlagHamincha96MinutesZmanis;
-$zmanim->PlagHamincha90MinutesZmanis;
-$zmanim->PlagHamincha72MinutesZmanis;
-$zmanim->PlagHamincha16Point1Degrees;
-$zmanim->PlagHamincha19Point8Degrees;
-$zmanim->PlagHamincha26Degrees;
-$zmanim->PlagHamincha18Degrees;
-$zmanim->PlagAlosToSunset;
-$zmanim->PlagAlos16Point1ToTzaisGeonim7Point083Degrees;
-$zmanim->PlagHaminchaAteretTorah;    // Set note 1 below
-$zmanim->PlagHaminchaBaalHatanya;    // See note 3 below
+$zmanim->plagHaminchaGra;
+$zmanim->plagHamincha120MinutesZmanis;
+$zmanim->plagHamincha120Minutes;
+$zmanim->plagHamincha60Minutes;
+$zmanim->plagHamincha72Minutes;
+$zmanim->plagHamincha90Minutes;
+$zmanim->plagHamincha96Minutes;
+$zmanim->plagHamincha96MinutesZmanis;
+$zmanim->plagHamincha90MinutesZmanis;
+$zmanim->plagHamincha72MinutesZmanis;
+$zmanim->plagHamincha16Point1Degrees;
+$zmanim->plagHamincha19Point8Degrees;
+$zmanim->plagHamincha26Degrees;
+$zmanim->plagHamincha18Degrees;
+$zmanim->plagAlosToSunset;
+$zmanim->plagAlos16Point1ToTzaisGeonim7Point083Degrees;
+$zmanim->plagHaminchaAteretTorah;    // Set note 1 below
+$zmanim->plagHaminchaBaalHatanya;    // See note 3 below
 ```
 
 #### Candle Lighting
 ```php
-$zmanim->CandleLighting; // Get sea level sunset minus candle lighting offset. Default is 18 minutes
+$zmanim->candleLighting; // Get sea level sunset minus candle lighting offset. Default is 18 minutes
 $zmanim->setCandleLightingOffset($candleLightingOffset);
 ```
 
 #### Start of Bain Hasmashos (According to Rabbeinu Tam)
 
 ```php
-$zmanim->BainHasmashosRT13Point24Degrees;
-$zmanim->BainHasmashosRT58Point5Minutes;
-$zmanim->BainHasmashosRT13Point5MinutesBefore7Point083Degrees;
-$zmanim->BainHasmashosRT2Stars;
+$zmanim->bainHasmashosRT13Point24Degrees;
+$zmanim->bainHasmashosRT58Point5Minutes;
+$zmanim->bainHasmashosRT13Point5MinutesBefore7Point083Degrees;
+$zmanim->bainHasmashosRT2Stars;
 ```
 
 #### Tzais
 ```php
-$zmanim->Tzais;                      // Sunset offset by 8.5 degrees
-$zmanim->Tzais72;
-$zmanim->TzaisGeonim3Point7Degrees;
-$zmanim->TzaisGeonim3Point8Degrees;
-$zmanim->TzaisGeonim5Point95Degrees;
-$zmanim->TzaisGeonim3Point65Degrees;
-$zmanim->TzaisGeonim3Point676Degrees;
-$zmanim->TzaisGeonim4Point61Degrees;
-$zmanim->TzaisGeonim4Point37Degrees;
-$zmanim->TzaisGeonim5Point88Degrees;
-$zmanim->TzaisGeonim4Point8Degrees;
-$zmanim->TzaisGeonim6Point45Degrees;
-$zmanim->TzaisGeonim7Point083Degrees;
-$zmanim->TzaisGeonim7Point67Degrees;
-$zmanim->TzaisGeonim8Point5Degrees;
-$zmanim->TzaisGeonim9Point3Degrees;
-$zmanim->TzaisGeonim9Point75Degrees;
-$zmanim->Tzais60;
-$zmanim->TzaisAteretTorah;           // Set note 1 below
-$zmanim->Tzais72Zmanis;
-$zmanim->Tzais90Zmanis;
-$zmanim->Tzais96Zmanis;
-$zmanim->Tzais90;
-$zmanim->Tzais120;
-$zmanim->Tzais120Zmanis;
-$zmanim->Tzais16Point1Degrees;
-$zmanim->Tzais26Degrees;
-$zmanim->Tzais18Degrees;
-$zmanim->Tzais19Point8Degrees;
-$zmanim->Tzais96;
-$zmanim->TzaisBaalHatanya;           // Set note 3 below
+$zmanim->tzais;                      // Sunset offset by 8.5 degrees
+$zmanim->tzais72;
+$zmanim->tzaisGeonim3Point7Degrees;
+$zmanim->tzaisGeonim3Point8Degrees;
+$zmanim->tzaisGeonim5Point95Degrees;
+$zmanim->tzaisGeonim3Point65Degrees;
+$zmanim->tzaisGeonim3Point676Degrees;
+$zmanim->tzaisGeonim4Point61Degrees;
+$zmanim->tzaisGeonim4Point37Degrees;
+$zmanim->tzaisGeonim5Point88Degrees;
+$zmanim->tzaisGeonim4Point8Degrees;
+$zmanim->tzaisGeonim6Point45Degrees;
+$zmanim->tzaisGeonim7Point083Degrees;
+$zmanim->tzaisGeonim7Point67Degrees;
+$zmanim->tzaisGeonim8Point5Degrees;
+$zmanim->tzaisGeonim9Point3Degrees;
+$zmanim->tzaisGeonim9Point75Degrees;
+$zmanim->tzais60;
+$zmanim->tzaisAteretTorah;           // Set note 1 below
+$zmanim->tzais72Zmanis;
+$zmanim->tzais90Zmanis;
+$zmanim->tzais96Zmanis;
+$zmanim->tzais90;
+$zmanim->tzais120;
+$zmanim->tzais120Zmanis;
+$zmanim->tzais16Point1Degrees;
+$zmanim->tzais26Degrees;
+$zmanim->tzais18Degrees;
+$zmanim->tzais19Point8Degrees;
+$zmanim->tzais96;
+$zmanim->tzaisBaalHatanya;           // Set note 3 below
 ```
 
 #### Chatzos Halayla (Midnight)
 ```php
-$zmanim->SolarMidnight;
+$zmanim->solarMidnight;
 ```
 
 #### Notes

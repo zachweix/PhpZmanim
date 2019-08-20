@@ -146,7 +146,7 @@ class AstronomicalCalendar {
 	*/
 
 	public function get($zman, ...$args) {
-		$method_name = "get" . $zman;
+		$method_name = "get" . ucfirst($zman);
 		if (method_exists($this, $method_name)) {
 			return $this->$method_name(...$args);
 		} else {
