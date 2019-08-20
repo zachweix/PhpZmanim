@@ -49,6 +49,22 @@ class AstronomicalCalendarTest extends TestCase {
 	/** 
 	 * @test
 	 */
+	public function changeCalculator() {
+		$astronomicalCalendar = new AstronomicalCalendar();
+
+		$noaa_sunset = $astronomicalCalendar->getSunset();
+		$astronomicalCalendar->setCalculatorType('SunTimes');
+		$suntimes_sunset = $astronomicalCalendar->getSunset();
+		$astronomicalCalendar->setCalculatorType('Noaa');
+		$this->assertEquals($astronomicalCalendar->getSunset(), $noaa_sunset);
+
+		$astronomicalCalendar->setCalculatorType('SunTimes');
+		$this->assertEquals($astronomicalCalendar->getSunset(), $suntimes_sunset);
+	}
+
+	/** 
+	 * @test
+	 */
 	public function testSunrise() {
 		$expected_dates = [
 			"2017-10-17T07:09:11-04:00",
@@ -404,5 +420,19 @@ class AstronomicalCalendarTest extends TestCase {
 
 			$this->assertEquals($sunTransit, $expected_dates[ $index ]);
 		}
+	}
+
+	/** 
+	 * @test
+	 */
+	public function testDefaultData() {
+		$geo = new GeoLocation();
+
+		$astronomicalCalendar1 = new AstronomicalCalendar();
+		$astronomicalCalendar2 = new AstronomicalCalendar(null, 1);
+		$astronomicalCalendar3 = new AstronomicalCalendar($geo, 1, 1);
+
+		$this->assertEquals($astronomicalCalendar1->getGeoLocation(), $geo);
+		$this->assertEquals($astronomicalCalendar2, $astronomicalCalendar3);
 	}
 }
