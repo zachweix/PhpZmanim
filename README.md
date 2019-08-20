@@ -267,6 +267,15 @@ $zmanim->CandleLighting; // Get sea level sunset minus candle lighting offset. D
 $zmanim->setCandleLightingOffset($candleLightingOffset);
 ```
 
+#### Start of Bain Hasmashos (According to Rabbeinu Tam)
+
+```php
+$zmanim->BainHasmashosRT13Point24Degrees;
+$zmanim->BainHasmashosRT58Point5Minutes;
+$zmanim->BainHasmashosRT13Point5MinutesBefore7Point083Degrees;
+$zmanim->BainHasmashosRT2Stars;
+```
+
 #### Tzais
 ```php
 $zmanim->Tzais;                      // Sunset offset by 8.5 degrees
