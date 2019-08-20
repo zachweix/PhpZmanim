@@ -22,8 +22,12 @@
 
 namespace PhpZmanim\Calendar;
 
+use ArgumentCountError;
 use Carbon\Carbon;
+use Exception;
 use PhpZmanim\Calculator\AstronomicalCalculator;
+use PhpZmanim\Calculator\NoaaCalculator;
+use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\Geo\GeoLocation;
 
 /**
@@ -91,6 +95,18 @@ class AstronomicalCalendar {
 		$this->calendar = $calendar;
 	}
 
+	public function setDate($year, $month, $day) {
+		$this->getCalendar()->setDate($year, $month, $day);
+	}
+
+	public function addDays($value) {
+		$this->getCalendar()->addDays($value);
+	}
+
+	public function subDays($value) {
+		$this->getCalendar()->subDays($value);
+	}
+
 	public function getGeoLocation() {
 		return $this->geoLocation;
 	}
@@ -105,6 +121,51 @@ class AstronomicalCalendar {
 
 	public function setAstronomicalCalculator(AstronomicalCalculator $astronomicalCalculator) {
 		$this->astronomicalCalculator = $astronomicalCalculator;
+	}
+
+	public function setCalculatorType($type) {
+		switch ($type) {
+			case 'SunTimes':
+				$this->setAstronomicalCalculator(new SunTimesCalculator());
+				break;
+			
+			case 'Noaa':
+				$this->setAstronomicalCalculator(new NoaaCalculator());
+				break;
+			
+			default:
+				throw new \Exception("Only SunTimes and Noaa are implemented currently");
+				break;
+		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| MAGIC GETTERS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function get($zman, ...$args) {
+		$method_name = "get" . $zman;
+		if (method_exists($this, $method_name)) {
+			return $this->$method_name(...$args);
+		} else {
+			throw new Exception("Requested Zman does not exist");
+		}
+	}
+
+	public function __get($arg) {
+		$response = null;
+
+		try {
+			$response = $this->get($arg);
+		} catch (ArgumentCountError $e) {
+			$response = null;
+		} catch (Exception $e) {
+			$response = null;
+		}
+
+		return $response;
 	}
 
 	/*

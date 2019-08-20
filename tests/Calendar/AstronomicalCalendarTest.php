@@ -49,6 +49,22 @@ class AstronomicalCalendarTest extends TestCase {
 	/** 
 	 * @test
 	 */
+	public function changeCalculator() {
+		$astronomicalCalendar = new AstronomicalCalendar();
+
+		$noaa_sunset = $astronomicalCalendar->getSunset();
+		$astronomicalCalendar->setCalculatorType('SunTimes');
+		$suntimes_sunset = $astronomicalCalendar->getSunset();
+		$astronomicalCalendar->setCalculatorType('Noaa');
+		$this->assertEquals($astronomicalCalendar->getSunset(), $noaa_sunset);
+
+		$astronomicalCalendar->setCalculatorType('SunTimes');
+		$this->assertEquals($astronomicalCalendar->getSunset(), $suntimes_sunset);
+	}
+
+	/** 
+	 * @test
+	 */
 	public function testSunrise() {
 		$expected_dates = [
 			"2017-10-17T07:09:11-04:00",

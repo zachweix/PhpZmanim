@@ -22,11 +22,6 @@
 
 namespace PhpZmanim;
 
-use ArgumentCountError;
-use Carbon\Carbon;
-use Exception;
-use PhpZmanim\Calculator\NoaaCalculator;
-use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\Calendar\ComplexZmanimCalendar;
 use PhpZmanim\Geo\GeoLocation;
 
@@ -36,74 +31,10 @@ use PhpZmanim\Geo\GeoLocation;
  * AstronomicalCalendar, ZmanimCalendar, or ComplexZmanimCalendar
  */
 class Zmanim extends ComplexZmanimCalendar {
-
-	/*
-	|--------------------------------------------------------------------------
-	| CLASS PROPERTIES AND CONSTANTS
-	|--------------------------------------------------------------------------
-	*/
-
-	public function __get($arg) {
-		$response = null;
-
-		try {
-			$response = $this->get($arg);
-		} catch (ArgumentCountError $e) {
-			$response = null;
-		} catch (Exception $e) {
-			$response = null;
-		}
-
-		return $response;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
-
 	public static function create($year = null, $month = null, $day = null, $locationName = null,
 		$latitude = 51.4772, $longitude = 0.0, $elevation = 0.0, $timeZone = "GMT") {
 		$geoLocation = new GeoLocation($locationName, $latitude, $longitude, $elevation, $timeZone);
 
 		return new Zmanim($geoLocation, $year, $month, $day);
-	}
-
-	public function setCalculatorType($type) {
-		switch ($type) {
-			case 'SunTimes':
-				$this->setAstronomicalCalculator(new NoaaCalculator());
-				break;
-			
-			case 'Noaa':
-				$this->setAstronomicalCalculator(new SunTimesCalculator());
-				break;
-			
-			default:
-				throw new \Exception("Only SunTimes and Noaa are implemented currently");
-				break;
-		}
-	}
-
-	public function setDate($year, $month, $day) {
-		$this->getCalendar()->setDate($year, $month, $day);
-	}
-
-	public function addDays($value) {
-		$this->getCalendar()->addDays($value);
-	}
-
-	public function subDays($value) {
-		$this->getCalendar()->subDays($value);
-	}
-
-	public function get($zman, ...$args) {
-		$method_name = "get" . $zman;
-		if (method_exists($this, $method_name)) {
-			return $this->$method_name(...$args);
-		} else {
-			throw new \Exception("Requested Zman does not exist");
-		}
 	}
 }
