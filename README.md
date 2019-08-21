@@ -15,7 +15,7 @@ $ composer require zachweix/php-zmanim
 ```json
 {
     "require": {
-        "zachweix/php-zmanim": "^1.1"
+        "zachweix/php-zmanim": "^1.2"
     }
 }
 ```
@@ -67,7 +67,7 @@ $complexZmanimCalendar = new ComplexZmanimCalendar($geoLocation, 2019, 2, 21);
 
 ## Usage
 
-Any parameter called like `$zmanim->Sunrise` or a method name you see that is called like `$zmanim->get("Sunrise")` can be called by concatenating `get` to the zman and making sure to capitalize the first letter, so you would get `$zmanim->getSunrise()`; the following three will return identical results, all of which are a Carbon object.
+Any parameter called like `$zmanim->sunrise` or a method name you see that is called like `$zmanim->get("Sunrise")` can be called by concatenating `get` to the zman and making sure to capitalize the first letter, so you would get `$zmanim->getSunrise()`; the following three will return identical results, all of which are a Carbon object.
 
 ```php
 $sunrise = $zmanim->sunrise;

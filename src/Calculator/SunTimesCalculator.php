@@ -117,7 +117,7 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	}
 
 	private static function getTimeUTC($calendar, $geoLocation, $zenith, $isSunrise) {
-		$dayOfYear = $calendar->dayOfYear;
+		$dayOfYear = $calendar->format("z") + 1;
 		$sunMeanAnomaly = self::getMeanAnomaly($dayOfYear, $geoLocation->getLongitude(), $isSunrise);
 		$sunTrueLong = self::getSunTrueLongitude($sunMeanAnomaly);
 		$sunRightAscensionHours = self::getSunRightAscensionHours($sunTrueLong);
