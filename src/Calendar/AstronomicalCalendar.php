@@ -374,9 +374,9 @@ class AstronomicalCalendar {
 
 	public function copy() {
 		$astronomicalCalculator = clone $this;
-		$astronomicalCalculator->setGeoLocation($this->getGeoLocation->copy());
-		$astronomicalCalculator->setCalendar($this->getCalendar->copy());
-		$astronomicalCalculator->setAstronomicalCalculator($this->getAstronomicalCalculator->copy());
+		$astronomicalCalculator->setGeoLocation($this->getGeoLocation()->copy());
+		$astronomicalCalculator->setCalendar($this->getCalendar()->copy());
+		$astronomicalCalculator->setAstronomicalCalculator($this->getAstronomicalCalculator()->copy());
 
 		return $astronomicalCalculator;
 	}
