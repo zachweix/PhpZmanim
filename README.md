@@ -126,6 +126,8 @@ $zmanim->shaahZmanis96Minutes;
 $zmanim->shaahZmanis120Minutes;
 $zmanim->shaahZmanis120MinutesZmanis;
 $zmanim->shaahZmanisBaalHatanya;     // See note 3 below
+$zmanim->shaahZmanisGra;
+$zmanim->shaahZmanisMGA;
 ```
 
 #### Alos Hashachar
@@ -159,7 +161,7 @@ $zmanim->misheyakir9Point5Degrees;
 
 #### Sof Zman Shma
 ```php
-$zmanim->sofZmanShmaMA;
+$zmanim->sofZmanShmaMGA;
 $zmanim->sofZmanShmaGra;
 $zmanim->sofZmanShmaMGA19Point8Degrees;
 $zmanim->sofZmanShmaMGA16Point1Degrees;
@@ -181,7 +183,7 @@ $zmanim->sofZmanShmaBaalHatanya;     // See note 3 below
 
 #### Sof Zman Tfila
 ```php
-$zmanim->sofZmanTfilaMA;
+$zmanim->sofZmanTfilaMGA;
 $zmanim->sofZmanTfilaGra;
 $zmanim->sofZmanTfilaMGA19Point8Degrees;
 $zmanim->sofZmanTfilaMGA16Point1Degrees;
