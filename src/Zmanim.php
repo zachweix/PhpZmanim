@@ -55,6 +55,8 @@ use PhpZmanim\Geo\GeoLocation;
  * @property-read \Carbon\Carbon|null $shaahZmanis120Minutes
  * @property-read \Carbon\Carbon|null $shaahZmanis120MinutesZmanis
  * @property-read \Carbon\Carbon|null $shaahZmanisBaalHatanya
+ * @property-read \Carbon\Carbon|null $shaahZmanisGra
+ * @property-read \Carbon\Carbon|null $shaahZmanisMGA
  * @property-read \Carbon\Carbon|null $alosHashachar
  * @property-read \Carbon\Carbon|null $alos72
  * @property-read \Carbon\Carbon|null $alos60
@@ -76,7 +78,7 @@ use PhpZmanim\Geo\GeoLocation;
  * @property-read \Carbon\Carbon|null $misheyakir10Point2Degrees
  * @property-read \Carbon\Carbon|null $misheyakir7Point65Degrees
  * @property-read \Carbon\Carbon|null $misheyakir9Point5Degrees
- * @property-read \Carbon\Carbon|null $sofZmanShmaMA
+ * @property-read \Carbon\Carbon|null $sofZmanShmaMGA
  * @property-read \Carbon\Carbon|null $sofZmanShmaGra
  * @property-read \Carbon\Carbon|null $sofZmanShmaMGA19Point8Degrees
  * @property-read \Carbon\Carbon|null $sofZmanShmaMGA16Point1Degrees
@@ -94,7 +96,7 @@ use PhpZmanim\Geo\GeoLocation;
  * @property-read \Carbon\Carbon|null $sofZmanShmaAteretTorah
  * @property-read \Carbon\Carbon|null $sofZmanShmaFixedLocal
  * @property-read \Carbon\Carbon|null $sofZmanShmaBaalHatanya
- * @property-read \Carbon\Carbon|null $sofZmanTfilaMA
+ * @property-read \Carbon\Carbon|null $sofZmanTfilaMGA
  * @property-read \Carbon\Carbon|null $sofZmanTfilaGra
  * @property-read \Carbon\Carbon|null $sofZmanTfilaMGA19Point8Degrees
  * @property-read \Carbon\Carbon|null $sofZmanTfilaMGA16Point1Degrees

@@ -84,7 +84,12 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * 3);
 	}
 
+	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
 	public function getSofZmanShmaMA() {
+		return $this->getSofZmanShmaMGA();
+	}
+
+	public function getSofZmanShmaMGA() {
 		return $this->getSofZmanShma($this->getAlos72(), $this->getTzais72());
 	}
 
@@ -97,7 +102,12 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * 4);
 	}
 
+	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
 	public function getSofZmanTfilaMA() {
+		return $this->getSofZmanTfilaMGA();
+	}
+
+	public function getSofZmanTfilaMGA() {
 		return $this->getSofZmanTfila($this->getAlos72(), $this->getTzais72());
 	}
 
@@ -174,7 +184,12 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getTemporalHour($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
 	}
 
+	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
 	public function getShaahZmanisMA() {
+		return $this->getShaahZmanisMGA();
+	}
+
+	public function getShaahZmanisMGA() {
 		return $this->getTemporalHour($this->getAlos72(), $this->getTzais72());
 	}
 }
