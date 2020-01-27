@@ -65,7 +65,7 @@ class AstronomicalCalendar {
 			$calendar = Carbon::createFromDate($year, $month, $day);
 		}
 
-		$this->setCalendar($calendar ?? Carbon::now());
+		$this->setCalendar($calendar ?? Carbon::now("UTC"));
 		$this->setGeoLocation($geoLocation); // duplicate call
 		$this->setAstronomicalCalculator(AstronomicalCalculator::getDefault());
 	}
