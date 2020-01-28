@@ -319,9 +319,9 @@ $zmanim->solarMidnight;
 ```
 
 #### Notes
-1 AteretTorah Zman is calculated based on a day being from Alos72Zmanis until 40 minutes after sunset. However, the exact time offset can be changed by calling `$zmanim->setAteretTorahSunsetOffset($ateretTorahSunsetOffset)`.
-1 FixedLocalChatzos is based on a fixed time for Chatzos throughout the year, see KosherJava's documentation for more details.
-1 Baal Hatanya calculates Zmanim based on a zenith of 1.583 degrees below the 90 degree geometric zenith.
+1. AteretTorah Zman is calculated based on a day being from Alos72Zmanis until 40 minutes after sunset. However, the exact time offset can be changed by calling `$zmanim->setAteretTorahSunsetOffset($ateretTorahSunsetOffset)`.
+1. FixedLocalChatzos is based on a fixed time for Chatzos throughout the year, see KosherJava's documentation for more details.
+1. Baal Hatanya calculates Zmanim based on a zenith of 1.583 degrees below the 90 degree geometric zenith.
 
 ### Alternative Zmanim
 
