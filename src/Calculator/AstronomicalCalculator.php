@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -52,12 +52,59 @@ abstract class AstronomicalCalculator {
 
 	/*
 	|--------------------------------------------------------------------------
-	| STATIC FUNCTIONS
+	| CALCULATOR
 	|--------------------------------------------------------------------------
 	*/
 
 	public static function getDefault() {
 		return new NoaaCalculator();
+	}
+
+	public function getCalculatorName() {
+		return static::CALCULATOR_NAME;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| EARTH RADIUS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getEarthRadius() {
+		return $this->earthRadius;
+	}
+
+	public function setEarthRadius(double $earthRadius) {
+		$this->earthRadius = $earthRadius;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| ABSTRACT FUNCTIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	abstract public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation);
+	abstract public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation);
+	abstract public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation);
+
+	/*
+	|--------------------------------------------------------------------------
+	| FUNCTIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getElevationAdjustment($elevation) {
+		$elevationAdjustment = rad2deg( acos($this->earthRadius / ($this->earthRadius + ($elevation / 1000.0))));
+		return $elevationAdjustment;
+	}
+
+	public function adjustZenith($zenith, $elevation) {
+		$adjustedZenith = $zenith;
+		if ($zenith == self::GEOMETRIC_ZENITH) {
+			$adjustedZenith = $zenith + ($this->getSolarRadius() + $this->getRefraction() + $this->getElevationAdjustment($elevation));
+		}
+		return $adjustedZenith;
 	}
 
 	/*
@@ -81,46 +128,6 @@ abstract class AstronomicalCalculator {
 	public function setSolarRadius(double $solarRadius) {
 		$this->solarRadius = $solarRadius;
 	}
-
-	public function getEarthRadius() {
-		return $this->earthRadius;
-	}
-
-	public function setEarthRadius(double $earthRadius) {
-		$this->earthRadius = $earthRadius;
-	}
-
-	public function getCalculatorName() {
-		return static::CALCULATOR_NAME;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
-
-	public function getElevationAdjustment($elevation) {
-		$elevationAdjustment = rad2deg( acos($this->earthRadius / ($this->earthRadius + ($elevation / 1000.0))));
-		return $elevationAdjustment;
-	}
-
-	public function adjustZenith($zenith, $elevation) {
-		$adjustedZenith = $zenith;
-		if ($zenith == self::GEOMETRIC_ZENITH) {
-			$adjustedZenith = $zenith + ($this->getSolarRadius() + $this->getRefraction() + $this->getElevationAdjustment($elevation));
-		}
-		return $adjustedZenith;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| ABSTRACT FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
-
-	abstract public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation);
-	abstract public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation);
 
 	/*
 	|--------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -64,9 +64,13 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	const ZENITH_9_POINT_5 =   AstronomicalCalendar::GEOMETRIC_ZENITH + 9.5;
 	const ZENITH_9_POINT_75 =  AstronomicalCalendar::GEOMETRIC_ZENITH + 9.75;
 
+	const ZENITH_MINUS_2_POINT_1  = AstronomicalCalendar::GEOMETRIC_ZENITH - 2.1;
+	const ZENITH_MINUS_2_POINT_8  = AstronomicalCalendar::GEOMETRIC_ZENITH - 2.8;
+	const ZENITH_MINUS_3_POINT_05 = AstronomicalCalendar::GEOMETRIC_ZENITH - 3.05;
+
 	/*
 	|--------------------------------------------------------------------------
-	| FUNCTIONS
+	| SHAAH ZMANIS
 	|--------------------------------------------------------------------------
 	*/
 
@@ -114,6 +118,14 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getTemporalHour($this->getAlos72Zmanis(), $this->getTzaisAteretTorah());
 	}
 
+	public function getShaahZmanisAlos16Point1ToTzais3Point8() {
+		return $this->getTemporalHour($this->getAlos16Point1Degrees(), $this->getTzaisGeonim3Point8Degrees());
+	}
+
+	public function getShaahZmanisAlos16Point1ToTzais3Point7() {
+		return $this->getTemporalHour($this->getAlos16Point1Degrees(), $this->getTzaisGeonim3Point7Degrees());
+	}
+
 	public function getShaahZmanis96Minutes() {
 		return $this->getTemporalHour($this->getAlos96(), $this->getTzais96());
 	}
@@ -126,6 +138,12 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getTemporalHour($this->getAlos120Zmanis(), $this->getTzais120Zmanis());
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| PLAG HAMINCHA
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getPlagHamincha120MinutesZmanis() {
 		return $this->getPlagHamincha($this->getAlos120Zmanis(), $this->getTzais120Zmanis());
 	}
@@ -134,52 +152,42 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getPlagHamincha($this->getAlos120(), $this->getTzais120());
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| ALOS
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getAlos60() {
-		return $this->getTimeOffset($this->getSunrise(), -60 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getSunrise(), -60 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getAlos72Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), $shaahZmanis * -1.2);
+		return $this->getZmanisBasedOffset(-1.2);
 	}
 
 	public function getAlos96() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -96 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -96 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getAlos90Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), $shaahZmanis * -1.5);
+		return $this->getZmanisBasedOffset(-1.5);
 	}
 
 	public function getAlos96Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), $shaahZmanis * -1.6);
+		return $this->getZmanisBasedOffset(-1.6);
 	}
 
 	public function getAlos90() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -90 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -90 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getAlos120() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -120 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -120 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getAlos120Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), $shaahZmanis * -2);
+		return $this->getZmanisBasedOffset(-2.0);
 	}
 
 	public function getAlos26Degrees() {
@@ -202,6 +210,12 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getSunriseOffsetByDegrees(ZmanimCalendar::ZENITH_16_POINT_1);
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| MISHEYAKIR
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getMisheyakir11Point5Degrees() {
 		return $this->getSunriseOffsetByDegrees(self::ZENITH_11_POINT_5);
 	}
@@ -221,6 +235,12 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	public function getMisheyakir9Point5Degrees() {
 		return $this->getSunriseOffsetByDegrees(self::ZENITH_9_POINT_5);
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SOF ZMAN SHMA
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getSofZmanShmaMGA19Point8Degrees() {
 		return $this->getSofZmanShma($this->getAlos19Point8Degrees(), $this->getTzais19Point8Degrees());
@@ -259,7 +279,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getSofZmanShma3HoursBeforeChatzos() {
-		return $this->getTimeOffset($this->getChatzos(), -180 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getChatzos(), -180 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getSofZmanShmaMGA120Minutes() {
@@ -273,6 +293,21 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	public function getSofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees() {
 		return $this->getSofZmanShma($this->getAlos16Point1Degrees(), $this->getTzaisGeonim7Point083Degrees());
 	}
+
+	public function getSofZmanShmaKolEliyahu() {
+		$chatzos = $this->getFixedLocalChatzos();
+		if ($chatzos == null || $this->getSunrise() == null) {
+			return null;
+		}
+		$diff = $chatzos->diffInMilliseconds($this->getElevationAdjustedSunrise()) / 2;
+		return $this->getTimeOffset($chatzos, -$diff);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SOF ZMAN TFILA
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getSofZmanTfilaMGA19Point8Degrees() {
 		return $this->getSofZmanTfila($this->getAlos19Point8Degrees(), $this->getTzais19Point8Degrees());
@@ -315,11 +350,17 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getSofZmanTfila2HoursBeforeChatzos() {
-		return $this->getTimeOffset($this->getChatzos(), -120 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getChatzos(), -120 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| MIMCHA GEDOLA
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getMinchaGedola30Minutes() {
-		return $this->getTimeOffset($this->getChatzos(), GeoLocation::MINUTE_SECOND * 30);
+		return $this->getTimeOffset($this->getChatzos(), AstronomicalCalendar::MINUTE_MILLIS * 30);
 	}
 
 	public function getMinchaGedola72Minutes() {
@@ -328,6 +369,16 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 
 	public function getMinchaGedola16Point1Degrees() {
 		return $this->getMinchaGedola($this->getAlos16Point1Degrees(), $this->getTzais16Point1Degrees());
+	}
+
+	public function getMinchaGedolaAhavatShalom() {
+		if ($this->getMinchaGedola30Minutes() == null || $this->getMinchaGedola() == null) {
+			return null;
+		} else {
+			$fixed = $this->getMinchaGedola30Minutes();
+			$ahavat_shalom = $this->getTimeOffset($this->getChatzos(), $this->getShaahZmanisAlos16Point1ToTzais3Point7() / 2);
+			return $fixed->gt($ahavat_shalom) ? $fixed : $ahavat_shalom;
+		}
 	}
 
 	public function getMinchaGedolaGreaterThan30() {
@@ -340,13 +391,29 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		}
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| MIMCHA KETANA
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getMinchaKetana16Point1Degrees() {
 		return $this->getMinchaKetana($this->getAlos16Point1Degrees(), $this->getTzais16Point1Degrees());
+	}
+
+	public function getMinchaKetanaAhavatShalom() {
+		return $this->getTimeOffset($this->getTzaisGeonim3Point8Degrees(), -$this->getShaahZmanisAlos16Point1ToTzais3Point8() * 2.5);
 	}
 
 	public function getMinchaKetana72Minutes() {
 		return $this->getMinchaKetana($this->getAlos72(), $this->getTzais72());
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| PLAG HAMINCHA
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getPlagHamincha60Minutes() {
 		return $this->getPlagHamincha($this->getAlos60(), $this->getTzais60());
@@ -400,30 +467,70 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getPlagHamincha($this->getAlos16Point1Degrees(), $this->getTzaisGeonim7Point083Degrees());
 	}
 
-	public function getBainHasmashosRT13Point24Degrees() {
+	public function getPlagAhavatShalom() {
+		return $this->getTimeOffset($this->getTzaisGeonim3Point8Degrees(), -$this->getShaahZmanisAlos16Point1ToTzais3Point8() * 1.25);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| BAIN HASHMASHOS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getBainHashmashosRT13Point24Degrees() {
 		return $this->getSunsetOffsetByDegrees(self::ZENITH_13_POINT_24);
 	}
 
-	public function getBainHasmashosRT58Point5Minutes() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 58.5 * GeoLocation::MINUTE_SECOND);
+	public function getBainHashmashosRT58Point5Minutes() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 58.5 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
-	public function getBainHasmashosRT13Point5MinutesBefore7Point083Degrees() {
-		return $this->getTimeOffset($this->getSunsetOffsetByDegrees(self::ZENITH_7_POINT_083), -13.5 * GeoLocation::MINUTE_SECOND);
+	public function getBainHashmashosRT13Point5MinutesBefore7Point083Degrees() {
+		return $this->getTimeOffset($this->getSunsetOffsetByDegrees(self::ZENITH_7_POINT_083), -13.5 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
-	public function getBainHasmashosRT2Stars() {
+	public function getBainHashmashosRT2Stars() {
 		$alos19Point8 = $this->getAlos19Point8Degrees();
 		$sunrise = $this->getElevationAdjustedSunrise();
 		if ($alos19Point8 == null || $sunrise == null) {
 			return null;
 		}
 
-		$alos19Point8 = $alos19Point8->format('U.u');
-		$sunrise = $sunrise->format('U.u');
+		$alos19Point8 = $alos19Point8->getTimestampMs();
+		$sunrise = $sunrise->getTimestampMs();
 
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), ($sunrise - $alos19Point8) * (5 / 18));
 	}
+
+	public function getBainHashmashosYereim18Minutes() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -18 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getBainHashmashosYereim3Point05Degrees() {
+		return $this->getSunsetOffsetByDegrees(self::ZENITH_MINUS_3_POINT_05);
+	}
+
+	public function getBainHashmashosYereim16Point875Minutes() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -16.875 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getBainHashmashosYereim2Point8Degrees() {
+		return $this->getSunsetOffsetByDegrees(self::ZENITH_MINUS_2_POINT_8);
+	}
+
+	public function getBainHashmashosYereim13Point5Minutes() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -13.5 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getBainHashmashosYereim2Point1Degrees() {
+		return $this->getSunsetOffsetByDegrees(self::ZENITH_MINUS_2_POINT_1);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| TZAIS
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getTzaisGeonim3Point7Degrees() {
 		return $this->getSunsetOffsetByDegrees(self::ZENITH_3_POINT_7);
@@ -474,7 +581,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getTzaisGeonim8Point5Degrees() {
-		return $this->getSunsetOffsetByDegrees(ZmanimCalculator::ZENITH_8_POINT_5);
+		return $this->getSunsetOffsetByDegrees(ZmanimCalendar::ZENITH_8_POINT_5);
 	}
 
 	public function getTzaisGeonim9Point3Degrees() {
@@ -486,11 +593,17 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getTzais60() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 60 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 60 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| ATERET TORAH CALCULATIONS
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getTzaisAteretTorah() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->getAteretTorahSunsetOffset() * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->getAteretTorahSunsetOffset() * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getAteretTorahSunsetOffset() {
@@ -521,44 +634,59 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getPlagHamincha($this->getAlos72Zmanis(), $this->getTzaisAteretTorah());
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| TZAIS CONTINUED
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getTzais72Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $shaahZmanis * 1.2);
+		return $this->getZmanisBasedOffset(1.2);
 	}
 
-	public function getTzais90Zmanis() {
+	/*
+	|--------------------------------------------------------------------------
+	| ZMANIS OFFSET HELPER
+	|--------------------------------------------------------------------------
+	*/
+
+	private function getZmanisBasedOffset($hours = 0) {
 		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
+		if ($shaahZmanis == null || $hours == 0) {
 			return null;
 		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $shaahZmanis * 1.5);
+
+		if ($hours > 0) {
+			return $this->getTimeOffset($this->getElevationAdjustedSunset(), $shaahZmanis * $hours);
+		} else {
+			return $this->getTimeOffset($this->getElevationAdjustedSunrise(), $shaahZmanis * $hours);
+		}
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| TZAIS CONTINUED x2
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getTzais90Zmanis() {
+		return $this->getZmanisBasedOffset(1.5);
 	}
 
 	public function getTzais96Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $shaahZmanis * 1.6);
+		return $this->getZmanisBasedOffset(1.6);
 	}
 
 	public function getTzais90() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 90 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 90 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getTzais120() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 120 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 120 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getTzais120Zmanis() {
-		$shaahZmanis = $this->getShaahZmanisGra();
-		if ($shaahZmanis == null) {
-			return null;
-		}
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $shaahZmanis * 2.0);
+		return $this->getZmanisBasedOffset(2.0);
 	}
 
 	public function getTzais16Point1Degrees() {
@@ -578,21 +706,140 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getTzais96() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 96 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 96 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| FIXED ZMANIM
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getFixedLocalChatzos() {
 		return $this->getTimeOffset($this->getDateFromTime(12.0 - $this->getGeoLocation()->getStandardTimeOffset()
-				/ GeoLocation::HOUR_MILLIS, true), -$this->getGeoLocation()->getLocalMeanTimeOffset());
+				/ AstronomicalCalendar::HOUR_MILLIS, true), -$this->getGeoLocation()->getLocalMeanTimeOffset());
 	}
 
 	public function getSofZmanShmaFixedLocal() {
-		return $this->getTimeOffset($this->getFixedLocalChatzos(), -180 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getFixedLocalChatzos(), -180 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
 	public function getSofZmanTfilaFixedLocal() {
-		return $this->getTimeOffset($this->getFixedLocalChatzos(), -120 * GeoLocation::MINUTE_SECOND);
+		return $this->getTimeOffset($this->getFixedLocalChatzos(), -120 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| MOLAD
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getSofZmanKidushLevanaBetweenMoldos($alos = null, $tzais = null) {
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+
+		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 16) { 
+			return null;
+		}
+
+		return $this->getMoladBasedTime($jewishCalendar->getSofZmanKidushLevanaBetweenMoldos(), $alos, $tzais, false);
+	}
+
+	private function getMoladBasedTime($moladBasedTime, $alos, $tzais, $techila) {
+		$lastMidnight = $this->getMidnightLastNight();
+		$midnightTonight = $this->getMidnightTonight();
+		if (!($moladBasedTime->lt($lastMidnight) || $moladBasedTime->gt($midnightTonight))){
+			if ($alos != null || $tzais != null) {
+				if ($techila && !($moladBasedTime->lt($tzais) || $moladBasedTime->gt($alos))){
+					return $tzais;
+				} else {
+					return $alos;
+				}
+			}
+			return $moladBasedTime;
+		}
+		return null;
+	}
+
+	public function getSofZmanKidushLevana15Days($alos = null, $tzais = null) {
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+
+		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 17) { 
+			return null;
+		}
+
+		return $this->getMoladBasedTime($jewishCalendar->getSofZmanKidushLevana15Days(), $alos, $tzais, false);
+	}
+
+	public function getTchilasZmanKidushLevana3Days($alos = null, $tzais = null) {
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		
+		if ($jewishCalendar->getJewishDayOfMonth() > 5 && $jewishCalendar->getJewishDayOfMonth() < 30) { 
+			return null;
+		}
+		
+		$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), $alos, $tzais, true);
+
+		if ($zman == null && $jewishCalendar->getJewishDayOfMonth() == 30) {
+			$jewishCalendar->forward("month", 1);
+			$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), null, null, true);
+		}
+		
+		return $zman;
+	}
+
+	public function getZmanMolad() {
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+
+		if ($jewishCalendar->getJewishDayOfMonth() > 2 && $jewishCalendar->getJewishDayOfMonth() < 27) { 
+			return null;
+		}
+
+		$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+
+		if ($molad == null && $jewishCalendar->getJewishDayOfMonth() > 26) {
+			$jewishCalendar->forward("month", 1);
+			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+		}
+		return molad;
+	}
+
+	private function getMidnightLastNight() {
+		$midnight = $this->getCalendar()->copy();
+
+		$midnight->startOfDay();
+
+		return $midnight;
+	}
+
+	private function getMidnightTonight() {
+		$midnight = $this->getCalendar()->copy();
+
+		$midnight->addDay();
+		$midnight->startOfDay();
+
+		return $midnight;
+	}
+
+	public function getTchilasZmanKidushLevana7Days($alos = null, $tzais = null) {
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+
+		if ($jewishCalendar->getJewishDayOfMonth() < 4 || $jewishCalendar->getJewishDayOfMonth() > 9) { 
+			return null;
+		}
+		
+		return $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana7Days(), alos, tzais, true);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| PESACH
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getSofZmanAchilasChametzGRA() {
 		return $this->getSofZmanTfilaGRA();
@@ -618,13 +865,25 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $this->getTimeOffset($this->getAlos16Point1Degrees(), $this->getShaahZmanis16Point1Degrees() * 5);
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| CHATZOS HALAYLA
+	|--------------------------------------------------------------------------
+	*/
+
 	public function getSolarMidnight() {
 		$clonedCal = $this->copy();
 		$clonedCal->getCalendar()->addDay();
-		$sunset = $this->getSeaLevelSunset();
-		$sunrise = $clonedCal->getSeaLevelSunrise();
-		return $this->getTimeOffset($sunset, $this->getTemporalHour($sunset, $sunrise) * 6);
+		$chatzos_today = $this->getChatzos();
+		$chatzos_tomorrow = $clonedCal->getChatzos();
+		return $this->getTimeOffset($chatzos_today, ($chatzos_tomorrow->getTimestampMs() - $chatzos_today->getTimestampMs()) / 2);
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| BAAL HATANYA
+	|--------------------------------------------------------------------------
+	*/
 
 	private function getSunriseBaalHatanya() {
 		return $this->getSunriseOffsetByDegrees(self::ZENITH_1_POINT_583);
@@ -682,5 +941,83 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 
 	public function getTzaisBaalHatanya() {
 		return $this->getSunsetOffsetByDegrees(self::ZENITH_6_DEGREES);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| FIXED LOCAL CHATZOS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getFixedLocalChatzosBasedZmanim($startOfHalfDay, $endOfHalfDay, $hours) {
+		if ($startOfHalfDay == null || $endOfHalfDay == null) {
+			return null;
+		}
+		$shaahZmanis = ($endOfHalfDay->getTimestampMs() - $startOfHalfDay->getTimestampMs()) / 6;
+		return Carbon::createFromTimestamp($startOfHalfDay->getTimestampMs() + $shaahZmanis * $hours);
+	}
+
+	public function getSofZmanShmaMGA18DegreesToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos18Degrees(), $this->getFixedLocalChatzos(), 3);
+	}
+
+	public function getSofZmanShmaMGA16Point1DegreesToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos16Point1Degrees(), $this->getFixedLocalChatzos(), 3);
+	}
+
+	public function getSofZmanShmaMGA90MinutesToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos90(), $this->getFixedLocalChatzos(), 3);
+	}
+
+	public function getSofZmanShmaMGA72MinutesToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos72(), $this->getFixedLocalChatzos(), 3);
+	}
+
+	public function getSofZmanShmaGRASunriseToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getSunrise(), $this->getFixedLocalChatzos(), 3);
+	}
+
+	public function getSofZmanTfilaGRASunriseToFixedLocalChatzos() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getSunrise(), $this->getFixedLocalChatzos(), 4);
+	}
+
+	public function getMinchaGedolaGRAFixedLocalChatzos30Minutes() {
+		return $this->getTimeOffset($this->getFixedLocalChatzos(), AstronomicalCalendar::MINUTE_MILLIS * 30);
+	}
+
+	public function getMinchaKetanaGRAFixedLocalChatzosToSunset() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getFixedLocalChatzos(), $this->getSunset(), 3.5);
+	}
+
+	public function getPlagHaminchaGRAFixedLocalChatzosToSunset() {
+		return $this->getFixedLocalChatzosBasedZmanim($this->getFixedLocalChatzos(), $this->getSunset(), 4.75);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| RAV MOSHE 50 MINUTES
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getTzais50() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 50 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SAMUCH LEMINCHA KETANA
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getSamuchLeMinchaKetanaGRA() {
+		return $this->getSamuchLeMinchaKetana($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
+	}
+
+	public function getSamuchLeMinchaKetana16Point1Degrees() {
+		return $this->getSamuchLeMinchaKetana($this->getAlos16Point1Degrees(), $this->getTzais16Point1Degrees());
+	}
+
+	public function getSamuchLeMinchaKetana72Minutes() {
+		return $this->getSamuchLeMinchaKetana($this->getAlos72(), $this->getTzais72());
 	}
 }

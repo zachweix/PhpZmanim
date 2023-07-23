@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -23,8 +23,6 @@
 namespace PhpZmanim\Calendar;
 
 use Carbon\Carbon;
-use PhpZmanim\Calculator\AstronomicalCalculator;
-use PhpZmanim\Geo\GeoLocation;
 
 /**
  * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/ZmanimCalendar.java
@@ -40,21 +38,124 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	private $useElevation = true;
 	private $candleLightingOffset = 18;
 
-	const ZENITH_16_POINT_1 = AstronomicalCalculator::GEOMETRIC_ZENITH + 16.1;
-	const ZENITH_8_POINT_5 = AstronomicalCalculator::GEOMETRIC_ZENITH + 8.5;
+	const ZENITH_16_POINT_1 = AstronomicalCalendar::GEOMETRIC_ZENITH + 16.1;
+	const ZENITH_8_POINT_5 = AstronomicalCalendar::GEOMETRIC_ZENITH + 8.5;
 
 	/*
 	|--------------------------------------------------------------------------
-	| GETTERS AND SETTERS
+	| UTILITIES
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getUseElevation() {
+	public function isUseElevation() {
 		return $this->useElevation;
 	}
 
 	public function setUseElevation($useElevation) {
 		$this->useElevation = $useElevation;
+	}
+
+	protected function getElevationAdjustedSunrise() {
+		if ($this->isUseElevation()) {
+			return $this->getSunrise();
+		} else {
+			return $this->getSeaLevelSunrise();
+		}
+	}
+
+	protected function getElevationAdjustedSunset() {
+		if ($this->isUseElevation()) {
+			return $this->getSunset();
+		} else {
+			return $this->getSeaLevelSunset();
+		}
+	}
+
+	public function getTzais() {
+		return $this->getSunsetOffsetByDegrees(self::ZENITH_8_POINT_5);
+	}
+
+	public function getAlosHashachar() {
+		return $this->getSunriseOffsetByDegrees(self::ZENITH_16_POINT_1);
+	}
+
+	public function getAlos72() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getChatzos() {
+		return $this->getSunTransit();
+	}
+
+	public function getSofZmanShma($startOfDay, $endOfDay) {
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 3);
+	}
+
+	public function getSofZmanShmaGRA() {
+		return $this->getSofZmanShma($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
+	}
+
+	public function getSofZmanShmaMGA() {
+		return $this->getSofZmanShma($this->getAlos72(), $this->getTzais72());
+	}
+
+	public function getTzais72() {
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getCandleLighting() {
+		return $this->getTimeOffset($this->getSeaLevelSunset(), -$this->getCandleLightingOffset() * AstronomicalCalendar::MINUTE_MILLIS);
+	}
+
+	public function getSofZmanTfila($startOfDay, $endOfDay) {
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 4);
+	}
+
+	public function getSofZmanTfilaGRA() {
+		return $this->getSofZmanTfila($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
+	}
+
+	public function getSofZmanTfilaMGA() {
+		return $this->getSofZmanTfila($this->getAlos72(), $this->getTzais72());
+	}
+
+	public function getMinchaGedola($startOfDay = null, $endOfDay = null) {
+		if (is_null($startOfDay) && is_null($endOfDay)) {
+			$startOfDay = $this->getElevationAdjustedSunrise();
+			$endOfDay = $this->getElevationAdjustedSunset();
+		}
+
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 6.5);
+	}
+
+	public function getSamuchLeMinchaKetana($startOfDay, $endOfDay) {
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9);
+	}
+
+	public function getMinchaKetana($startOfDay = null, $endOfDay = null) {
+		if (is_null($startOfDay) && is_null($endOfDay)) {
+			$startOfDay = $this->getElevationAdjustedSunrise();
+			$endOfDay = $this->getElevationAdjustedSunset();
+		}
+
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9.5);
+	}
+
+	public function getPlagHamincha($startOfDay = null, $endOfDay = null) {
+		if (is_null($startOfDay) && is_null($endOfDay)) {
+			$startOfDay = $this->getElevationAdjustedSunrise();
+			$endOfDay = $this->getElevationAdjustedSunset();
+		}
+
+		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 10.75);
+	}
+
+	public function getShaahZmanisGra() {
+		return $this->getTemporalHour($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
+	}
+
+	public function getShaahZmanisMGA() {
+		return $this->getTemporalHour($this->getAlos72(), $this->getTzais72());
 	}
 
 	public function getCandleLightingOffset() {
@@ -65,131 +166,22 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		$this->candleLightingOffset = $candleLightingOffset;
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
+	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, $inIsrael) {
+		// Get current date (not yet implemented)
 
-	public function getAlosHashachar() {
-		return $this->getSunriseOffsetByDegrees(self::ZENITH_16_POINT_1);
-	}
-
-	public function getAlos72() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * GeoLocation::MINUTE_SECOND);
-	}
-
-	public function getSofZmanShma($startOfDay, $endOfDay) {
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 3);
-	}
-
-	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
-	public function getSofZmanShmaMA() {
-		return $this->getSofZmanShmaMGA();
-	}
-
-	public function getSofZmanShmaMGA() {
-		return $this->getSofZmanShma($this->getAlos72(), $this->getTzais72());
-	}
-
-	public function getSofZmanShmaGra() {
-		return $this->getSofZmanShma($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	public function getSofZmanTfila($startOfDay, $endOfDay) {
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 4);
-	}
-
-	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
-	public function getSofZmanTfilaMA() {
-		return $this->getSofZmanTfilaMGA();
-	}
-
-	public function getSofZmanTfilaMGA() {
-		return $this->getSofZmanTfila($this->getAlos72(), $this->getTzais72());
-	}
-
-	public function getSofZmanTfilaGra() {
-		return $this->getSofZmanTfila($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	public function getChatzos() {
-		return $this->getSunTransit();
-	}
-
-	public function getMinchaGedola($startOfDay, $endOfDay) {
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 6.5);
-	}
-
-	public function getMinchaGedolaGra() {
-		return $this->getMinchaGedola($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	public function getMinchaKetana($startOfDay, $endOfDay) {
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 9.5);
-	}
-
-	public function getMinchaKetanaGra() {
-		return $this->getMinchaKetana($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	public function getPlagHamincha($startOfDay, $endOfDay) {
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 10.75);
-	}
-
-	public function getPlagHaminchaGra() {
-		return $this->getPlagHamincha($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	public function getCandleLighting() {
-		return $this->getTimeOffset($this->getSeaLevelSunset(), -$this->getCandleLightingOffset() * GeoLocation::MINUTE_SECOND);
-	}
-
-	public function getTzais() {
-		return $this->getSunsetOffsetByDegrees(self::ZENITH_8_POINT_5);
-	}
-
-	public function getTzais72() {
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * GeoLocation::MINUTE_SECOND);
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| HELPER METHODS
-	|--------------------------------------------------------------------------
-	*/
-
-	protected function getElevationAdjustedSunrise() {
-		if ($this->getUseElevation()) {
-			return $this->getSunrise();
-		} else {
-			return $this->getSeaLevelSunrise();
+		if ($jewishCalendar->hasCandleLighting() && $currentTime->gt($this->getElevationAdjustedSunset())) { // erev shabbos, YT or YT sheni after shkiah
+			return true;
 		}
-	}
 
-	protected function getElevationAdjustedSunset() {
-		if ($this->getUseElevation()) {
-			return $this->getSunset();
-		} else {
-			return $this->getSeaLevelSunset();
+		if ($jewishCalendar->isAssurBemelacha() && $currentTime->lt($tzais)) { // is ahabbos or YT and it is before tzais
+			return true;
 		}
+
+		return false;
 	}
 
-	public function getShaahZmanisGra() {
-		return $this->getTemporalHour($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
-	}
-
-	// @deprecated The name of the function is not the same as in KosherJava, so it has been updated and this will be removed in the next version
-	public function getShaahZmanisMA() {
-		return $this->getShaahZmanisMGA();
-	}
-
-	public function getShaahZmanisMGA() {
-		return $this->getTemporalHour($this->getAlos72(), $this->getTzais72());
+	public function getShaahZmanisBasedZman($startOfDay, $endOfDay, $hours) {
+		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
+		return $this->getTimeOffset($startOfDay, $shaahZmanis * $hours);
 	}
 }

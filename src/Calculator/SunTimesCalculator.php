@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -34,6 +34,26 @@ class SunTimesCalculator extends AstronomicalCalculator {
 
 	const CALCULATOR_NAME = "US Naval Almanac Algorithm";
 	const DEG_PER_HOUR = 360.0 / 24.0;
+
+	/*
+	|--------------------------------------------------------------------------
+	| FUNCTIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
+		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
+		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, true);
+		return $doubleTime;
+	}
+
+	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
+		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
+		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, false);
+		return $doubleTime;
+	}
 
 	/*
 	|--------------------------------------------------------------------------
@@ -76,8 +96,7 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	private static function getMeanAnomaly($dayOfYear, $longitude, $isSunrise) {
 		$hoursFromMeridian = self::getHoursFromMeridian($longitude);
 		$approxTimeDays = self::getApproxTimeDays($dayOfYear, $hoursFromMeridian, $isSunrise);
-		$meanAnomaly = (0.9856 * $approxTimeDays) - 3.289;
-		return $meanAnomaly;
+		return (0.9856 * $approxTimeDays) - 3.289;
 	}
 
 	private static function getSunTrueLongitude($sunMeanAnomaly) {
@@ -111,6 +130,12 @@ class SunTimesCalculator extends AstronomicalCalculator {
 		$cosLocalHourAngle = (self::cosDeg($zenith) - ($sinDec * self::sinDeg($latitude))) / ($cosDec * self::cosDeg($latitude));
 		return $cosLocalHourAngle;
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| CALCULATIONS
+	|--------------------------------------------------------------------------
+	*/
 
 	private static function getLocalMeanTime($localHour, $sunRightAscensionHours, $approxTimeDays) {
 		return $localHour + $sunRightAscensionHours - (0.06571 * $approxTimeDays) - 6.622;
@@ -146,23 +171,9 @@ class SunTimesCalculator extends AstronomicalCalculator {
 		return $processedTime;
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
-
-	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, true);
-		return $doubleTime;
-	}
-
-	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, false);
-		return $doubleTime;
+	public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation) {
+		$sunrise = $this->getUTCSunrise($calendar, $geoLocation, 90, true);
+		$sunset = $this->getUTCSunset($calendar, $geoLocation, 90, true);
+		return ($sunrise + (($sunset - $sunrise) / 2));
 	}
 }

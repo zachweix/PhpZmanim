@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -57,16 +57,16 @@ class GeoLocationTest extends TestCase {
 	public function updateLatitudeAndLongitude() {
 		$geoLocation = new GeoLocation("Lakewood, NJ", 40.0828, -74.2094, 20, "America/New_York");
 
-		$geoLocation->setLatitude([41, 7, 5.17296, 'N']);
+		$geoLocation->setLatitudeFromDegrees(41, 7, 5.17296, 'N');
 		$this->assertEquals($geoLocation->getLatitude(), 41.1181036);
 
-		$geoLocation->setLatitude([41, 7, 5.17296, 'S']);
+		$geoLocation->setLatitudeFromDegrees(41, 7, 5.17296, 'S');
 		$this->assertEquals($geoLocation->getLatitude(), -41.1181036);
 
-		$geoLocation->setLongitude([41, 7, 5.17296, 'E']);
+		$geoLocation->setLongitudeFromDegrees(41, 7, 5.17296, 'E');
 		$this->assertEquals($geoLocation->getLongitude(), 41.1181036);
 
-		$geoLocation->setLongitude([41, 7, 5.17296, 'W']);
+		$geoLocation->setLongitudeFromDegrees(41, 7, 5.17296, 'W');
 		$this->assertEquals($geoLocation->getLongitude(), -41.1181036);
 	}
 
@@ -110,14 +110,13 @@ class GeoLocationTest extends TestCase {
 	 * @test
 	 */
 	public function testVincentyFormulae() {
-		$pointA = new GeoLocation("",
-			[50, 3, 58.76, "N"],
-			[5, 42, 53.1, "W"],
-			0, "Etc/GMT+12");
-		$pointB = new GeoLocation("",
-			[58, 38, 38.48, "N"],
-			[3, 4, 12.34, "W"],
-			0, "Etc/GMT+12");
+		$pointA = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointA->setLatitudeFromDegrees(50, 3, 58.76, "N");
+		$pointA->setLongitudeFromDegrees(5, 42, 53.1, "W");
+
+		$pointB = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointB->setLatitudeFromDegrees(58, 38, 38.48, "N");
+		$pointB->setLongitudeFromDegrees(3, 4, 12.34, "W");
 
 		$initialBearing = $pointA->getGeodesicInitialBearing($pointB);
 		$finalBearing = $pointA->getGeodesicFinalBearing($pointB);
@@ -132,14 +131,13 @@ class GeoLocationTest extends TestCase {
 	 * @test
 	 */
 	public function testRhumbLineBearing() {
-		$pointA = new GeoLocation("",
-			[50, 3, 59, "N"],
-			[5, 42, 53, "W"],
-			0, "Etc/GMT+12");
-		$pointB = new GeoLocation("",
-			[58, 38, 38, "N"],
-			[3, 4, 12, "W"],
-			0, "Etc/GMT+12");
+		$pointA = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointA->setLatitudeFromDegrees(50, 3, 59, "N");
+		$pointA->setLongitudeFromDegrees(5, 42, 53, "W");
+
+		$pointB = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointB->setLatitudeFromDegrees(58, 38, 38, "N");
+		$pointB->setLongitudeFromDegrees(3, 4, 12, "W");
 
 		$rhumbLineBearing = $pointA->getRhumbLineBearing($pointB);
 
@@ -150,14 +148,13 @@ class GeoLocationTest extends TestCase {
 	 * @test
 	 */
 	public function testRhumbLineDistance() {
-		$pointA = new GeoLocation("",
-			[50, 3, 59, "N"],
-			[5, 42, 53, "W"],
-			0, "Etc/GMT+12");
-		$pointB = new GeoLocation("",
-			[58, 38, 38, "N"],
-			[3, 4, 12, "W"],
-			0, "Etc/GMT+12");
+		$pointA = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointA->setLatitudeFromDegrees(50, 3, 59, "N");
+		$pointA->setLongitudeFromDegrees(5, 42, 53, "W");
+
+		$pointB = new GeoLocation("", 0 , 0, 0, "Etc/GMT+12");
+		$pointB->setLatitudeFromDegrees(58, 38, 38, "N");
+		$pointB->setLongitudeFromDegrees(3, 4, 12, "W");
 
 		$rhumbLineDistance = $pointA->getRhumbLineDistance($pointB);
 

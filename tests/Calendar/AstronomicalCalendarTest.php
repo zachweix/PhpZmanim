@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -387,7 +387,7 @@ class AstronomicalCalendarTest extends TestCase {
 			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
 			$sunset = $astronomicalCalendar->getTemporalHour();
 			if (!is_null($sunset)) {
-				$sunset = $sunset / 3600;
+				$sunset = $sunset / AstronomicalCalendar::HOUR_MILLIS;
 				$sunset = round($sunset, 8);
 			}
 

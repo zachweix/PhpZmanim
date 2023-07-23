@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -32,18 +32,17 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	private $locationName;
 	private $latitude;
 	private $longitude; 
-	private $elevation;
+	private $locationName;
 	private $timeZone;
+	private $elevation;
 
 	const DISTANCE = 0;
 	const INITIAL_BEARING = 1;
 	const FINAL_BEARING = 2;
 
-	const MINUTE_SECOND = 60;
-	const MINUTE_MILLIS = self::MINUTE_SECOND * 1000;
+	const MINUTE_MILLIS = 60 * 1000;
 	const HOUR_MILLIS = self::MINUTE_MILLIS * 60;
 
 	/*
@@ -62,49 +61,9 @@ class GeoLocation {
 
 	/*
 	|--------------------------------------------------------------------------
-	| GETTERS AND SETTERS
+	| ELEVATION
 	|--------------------------------------------------------------------------
 	*/
-
-	public function getLocationName() {
-		return $this->locationName;
-	}
-
-	public function setLocationName($locationName) {
-		$this->locationName = $locationName;
-	}
-
-	public function getLatitude() {
-		return $this->latitude;
-	}
-
-	public function setLatitude($latitude) {
-		if (is_array($latitude)) {
-			$latitude = $this->getLatitudeFromDegreesMinutesSeconds($latitude[0], $latitude[1], $latitude[2], $latitude[3]);
-		}
-
-		if ($latitude > 90.0 || $latitude < -90.0) {
-			throw new \Exception("Latitude must be between -90 and 90");
-		}
-
-		$this->latitude = $latitude;
-	}
-
-	public function getLongitude() {
-		return $this->longitude;
-	}
-
-	public function setLongitude($longitude) {
-		if (is_array($longitude)) {
-			$longitude = $this->getLongitudeFromDegreesMinutesSeconds($longitude[0], $longitude[1], $longitude[2], $longitude[3]);
-		}
-
-		if ($longitude > 180.0 || $longitude < -180.0) {
-			throw new \Exception("Longitude must be between -180 and 180");
-		}
-
-		$this->longitude = $longitude;
-	}
 
 	public function getElevation() {
 		return $this->elevation;
@@ -115,6 +74,76 @@ class GeoLocation {
 			throw new \Exception("Elevation cannot be negative");
 		}
 		$this->elevation = $elevation;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| GETTERS AND SETTERS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function setLatitude($latitude) {
+		if ($latitude > 90.0 || $latitude < -90.0) {
+			throw new \Exception("Latitude must be between -90 and 90");
+		}
+
+		$this->latitude = $latitude;
+	}
+
+	public function setLatitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
+		$tempLat = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
+
+		if ($tempLat > 90 || $tempLat < 0) {
+			throw new \Exception("Latitude must be between 0 and  90. Use direction of S instead of negative.");
+		}
+
+		if ($direction == "S") {
+			$tempLat *= -1;
+		} else if ($direction != "N") {
+			throw new IllegalArgumentException("Latitude direction must be N or S");
+		}
+
+		$this->latitude = $tempLat;
+	}
+
+	public function getLatitude() {
+		return $this->latitude;
+	}
+
+	public function setLongitude($longitude) {
+		if ($longitude > 180.0 || $longitude < -180.0) {
+			throw new \Exception("Longitude must be between -180 and 180");
+		}
+
+		$this->longitude = $longitude;
+	}
+
+	public function setLongitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
+		$longTemp = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
+
+		if ($longTemp > 180 || $longTemp < 0) {
+			throw new \Exception("Latitude must be between 0 and  180. Use direction of W instead of negative.");
+		}
+
+		if ($direction == "W") {
+			$longTemp *= -1;
+		} else if ($direction != "E") {
+			throw new IllegalArgumentException("Logitude direction must be E or W");
+		}
+
+		$this->longitude = $longTemp;
+	}
+
+	public function getLongitude() {
+		return $this->longitude;
+	}
+
+	public function getLocationName() {
+		return $this->locationName;
+	}
+
+	public function setLocationName($locationName) {
+		$this->locationName = $locationName;
 	}
 
 	public function getTimeZone() {
@@ -131,84 +160,30 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	private function getLatitudeFromDegreesMinutesSeconds($degrees, $minutes, $seconds, $direction) {
-		if ($degrees < 0 || $minutes < 0 || $seconds < 0) {
-			throw new \Exception("Degrees, mminutes and seconds must all be positive");
-		}
-
-		$latitude = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
-		if ($latitude > 90 || $latitude < 0) {
-			throw new \Exception("Latitude must be between 0 and  90. Use direction of S instead of negative");
-		}
-
-		if ($direction == "S") {
-			$latitude *= -1;
-		} else if ($direction != "N") {
-			throw new \Exception("Latitude direction must be N or S");
-		}
-
-		return $latitude;
-	}
-
-	private function getLongitudeFromDegreesMinutesSeconds($degrees, $minutes, $seconds, $direction) {
-		if ($degrees < 0 || $minutes < 0 || $seconds < 0) {
-			throw new \Exception("Degrees, mminutes and seconds must all be positive");
-		}
-
-		$longitude = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
-		if ($longitude > 180 || $longitude < 0) {
-			throw new \Exception("Longitude must be between 0 and  180.  Use a direction of W instead of negative");
-		}
-
-		if ($direction == "W") {
-			$longitude *= -1;
-		} else if ($direction != "E") {
-			throw new \Exception("Longitude direction must be E or W");
-		}
-
-		return $longitude;
-	}
-
-	public function getElevationAdjustment($elevation) {
-		$elevationAdjustment = rad2deg( acos($this->earthRadius / ($this->earthRadius + ($elevation / 1000))));
-		return $elevationAdjustment;
-	}
-
-	public function adjustZenith($zenith, $elevation) {
-		$adjustedZenith = $zenith;
-		if ($zenith == AstronomicalCalendar::GEOMETRIC_ZENITH) {
-			$adjustedZenith = $senith + ($this->getSolarRadius() + $this->getRefraction() + $this->getElevationAdjustment($elevation));
-		}
-		return $adjustedZenith;
-	}
-
 	public function getLocalMeanTimeOffset() {
-		$offset = $this->getStandardTimeOffset();
-		return $this->getLongitude() * 4 * self::MINUTE_MILLIS - $offset;
-	}
-
-	public function getStandardTimeOffset() {
 		$timeZone = new DateTimeZone($this->getTimeZone());
 		$utc = new DateTimeZone("UTC");
 		$utc_date = new DateTime("now", $utc);
 		$offset = $timeZone->getOffset($utc_date) * 1000;
-		return $offset;
+		return $this->getLongitude() * 4 * self::MINUTE_MILLIS - $offset;
 	}
 
 	public function getAntimeridianAdjustment() {
 		$localHoursOffset = $this->getLocalMeanTimeOffset() / self::HOUR_MILLIS;
 
 		if ($localHoursOffset >= 20){
-			// if the offset is 20 hours or more in the future (never expected anywhere other
-			// than a location using a timezone across the anti meridian to the east such as Samoa)
-			return 1; // roll the date forward a day
+			return 1;
 		} else if ($localHoursOffset <= -20) {
-			// if the offset is 20 hours or more in the past (no current location is known
-			// that crosses the antimeridian to the west, but better safe than sorry)
-			return -1; // roll the date back a day
+			return -1;
 		}
-		return 0; //99.999% of the world will have no adjustment
+		return 0;
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| GEODESIC FORMULAS
+	|--------------------------------------------------------------------------
+	*/
 
 	public function getGeodesicInitialBearing(GeoLocation $geoLocation) {
 		return $this->vincentyFormula($geoLocation, self::INITIAL_BEARING);
@@ -354,14 +329,6 @@ class GeoLocation {
 				&& $this->elevation == $geoLocation->elevation
 				&& $this->locationName == $geoLocation->locationName
 				&& $this->timeZone == $geoLocation->timeZone;
-	}
-
-	public function __toString() {
-		return "Location Name:\t\t\t{$this->getLocationName()}\n" .
-		"Latitude:\t\t\t{$this->getLatitude()}\n" .
-		"Longitude:\t\t\t{$this->getLongitude()}\n" .
-		"Elevation:\t\t\t{$this->getElevation()}\n" .
-		"Timezone:\t\t\t{$this->getTimeZone()}\n";
 	}
 
 	/*

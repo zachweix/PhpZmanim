@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019 Zachary Weixelbaum
+ * Copyright (C) 2019-2023 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -38,6 +38,46 @@ class NoaaCalculator extends AstronomicalCalculator {
 
 	/*
 	|--------------------------------------------------------------------------
+	| FUNCTIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
+		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
+		$sunrise = self::getSunriseUTC(self::getJulianDay($calendar), $geoLocation->getLatitude(), -$geoLocation->getLongitude(), $adjustedZenith);
+		
+		$sunrise = $sunrise / 60;
+
+		while ($sunrise < 0.0) {
+			$sunrise += 24.0;
+		}
+		while ($sunrise >= 24.0) {
+			$sunrise -= 24.0;
+		}
+
+		return $sunrise;
+	}
+
+	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
+		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
+		$sunset = self::getSunsetUTC(self::getJulianDay($calendar), $geoLocation->getLatitude(), -$geoLocation->getLongitude(), $adjustedZenith);
+		
+		$sunset = $sunset / 60;
+
+		while ($sunset < 0.0) {
+			$sunset += 24.0;
+		}
+		while ($sunset >= 24.0) {
+			$sunset -= 24.0;
+		}
+
+		return $sunset;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
 	| STATIC FUNCTIONS
 	|--------------------------------------------------------------------------
 	*/
@@ -68,7 +108,7 @@ class NoaaCalculator extends AstronomicalCalculator {
 
 	private static function getSunGeometricMeanLongitude($julianCenturies) {
 		$longitude = 280.46646 + $julianCenturies * (36000.76983 + 0.0003032 * $julianCenturies);
-		while ($longitude > 360.0) {
+		while ($longitude >= 360.0) {
 			$longitude -= 360.0;
 		}
 		while ($longitude < 0.0) {
@@ -210,6 +250,57 @@ class NoaaCalculator extends AstronomicalCalculator {
 				/ ((cos($hourAngle_rad) * sin($lat_rad)) - (tan($dec_rad) * cos($lat_rad)))))+180;
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| CALCULATIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	private static function getSunriseUTC($julianDay, $latitude, $longitude, $zenith) {
+		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
+
+		$noonmin = self::getSolarNoonUTC($julianCenturies, $longitude);
+		$tnoon = self::getJulianCenturiesFromJulianDay($julianDay + $noonmin / 1440.0);
+
+		$eqTime = self::getEquationOfTime($tnoon);
+		$solarDec = self::getSunDeclination($tnoon);
+		$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
+
+
+		$delta = $longitude - rad2deg($hourAngle);
+		$timeDiff = 4.0 * $delta;
+		$timeUTC = 720.0 + $timeDiff - $eqTime;
+
+		$newt = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $timeUTC
+				/ 1440.0);
+		$eqTime = self::getEquationOfTime($newt);
+		$solarDec = self::getSunDeclination($newt);
+		$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
+
+		$delta = $longitude - rad2deg($hourAngle);
+		$timeDiff = 4.0 * $delta;
+		$timeUTC = 720.0 + $timeDiff - $eqTime; // in minutes
+
+		return $timeUTC;
+	}
+
+	public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation) {
+		$julianDay = self::getJulianDay($calendar);
+		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
+		
+		$noon = self::getSolarNoonUTC($julianCenturies, -$geoLocation->getLongitude());
+		$noon = $noon / 60;
+
+		// ensure that the time is >= 0 and < 24
+		while ($noon < 0.0) {
+			$noon += 24.0;
+		}
+		while ($noon >= 24.0) {
+			$noon -= 24.0;
+		}
+		return $noon;
+	}
+
 	private static function getSolarNoonUTC($julianCenturies, $longitude) {
 		// First pass uses approximate solar noon to calculate eqtime
 		$tnoon = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $longitude
@@ -224,80 +315,31 @@ class NoaaCalculator extends AstronomicalCalculator {
 		return 720.0 + ($longitude * 4.0) - $eqTime; // min
 	}
 
-	private static function getUTCPosition($calendar, $geoLocation, $zenith, $isSunrise) {
-		$julianDay = self::getJulianDay($calendar);
-		$latitude = $geoLocation->getLatitude();
-		$longitude = -$geoLocation->getLongitude();
-
+	private static function getSunsetUTC($julianDay, $latitude, $longitude, $zenith) {
 		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
-
-		// Find the time of solar noon at the location, and use that declination. This is better than start of the
-		// Julian day
 
 		$noonmin = self::getSolarNoonUTC($julianCenturies, $longitude);
 		$tnoon = self::getJulianCenturiesFromJulianDay($julianDay + $noonmin / 1440.0);
 
-		// First calculates sunrise and approx length of day
-
 		$eqTime = self::getEquationOfTime($tnoon);
 		$solarDec = self::getSunDeclination($tnoon);
-		if ($isSunrise) {
-			$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
-		} else {
-			$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
-		}
+		$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
+
 
 		$delta = $longitude - rad2deg($hourAngle);
 		$timeDiff = 4.0 * $delta;
 		$timeUTC = 720.0 + $timeDiff - $eqTime;
 
-		// Second pass includes fractional Julian Day in gamma calc
-
 		$newt = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $timeUTC
 				/ 1440.0);
 		$eqTime = self::getEquationOfTime($newt);
 		$solarDec = self::getSunDeclination($newt);
-		if ($isSunrise) {
-			$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
-		} else {
-			$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
-		}
+		$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
 
 		$delta = $longitude - rad2deg($hourAngle);
 		$timeDiff = 4.0 * $delta;
 		$timeUTC = 720.0 + $timeDiff - $eqTime; // in minutes
 
-		$timeUTC = $timeUTC / 60.0;
-
-		// ensure that the time is >= 0 and < 24
-		while ($timeUTC < 0.0) {
-			$timeUTC += 24.0;
-		}
-		while ($timeUTC >= 24.0) {
-			$timeUTC -= 24.0;
-		}
 		return $timeUTC;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| FUNCTIONS
-	|--------------------------------------------------------------------------
-	*/
-
-	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$sunrise = self::getUTCPosition($calendar, $geoLocation, $adjustedZenith, true);
-		
-		return $sunrise;
-	}
-
-	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$sunset = self::getUTCPosition($calendar, $geoLocation, $adjustedZenith, false);
-		
-		return $sunset;
 	}
 }
