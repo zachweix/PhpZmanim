@@ -496,8 +496,8 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 			return null;
 		}
 
-		$alos19Point8 = $alos19Point8->getTimestampMs();
-		$sunrise = $sunrise->getTimestampMs();
+		$alos19Point8 = $alos19Point8->getPreciseTimestamp() / 1000;
+		$sunrise = $sunrise->getPreciseTimestamp() / 1000;
 
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), ($sunrise - $alos19Point8) * (5 / 18));
 	}
@@ -876,7 +876,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		$clonedCal->getCalendar()->addDay();
 		$chatzos_today = $this->getChatzos();
 		$chatzos_tomorrow = $clonedCal->getChatzos();
-		return $this->getTimeOffset($chatzos_today, ($chatzos_tomorrow->getTimestampMs() - $chatzos_today->getTimestampMs()) / 2);
+		return $this->getTimeOffset($chatzos_today, ($chatzos_tomorrow->getPreciseTimestamp() - $chatzos_today->getPreciseTimestamp()) / 2000);
 	}
 
 	/*
@@ -953,8 +953,8 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		if ($startOfHalfDay == null || $endOfHalfDay == null) {
 			return null;
 		}
-		$shaahZmanis = ($endOfHalfDay->getTimestampMs() - $startOfHalfDay->getTimestampMs()) / 6;
-		return Carbon::createFromTimestamp($startOfHalfDay->getTimestampMs() + $shaahZmanis * $hours);
+		$shaahZmanis = ($endOfHalfDay->getPreciseTimestamp() - $startOfHalfDay->getPreciseTimestamp()) / 6000;
+		return Carbon::createFromTimestamp(($startOfHalfDay->getPreciseTimestamp() / 1000) + $shaahZmanis * $hours);
 	}
 
 	public function getSofZmanShmaMGA18DegreesToFixedLocalChatzos() {

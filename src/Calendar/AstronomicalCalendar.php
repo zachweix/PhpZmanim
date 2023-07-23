@@ -156,7 +156,7 @@ class AstronomicalCalendar {
 			return null;
 		}
 
-		return Carbon::createFromTimestamp($time->format("U.u") + $offset, $time->getTimeZone());
+		return Carbon::createFromTimestamp($time->format("U.u") + ($offset / 1000), $time->getTimeZone());
 	}
 
 	public function getSunriseOffsetByDegrees($offsetZenith) {
@@ -203,11 +203,11 @@ class AstronomicalCalendar {
 			return null;
 		}
 
-		$startOfDayTotal = $startOfDay->getTimestampMs();
-		$endOfDayTotal = $endOfDay->getTimestampMs();
+		$startOfDayTotal = $startOfDay->getPreciseTimestamp();
+		$endOfDayTotal = $endOfDay->getPreciseTimestamp();
 
 		$dayTimeHours = $endOfDayTotal - $startOfDayTotal;
-		return $dayTimeHours / 12;
+		return $dayTimeHours / 12000;
 	}
 
 	public function getSunTransit(Carbon $startOfDay = null, Carbon $endOfDay = null) {
@@ -238,6 +238,7 @@ class AstronomicalCalendar {
 		$calculatedTime -= $minutes;
 		$seconds = (int) ($calculatedTime *= 60); // retain only the seconds
 		$calculatedTime -= $seconds;
+		$microseconds = $calculatedTime * 1000000;
 
 		// Check if a date transition has occurred, or is about to occur - this indicates the date of the event is
 		// actually not the target date, but the day prior or after
@@ -252,8 +253,7 @@ class AstronomicalCalendar {
 			$calendar->addDay();
 		}
 
-		$calendar->setTime($hours, $minutes, $seconds);
-		$calendar->milliseconds((int) ($calculatedTime * 1000));
+		$calendar->setTime($hours, $minutes, $seconds, $microseconds);
 		$calendar->setTimeZone($this->getGeoLocation()->getTimeZone());
 		return $calendar;
 	}
