@@ -427,6 +427,8 @@ class JewishDate {
 	public function setDate(Carbon $calendar) {
 		$this->validateGregorianDate($calendar->year, $calendar->month, $calendar->day);
 		$this->setInternalGregorianDate($calendar->year, $calendar->month, $calendar->day);
+
+		return $this;
 	}
 
 	public function setGregorianDate($year, $month, $dayOfMonth) {
@@ -557,7 +559,12 @@ class JewishDate {
 	}
 
 	public function addMonthsGregorian($amount) {
-		//
+		$months = $amount + $this->gregorianMonth;
+
+		$years = (int) ($months / 12) + $this->gregorianYear;
+		$months = $months % 12;
+
+		$this->setInternalGregorianDate($years, $months, $this->gregorianDayOfMonth);
 
 		return $this;
 	}
