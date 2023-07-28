@@ -167,13 +167,15 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	}
 
 	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, $inIsrael) {
-		// Get current date (not yet implemented)
+		$jewishCalendar = new JewishCalendar();
+		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar->setInIsrael($inIsrael);
 
 		if ($jewishCalendar->hasCandleLighting() && $currentTime->gt($this->getElevationAdjustedSunset())) { // erev shabbos, YT or YT sheni after shkiah
 			return true;
 		}
 
-		if ($jewishCalendar->isAssurBemelacha() && $currentTime->lt($tzais)) { // is ahabbos or YT and it is before tzais
+		if ($jewishCalendar->isAssurBemelacha() && $currentTime->lt($tzais)) { // is shabbos or YT and it is before tzais
 			return true;
 		}
 
@@ -183,5 +185,27 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	public function getShaahZmanisBasedZman($startOfDay, $endOfDay, $hours) {
 		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * $hours);
+	}
+
+	public function getPercentOfShaahZmanisFromDegrees($degrees, $sunset) {
+		$seaLevelSunrise = $this->getSeaLevelSunrise();
+		$seaLevelSunset = $this->getSeaLevelSunset();
+		$twilight = null;
+		if($sunset) {
+			$twilight = $this->getSunsetOffsetByDegrees(AstronomicalCalendar::GEOMETRIC_ZENITH + $degrees);
+		} else {
+			$twilight = $this->getSunriseOffsetByDegrees(AstronomicalCalendar::GEOMETRIC_ZENITH + $degrees);
+		}
+		if($seaLevelSunrise == null || $seaLevelSunset == null || $twilight == null) {
+			return null;
+		}
+		$shaahZmanis = ($seaLevelSunset->getPreciseTimestamp() - $seaLevelSunrise->getPreciseTimestamp()) / 12000.0;
+		$riseSetToTwilight;
+		if($sunset) {
+			$riseSetToTwilight = ($twilight->getPreciseTimestamp() - $seaLevelSunset->getPreciseTimestamp()) / 1000;
+		} else {
+			$riseSetToTwilight = ($seaLevelSunrise->getPreciseTimestamp() - $twilight->getPreciseTimestamp()) / 1000;
+		}
+		return $riseSetToTwilight / $shaahZmanis;
 	}
 }
