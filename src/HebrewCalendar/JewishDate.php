@@ -30,6 +30,7 @@ class JewishDate {
 	| CLASS PROPERTIES AND CONSTANTS
 	|--------------------------------------------------------------------------
 	*/
+
 	private $jewishMonth;
 	private $jewishDay;
 	private $jewishYear;
@@ -158,18 +159,18 @@ class JewishDate {
 	}
 
 	private function absDateToDate($absDate) {
-		$year = $absDate / 366;
+		$year = (int) ($absDate / 366);
 		while ($absDate >= $this->gregorianDateToAbsDate($year + 1, 1, 1)) {
 			$year++;
 		}
 
-		$$month = 1;
+		$month = 1;
 		while ($absDate > $this->gregorianDateToAbsDate($year, $month, self::getLastDayOfGregorianMonth($month, $year))) {
 			$month++;
 		}
 
 		$dayOfMonth = $absDate - $this->gregorianDateToAbsDate($year, $month, 1) + 1;
-		$this->setInternalGregorianDate($year, $month, $dayOfMonth);
+		return $this->setInternalGregorianDate($year, $month, $dayOfMonth);
 	}
 
 	public function getAbsDate() {
@@ -382,7 +383,7 @@ class JewishDate {
 	public function getMolad() {
 		$moladDate = new JewishDate(self::getChalakimSinceMoladTohu($this->jewishYear, $this->jewishMonth));
 		if ($moladDate->getMoladHours() >= 6) {
-			$moladDate->addDay();
+			$moladDate->addDays(1);
 		}
 		$moladDate->setMoladHours(($moladDate->getMoladHours() + 18) % 24);
 		return $moladDate;
@@ -426,14 +427,12 @@ class JewishDate {
 
 	public function setDate(Carbon $calendar) {
 		$this->validateGregorianDate($calendar->year, $calendar->month, $calendar->day);
-		$this->setInternalGregorianDate($calendar->year, $calendar->month, $calendar->day);
-
-		return $this;
+		return $this->setInternalGregorianDate($calendar->year, $calendar->month, $calendar->day);
 	}
 
 	public function setGregorianDate($year, $month, $dayOfMonth) {
 		$this->validateGregorianDate($year, $month, $dayOfMonth);
-		$this->setInternalGregorianDate($year, $month, $dayOfMonth);
+		return $this->setInternalGregorianDate($year, $month, $dayOfMonth);
 	}
 
 	private function setInternalGregorianDate($year, $month, $dayOfMonth) {
@@ -449,6 +448,8 @@ class JewishDate {
 		$this->absDateToJewishDate();
 
 		$this->dayOfWeek = abs($this->gregorianAbsDate % 7) + 1;
+
+		return $this;
 	}
 
 	public function setJewishDate($year, $month, $dayOfMonth, $hours = 0, $minutes = 0, $chalakim = 0) {
@@ -468,7 +469,7 @@ class JewishDate {
 		$this->moladChalakim = $chalakim;
 
 		$this->gregorianAbsDate = self::jewishDateToAbsDate($this->jewishYear, $this->jewishMonth, $this->jewishDay); // reset Gregorian date
-		$this->absDateToDate($this->gregorianAbsDate);
+		return $this->absDateToDate($this->gregorianAbsDate);
 	}
 
 	public function getGregorianCalendar() {
@@ -482,95 +483,154 @@ class JewishDate {
 
 	public function addDays($amount) {
 		if ($amount < 1) {
-			throw new \Exception("The amount cannot be a negative number");
+			return $this->subDays(-1 * $amount);
 		}
 
-		// Change Gregorian date
-		for ($i = 0; $i < $amount; $i++) {
-			if ($this->gregorianDayOfMonth == self::getLastDayOfGregorianMonth($this->gregorianMonth, $this->gregorianYear)) {
+		// Update day of week and abs date
+		$this->dayOfWeek = ($this->dayOfWeek + $amount) % 7;
+		if ($this->dayOfWeek == 0) {
+			$this->dayOfWeek = 7;
+		}
+		$this->gregorianAbsDate += $amount;
+
+		// Update Gregorian Date
+		$gregorianAmount = $amount;
+
+		// Let's start by checking if we are gonna bump to next year
+		while (true) {
+			$dayOfYear = 0;
+			for ($i = 1; $i < $this->gregorianMonth; $i++) {
+				$dayOfYear += self::getLastDayOfGregorianMonth($i, $this->gregorianYear);
+			}
+			$dayOfYear += $this->gregorianDayOfMonth;
+			$diffToEndOfYear = (self::isGregorianLeapYear($this->gregorianYear) ? 366 : 365) - $dayOfYear;
+
+			// If we're moving enough, let's move to January 1
+			if ($gregorianAmount > $diffToEndOfYear) {
+				$this->gregorianYear++;
 				$this->gregorianDayOfMonth = 1;
-				// if last day of year
-				if ($this->gregorianMonth == 12) {
-					$this->gregorianYear++;
-					$this->gregorianMonth = 1;
-				} else {
-					$this->gregorianMonth++;
-				}
-			} else { // if not last day of month
-				$this->gregorianDayOfMonth++;
+				$this->gregorianMonth = 1;
+				$gregorianAmount = $gregorianAmount - $diffToEndOfYear - 1;
+				continue;
 			}
-	
-			// Change the Jewish Date
-			if ($this->jewishDay == self::getDaysInJewishMonth($this->getJewishMonth(), $this->getJewishYear())) {
-				// if it last day of elul (i.e. last day of Jewish year)
-				if ($this->jewishMonth == self::ELUL) {
-					$this->jewishYear++;
-					$this->jewishMonth++;
-					$this->jewishDay = 1;
-				} else if ($this->jewishMonth == self::getLastMonthOfJewishYear($this->jewishYear)) {
-					// if it is the last day of Adar, or Adar II as case may be
+
+			break;
+		}
+
+		// Now let's check how many months and days to move forward
+		while ($gregorianAmount > 0) {
+			$diffToEndOfMonth = self::getLastDayOfGregorianMonth($this->gregorianMonth, $this->gregorianYear) - $this->gregorianDayOfMonth;
+			if ($gregorianAmount > $diffToEndOfMonth) {
+				$this->gregorianDayOfMonth = 1;
+				$this->gregorianMonth++;
+				$gregorianAmount = $gregorianAmount - $diffToEndOfMonth - 1;
+				continue;
+			}
+
+			$this->gregorianDayOfMonth += $gregorianAmount;
+			break;
+		}
+
+		// Update Jewish Date
+		// Let's start by checking if we are gonna bump to next year
+		while (true) {
+			$dayOfYear = self::getDaysSinceStartOfJewishYear($this->jewishYear, $this->jewishMonth, $this->jewishDay);
+			$diffToEndOfYear = self::getDaysInJewishYear($this->jewishYear) - $dayOfYear;
+
+			// If we're moving enough, let's move to 1 Tishrei
+			if ($amount > $diffToEndOfYear) {
+				$this->jewishYear++;
+				$this->jewishMonth = self::TISHREI;
+				$this->jewishDay = 1;
+				$amount = $amount - $diffToEndOfYear - 1;
+				continue;
+			}
+
+			break;
+		}
+
+		// Now let's check how many months and days to move forward
+		while ($amount > 0) {
+			$diffToEndOfMonth = self::getDaysInJewishMonth($this->jewishMonth, $this->jewishYear) - $this->jewishDay;
+			if ($amount > $diffToEndOfMonth) {
+				// If it was Adar and not a leap year or if it was Adar II, then we need to go to Nissan
+				if (($this->jewishMonth == self::ADAR && self::getLastMonthOfJewishYear($this->jewishYear) == self::ADAR) || $this->jewishMonth == self::ADAR_II) {
 					$this->jewishMonth = self::NISSAN;
-					$this->jewishDay = 1;
 				} else {
 					$this->jewishMonth++;
-					$this->jewishDay = 1;
 				}
-			} else { // if not last date of month
-				$this->jewishDay++;
+
+				$this->jewishDay = 1;
+				$amount = $amount - $diffToEndOfMonth - 1;
+				continue;
 			}
-	
-			if ($this->dayOfWeek == 7) {
-				$this->dayOfWeek = 1;
-			} else {
-				$this->dayOfWeek++;
-			}
-	
-			$this->gregorianAbsDate++; // increment the absolute date
+
+			$this->jewishDay += $amount;
+			break;
 		}
 
 		return $this;
-	}
-
-	public function addDay() {
-		return $this->addDays(1);
 	}
 
 	public function addMonthsJewish($amount) {
 		if ($amount < 1) {
-			throw new \Exception("The amount of months to add has to be greater than zero.");
+			return $this->subMonthsJewish(-1 * $amount);
 		}
-		for ($i = 0; $i < $amount; $i++) {
-			if($this->getJewishMonth() == self::ELUL) {
-				$this->setJewishMonth(self::TISHREI);
-				$this->setJewishYear($this->getJewishYear() + 1);
-			} else if ((! self::isJewishLeapYear($this->getJewishYear()) && $this->getJewishMonth() == self::ADAR)
-						|| (self::isJewishLeapYear($this->getJewishYear()) && $this->getJewishMonth() == self::ADAR_II)){
-				$this->setJewishMonth(self::NISSAN);
+
+		// For every full metonic cycle, let's just add 19 years
+		if ($amount >= 235) {
+			$this->jewishYear = $this->jewishYear + (((int) $amount / 235) * 19);
+			$amount = $amount % 235;
+		}
+
+		while ($amount > 0) {
+			$lastMonthOfJewishYear = self::getLastMonthOfJewishYear($this->jewishYear);
+
+			// How many months is it until Elul
+			$diffToEndOfYear = self::ELUL - $this->jewishMonth;
+			// If the month is greater than Elul we actually got to last year's Elul,
+			// so let's add the number of months from this year
+			if ($this->jewishMonth > self::ELUL) {
+				$diffToEndOfYear += $lastMonthOfJewishYear;
+			}
+
+			// If we're moving enough, we'll move to Tishrei of next year
+			if ($diffToEndOfYear > $amount) {
+				$this->jewishMonth = self::TISHREI;
+				$this->jewishYear++;
+				$amount = $amount - $diffToEndOfYear - 1;
+				continue;
+			}
+
+			// At this point we will remain in the same year, so let's just add the number of months requested
+			$this->jewishMonth += $amount;
+			if ($this->jewishMonth <= $lastMonthOfJewishYear) {
+				// We don't need to do anything because it is a valid month
+				break;
 			} else {
-				$this->setJewishMonth($this->getJewishMonth() + 1);
+				// We overflowed the numbers, so we need to reset them without changing the year
+				$this->jewishMonth -= $lastMonthOfJewishYear;
+				break;
 			}
 		}
 
-		return $this;
-	}
-
-	public function addMonthJewish() {
-		return $this->addMonthsJewish(1);
+		return $this->setJewishDate($this->jewishYear, $this->jewishMonth, $this->jewishDay);
 	}
 
 	public function addMonthsGregorian($amount) {
 		$months = $amount + $this->gregorianMonth;
 
-		$years = (int) ($months / 12) + $this->gregorianYear;
-		$months = $months % 12;
+		// We subtract 1 and then add it back to prevent December from being turned into month 0 of the following year
+		$years = (floor(($months - 1) / 12)) + $this->gregorianYear;
+		$months = (($months - 1) % 12) + 1;
+		// PHP is wrong, modulo should return a positive number, so let's add back 12 if it was 0 or lower
+		if ($months <= 0) {
+			$months += 12;
+		}
 
 		$this->setInternalGregorianDate($years, $months, $this->gregorianDayOfMonth);
 
 		return $this;
-	}
-
-	public function addMonthGregorian() {
-		return $this->addMonthsGregorian(1);
 	}
 
 	public function addYearsJewish($amount) {
@@ -579,69 +639,152 @@ class JewishDate {
 		return $this;
 	}
 
-	public function addYearJewish() {
-		return $this->addYearsJewish(1);
-	}
-
 	public function addYearsGregorian($amount) {
 		$this->setGregorianYear($this->getGregorianYear() + $amount);
 
 		return $this;
 	}
 
-	public function addYearGregorian() {
-		return $this->addYearsGregorian(1);
-	}
-
 	public function subDays($amount) {
-		for ($i = 0; $i < $amount; $i++) {
-			if ($this->gregorianDayOfMonth == 1) {
-				if ($this->gregorianMonth == 1) {
-					$this->gregorianMonth = 12;
-					$this->gregorianYear--;
-				} else {
-					$this->gregorianMonth--;
-				}
-				$this->gregorianDayOfMonth = self::getLastDayOfGregorianMonth($this->gregorianMonth, $this->gregorianYear);
-			} else {
-				$this->gregorianDayOfMonth--;
+		if ($amount < 0) {
+			return $this->addDays($amount * -1);
+		}
+
+		// Update day of week and abs date
+		$this->dayOfWeek = (7 - ($amount % 7) + $this->dayOfWeek) % 7;
+		if ($this->dayOfWeek == 0) {
+			$this->dayOfWeek = 7;
+		}
+		$this->gregorianAbsDate -= $amount;
+
+		// Update Gregorian Date
+		$gregorianAmount = $amount;
+
+		// Let's start by checking if we are gonna change to previous year
+		while (true) {
+			$dayOfYear = 0;
+			for ($i = 1; $i < $this->gregorianMonth; $i++) {
+				$dayOfYear += self::getLastDayOfGregorianMonth($i, $this->gregorianYear);
+			}
+			$dayOfYear += $this->gregorianDayOfMonth;
+
+			if ($gregorianAmount >= $dayOfYear) {
+				$this->gregorianYear--;
+				$this->gregorianDayOfMonth = 31;
+				$this->gregorianMonth = 12;
+				$gregorianAmount = $gregorianAmount - $dayOfYear;
+				continue;
 			}
 
-			if ($this->jewishDay == 1) {
+			break;
+		}
+
+		// Now let's check how many months and days to move backward
+		while ($gregorianAmount > 0) {
+			if ($gregorianAmount >= $this->gregorianDayOfMonth) {
+				$this->gregorianMonth--;
+				$this->gregorianDayOfMonth = self::getLastDayOfGregorianMonth($this->gregorianMonth, $this->gregorianYear);
+				$gregorianAmount = $gregorianAmount - $this->gregorianDayOfMonth;
+				continue;
+			}
+
+			$this->gregorianDayOfMonth -= $gregorianAmount;
+			break;
+		}
+
+		// Update Jewish Date
+		// Let's start by checking if we are gonna change to previous year
+		while (true) {
+			$dayOfYear = self::getDaysSinceStartOfJewishYear($this->jewishYear, $this->jewishMonth, $this->jewishDay);
+
+			// If we're moving enough, let's move to 29 Elul
+			if ($amount >= $dayOfYear) {
+				$this->jewishYear--;
+				$this->jewishMonth = self::ELUL;
+				$this->jewishDay = 29;
+				$amount = $amount - $dayOfYear;
+				continue;
+			}
+
+			break;
+		}
+
+		// Now let's check how many months and days to move backward
+		while ($amount > 0) {
+			if ($amount >= $this->jewishDay) {
 				if ($this->jewishMonth == self::NISSAN) {
 					$this->jewishMonth = self::getLastMonthOfJewishYear($this->jewishYear);
-				} else if ($this->jewishMonth == self::TISHREI) {
-					$this->jewishYear--;
-					$this->jewishMonth--;
 				} else {
 					$this->jewishMonth--;
 				}
-				$this->jewishDay = self::getDaysInJewishMonth($this->getJewishMonth(), $this->getJewishYear());
-			} else {
-				$this->jewishDay--;
+
+				$amount = $amount - $this->jewishDay;
+				$this->jewishDay = self::getDaysInJewishMonth($this->jewishMonth, $this->jewishYear);
+				continue;
 			}
 
-			if ($this->dayOfWeek == 1) {
-				$this->dayOfWeek = 7;
-			} else {
-				$this->dayOfWeek--;
-			}
-			$this->gregorianAbsDate--;
+			$this->jewishDay -= $amount;
+			break;
 		}
 
 		return $this;
 	}
 
-	public function subDay() {
-		return $this->subDays(1);
+	public function subMonthsJewish($amount) {
+		if ($amount < 1) {
+			return $this->addMonthsJewish(-1 * $amount);
+		}
+
+		// For every full metonic cycle, let's just add 19 years
+		if ($amount >= 235) {
+			$this->jewishYear = $this->jewishYear - (((int) $amount / 235) * 19);
+			$amount = $amount % 235;
+		}
+
+		while ($amount > 0) {
+			$lastMonthOfJewishYear = self::getLastMonthOfJewishYear($this->jewishYear);
+
+			// How many months has it been since Tishrei
+			$monthOfYear = $this->jewishMonth - self::TISHREI + 1;
+			// If the month is before Tishrei we actually got to next year's Tishrei,
+			// so let's get to last year instad
+			if ($this->jewishMonth < self::TISHREI) {
+				$monthOfYear = $lastMonthOfJewishYear - $monthOfYear;
+			}
+
+			// If we're moving enough, we'll move to Elul of last year
+			if ($monthOfYear > $amount) {
+				$this->jewishMonth = self::ELUL;
+				$this->jewishYear--;
+				$amount = $amount - $monthOfYear;
+				continue;
+			}
+
+			// At this point we will remain in the same year, so let's just subtract the number of months requested
+			$this->jewishMonth -= $amount;
+			if ($this->jewishMonth <= 0) {
+				// We underflowed the numbers, so we need to reset them without changing the year
+				$this->jewishMonth += $lastMonthOfJewishYear;
+				break;
+			} else {
+				// We don't need to do anything because it is a valid month
+				break;
+			}
+		}
+
+		return $this->setJewishDate($this->jewishYear, $this->jewishMonth, $this->jewishDay);
+	}
+
+	public function subMonthsGregorian($amount) {
+		return $this->addDays(-1 * $amount);
 	}
 
 	public function subYearsJewish($amount) {
 		return $this->addYearsJewish(-1 * $amount);
 	}
 
-	public function subYearJewish() {
-		return $this->addYearsJewish(-1);
+	public function subYearsGregorian($amount) {
+		return $this->addYearsGregorian(-1 * $amount);
 	}
 
 	/*
@@ -703,17 +846,17 @@ class JewishDate {
 
 	public function setGregorianMonth($month) {
 		self::validateGregorianMonth($month);
-		$this->setInternalGregorianDate($this->gregorianYear, $month + 1, $this->gregorianDayOfMonth);
+		return $this->setInternalGregorianDate($this->gregorianYear, $month + 1, $this->gregorianDayOfMonth);
 	}
 
 	public function setGregorianYear($year) {
 		self::validateGregorianYear($year);
-		$this->setInternalGregorianDate($year, $this->gregorianMonth, $this->gregorianDayOfMonth);
+		return $this->setInternalGregorianDate($year, $this->gregorianMonth, $this->gregorianDayOfMonth);
 	}
 
 	public function setGregorianDayOfMonth($dayOfMonth) {
 		self::validateGregorianDayOfMonth($dayOfMonth);
-		$this->setInternalGregorianDate($this->gregorianYear, $this->gregorianMonth, $dayOfMonth);
+		return $this->setInternalGregorianDate($this->gregorianYear, $this->gregorianMonth, $dayOfMonth);
 	}
 
 	public function setJewishMonth($month) {

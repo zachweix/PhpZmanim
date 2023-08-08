@@ -116,7 +116,7 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals(11, $hebrewDate->getJewishMonth());
 		$this->assertEquals(26, $hebrewDate->getJewishDayOfMonth());
 
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(2, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(11, $hebrewDate->getJewishMonth());
@@ -129,7 +129,7 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals(12, $hebrewDate->getJewishMonth());
 		$this->assertEquals(24, $hebrewDate->getJewishDayOfMonth());
 
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(3, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(12, $hebrewDate->getJewishMonth());
@@ -137,13 +137,13 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 3, 31);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(4, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(13, $hebrewDate->getJewishMonth());
 		$this->assertEquals(26, $hebrewDate->getJewishDayOfMonth());
 
-		$hebrewDate->addMonthGregorian();
+		$hebrewDate->addMonthsGregorian(1);
 		$this->assertEquals(5, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(1, $hebrewDate->getJewishMonth());
@@ -151,7 +151,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 5, 31);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(6, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(2, $hebrewDate->getJewishMonth());
@@ -159,7 +159,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 6, 30);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(7, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(3, $hebrewDate->getJewishMonth());
@@ -167,7 +167,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 7, 31);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(8, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(5, $hebrewDate->getJewishMonth());
@@ -175,7 +175,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 8, 31);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(9, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(6, $hebrewDate->getJewishMonth());
@@ -183,7 +183,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 9, 30);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(10, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(7, $hebrewDate->getJewishMonth());
@@ -191,7 +191,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 10, 31);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(11, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(5772, $hebrewDate->getJewishYear());
@@ -200,18 +200,34 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2011, 11, 30);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->addDay();
+		$hebrewDate->addDays(1);
 		$this->assertEquals(12, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(9, $hebrewDate->getJewishMonth());
 		$this->assertEquals(5, $hebrewDate->getJewishDayOfMonth());
 
-		$hebrewDate->addMonthGregorian();
+		$hebrewDate->addMonthsGregorian(1);
 		$this->assertEquals(2012, $hebrewDate->getGregorianYear());
 		$this->assertEquals(1, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(1, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(10, $hebrewDate->getJewishMonth());
 		$this->assertEquals(6, $hebrewDate->getJewishDayOfMonth());
+
+		$hebrewDate->addDays(650);
+		$this->assertEquals(2013, $hebrewDate->getGregorianYear());
+		$this->assertEquals(10, $hebrewDate->getGregorianMonth());
+		$this->assertEquals(12, $hebrewDate->getGregorianDayOfMonth());
+		$this->assertEquals(5774, $hebrewDate->getJewishYear());
+		$this->assertEquals(8, $hebrewDate->getJewishMonth());
+		$this->assertEquals(8, $hebrewDate->getJewishDayOfMonth());
+
+		$hebrewDate->addDays(218);
+		$this->assertEquals(2014, $hebrewDate->getGregorianYear());
+		$this->assertEquals(5, $hebrewDate->getGregorianMonth());
+		$this->assertEquals(18, $hebrewDate->getGregorianDayOfMonth());
+		$this->assertEquals(5774, $hebrewDate->getJewishYear());
+		$this->assertEquals(2, $hebrewDate->getJewishMonth());
+		$this->assertEquals(18, $hebrewDate->getJewishDayOfMonth());
 	}
 
 
@@ -220,7 +236,7 @@ class JewishDateTest extends TestCase {
 		$cal = Carbon::createMidnightDate(2011, 1, 1);
 
 		$hebrewDate = new JewishDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(2010, $hebrewDate->getGregorianYear());
 		$this->assertEquals(12, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
@@ -229,7 +245,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 12, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(11, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(30, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(9, $hebrewDate->getJewishMonth());
@@ -237,7 +253,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 11, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(10, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(8, $hebrewDate->getJewishMonth());
@@ -245,7 +261,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 10, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(9, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(30, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(7, $hebrewDate->getJewishMonth());
@@ -253,7 +269,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 9, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(8, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(5770, $hebrewDate->getJewishYear());
@@ -262,7 +278,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 8, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(7, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(5, $hebrewDate->getJewishMonth());
@@ -270,7 +286,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 7, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(6, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(30, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(4, $hebrewDate->getJewishMonth());
@@ -278,7 +294,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 6, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(5, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(3, $hebrewDate->getJewishMonth());
@@ -286,7 +302,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 5, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(4, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(30, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(2, $hebrewDate->getJewishMonth());
@@ -294,7 +310,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 4, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(3, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(1, $hebrewDate->getJewishMonth());
@@ -302,7 +318,7 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 3, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(2, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(28, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(12, $hebrewDate->getJewishMonth());
@@ -310,12 +326,30 @@ class JewishDateTest extends TestCase {
 
 		$cal->setDate(2010, 2, 1);
 		$hebrewDate->setDate($cal);
-		$hebrewDate->subDay();
+		$hebrewDate->subDays(1);
 		$this->assertEquals(1, $hebrewDate->getGregorianMonth());
 		$this->assertEquals(31, $hebrewDate->getGregorianDayOfMonth());
 		$this->assertEquals(11, $hebrewDate->getJewishMonth());
 		$this->assertEquals(16, $hebrewDate->getJewishDayOfMonth());
 
+		/////////
+		$cal->setDate(2014, 5, 18);
+		$hebrewDate->setDate($cal);
+		$hebrewDate->subDays(218);
+		$this->assertEquals(2013, $hebrewDate->getGregorianYear());
+		$this->assertEquals(10, $hebrewDate->getGregorianMonth());
+		$this->assertEquals(12, $hebrewDate->getGregorianDayOfMonth());
+		$this->assertEquals(5774, $hebrewDate->getJewishYear());
+		$this->assertEquals(8, $hebrewDate->getJewishMonth());
+		$this->assertEquals(8, $hebrewDate->getJewishDayOfMonth());
+
+		$hebrewDate->subDays(653);
+		$this->assertEquals(2011, $hebrewDate->getGregorianYear());
+		$this->assertEquals(12, $hebrewDate->getGregorianMonth());
+		$this->assertEquals(29, $hebrewDate->getGregorianDayOfMonth());
+		$this->assertEquals(5772, $hebrewDate->getJewishYear());
+		$this->assertEquals(10, $hebrewDate->getJewishMonth());
+		$this->assertEquals(3, $hebrewDate->getJewishDayOfMonth());
 	}
 
 	private function assertDaysInMonth($febIsLeap, $hebrewDate) {
