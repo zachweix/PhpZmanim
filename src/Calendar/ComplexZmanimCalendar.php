@@ -735,8 +735,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	*/
 
 	public function getSofZmanKidushLevanaBetweenMoldos($alos = null, $tzais = null) {
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar = new JewishCalendar($this->getCalendar());
 
 		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 16) { 
 			return null;
@@ -762,8 +761,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getSofZmanKidushLevana15Days($alos = null, $tzais = null) {
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar = new JewishCalendar($this->getCalendar());
 
 		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 17) { 
 			return null;
@@ -773,8 +771,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getTchilasZmanKidushLevana3Days($alos = null, $tzais = null) {
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar = new JewishCalendar($this->getCalendar());
 		
 		if ($jewishCalendar->getJewishDayOfMonth() > 5 && $jewishCalendar->getJewishDayOfMonth() < 30) { 
 			return null;
@@ -783,7 +780,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), $alos, $tzais, true);
 
 		if ($zman == null && $jewishCalendar->getJewishDayOfMonth() == 30) {
-			$jewishCalendar->forward("month", 1);
+			$jewishCalendar->addMonths(1);
 			$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), null, null, true);
 		}
 		
@@ -791,8 +788,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getZmanMolad() {
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar = new JewishCalendar($this->getCalendar());
 
 		if ($jewishCalendar->getJewishDayOfMonth() > 2 && $jewishCalendar->getJewishDayOfMonth() < 27) { 
 			return null;
@@ -801,7 +797,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
 
 		if ($molad == null && $jewishCalendar->getJewishDayOfMonth() > 26) {
-			$jewishCalendar->forward("month", 1);
+			$jewishCalendar->addMonths(1);
 			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
 		}
 		return molad;
@@ -825,8 +821,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getTchilasZmanKidushLevana7Days($alos = null, $tzais = null) {
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
+		$jewishCalendar = new JewishCalendar($this->getCalendar());
 
 		if ($jewishCalendar->getJewishDayOfMonth() < 4 || $jewishCalendar->getJewishDayOfMonth() > 9) { 
 			return null;
