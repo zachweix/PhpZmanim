@@ -804,6 +804,10 @@ class JewishDate {
 		return $this->gregorianAbsDate == $jewishDate->getAbsDate();
 	}
 
+	public function compareTo($jewishDate) {
+		return $this->getAbsDate() - $jewishDate->getAbsDate();
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| DATE GETTERS
