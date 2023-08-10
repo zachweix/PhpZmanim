@@ -867,20 +867,6 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 
 	/*
 	|--------------------------------------------------------------------------
-	| CHATZOS HALAYLA
-	|--------------------------------------------------------------------------
-	*/
-
-	public function getSolarMidnight() {
-		$clonedCal = $this->copy();
-		$clonedCal->getCalendar()->addDay();
-		$chatzos_today = $this->getChatzos();
-		$chatzos_tomorrow = $clonedCal->getChatzos();
-		return $this->getTimeOffset($chatzos_today, ($chatzos_tomorrow->getPreciseTimestamp() - $chatzos_today->getPreciseTimestamp()) / 2000);
-	}
-
-	/*
-	|--------------------------------------------------------------------------
 	| BAAL HATANYA
 	|--------------------------------------------------------------------------
 	*/

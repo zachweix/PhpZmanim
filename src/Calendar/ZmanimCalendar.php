@@ -37,6 +37,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	private $useElevation = true;
 	private $candleLightingOffset = 18;
+	private $useAstronomicalChatzos = true;
+	private $useAstronomicalChatzosForOtherZmanim = false;
 
 	const ZENITH_16_POINT_1 = AstronomicalCalendar::GEOMETRIC_ZENITH + 16.1;
 	const ZENITH_8_POINT_5 = AstronomicalCalendar::GEOMETRIC_ZENITH + 8.5;
@@ -53,6 +55,22 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	public function setUseElevation($useElevation) {
 		$this->useElevation = $useElevation;
+	}
+
+	public function isUseAstronomicalChatzos() {
+		return $this->useAstronomicalChatzos;
+	}
+
+	public function setUseAstronomicalChatzos($useAstronomicalChatzos) {
+		$this->useAstronomicalChatzos = $useAstronomicalChatzos;
+	}
+
+	public function isUseAstronomicalChatzosForOtherZmanim() {
+		return $this->useAstronomicalChatzosForOtherZmanim;
+	}
+
+	public function setUseAstronomicalChatzosForOtherZmanim($useAstronomicalChatzosForOtherZmanim) {
+		$this->useAstronomicalChatzosForOtherZmanim = $useAstronomicalChatzosForOtherZmanim;
 	}
 
 	protected function getElevationAdjustedSunrise() {
@@ -84,7 +102,15 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	}
 
 	public function getChatzos() {
-		return $this->getSunTransit();
+		if ($useAstronomicalChatzos) {
+			return $this->getSunTransit();
+		} else {
+			return $this->getChatzosAsHalfDay() ?? $this->getSunTransit();
+		}
+	}
+
+	public function getChatzosAsHalfDay() {
+		return $this->getSunTransit($this->getSeaLevelSunrise(), $this->getSeaLevelSunset());
 	}
 
 	public function getSofZmanShma($startOfDay, $endOfDay) {
@@ -120,6 +146,13 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	}
 
 	public function getMinchaGedola($startOfDay = null, $endOfDay = null) {
+		if($this->isUseAstronomicalChatzosForOtherZmanim()) {
+			$chatzos = $this->getSunTransit();
+			$sunset = $endOfDay ?? $this->getSunset();
+
+			return $this->getHalfDayBasedZman($chatzos, $sunset, 0.5);
+		}
+
 		if (is_null($startOfDay) && is_null($endOfDay)) {
 			$startOfDay = $this->getElevationAdjustedSunrise();
 			$endOfDay = $this->getElevationAdjustedSunset();
@@ -207,5 +240,14 @@ class ZmanimCalendar extends AstronomicalCalendar {
 			$riseSetToTwilight = ($seaLevelSunrise->getPreciseTimestamp() - $twilight->getPreciseTimestamp()) / 1000;
 		}
 		return $riseSetToTwilight / $shaahZmanis;
+	}
+
+	public function getHalfDayBasedZman($startOfHalfDay, $endOfHalfDay, $hours) {
+		if ($startOfHalfDay == null || $endOfHalfDay == null) {
+			return null;
+		}
+		$shaahZmanis = ($endOfHalfDay->getPreciseTimestamp() - $startOfHalfDay->getPreciseTimestamp()) / 6000;
+
+		return $this->getTimeOffset($startOfHalfDay, $shaahZmanis * $hours);
 	}
 }

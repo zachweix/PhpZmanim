@@ -172,8 +172,14 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	}
 
 	public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation) {
-		$sunrise = $this->getUTCSunrise($calendar, $geoLocation, 90, true);
-		$sunset = $this->getUTCSunset($calendar, $geoLocation, 90, true);
-		return ($sunrise + (($sunset - $sunrise) / 2));
+		$sunrise = $this->getUTCSunrise($calendar, $geoLocation, 90, false);
+		$sunset = $this->getUTCSunset($calendar, $geoLocation, 90, false);
+		$noon = $sunrise + (($sunset - $sunrise) / 2);
+		if ($noon < 0) {
+			$noon += 12;
+		}
+		if ($noon < $sunrise) {
+			$noon -= 12;
+		}
 	}
 }

@@ -225,6 +225,14 @@ class AstronomicalCalendar {
 		return $this->getTimeOffset($startOfDay, $temporalHour * 6);
 	}
 
+	public function getSolarMidnight() {
+		$clonedCal = $this->copy();
+		$clonedCal->getCalendar()->addDay();
+		$chatzos_today = $this->getSunTransit();
+		$chatzos_tomorrow = $clonedCal->getSunTransit();
+		return $this->getTimeOffset($chatzos_today, ($chatzos_tomorrow->getPreciseTimestamp() - $chatzos_today->getPreciseTimestamp()) / 2000);
+	}
+
 	protected function getDateFromTime($time, $isSunrise) {
 		if (is_nan($time)) {
 			return null;

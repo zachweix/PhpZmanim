@@ -871,6 +871,12 @@ class JewishDate {
 		$this->setJewishDate($this->jewishYear, $this->jewishMonth, $dayOfMonth);
 	}
 
+	/*
+	|--------------------------------------------------------------------------
+	| CLONEABLE
+	|--------------------------------------------------------------------------
+	*/
+
 	public function copy() {
 		return clone $this;
 	}
