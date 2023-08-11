@@ -364,10 +364,18 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getMinchaGedola72Minutes() {
+		if ($this->isUseAstronomicalChatzosForOtherZmanim()) {
+			return $this->getHalfDayBasedZman($this->getChatzos(), $this->getTzais72(), 0.5);
+		}
+
 		return $this->getMinchaGedola($this->getAlos72(), $this->getTzais72());
 	}
 
 	public function getMinchaGedola16Point1Degrees() {
+		if ($this->isUseAstronomicalChatzosForOtherZmanim()) {
+			return $this->getHalfDayBasedZman($this->getChatzos(), $this->getTzais16Point1Degrees(), 0.5);
+		}
+
 		return $this->getMinchaGedola($this->getAlos16Point1Degrees(), $this->getTzais16Point1Degrees());
 	}
 
@@ -716,8 +724,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	*/
 
 	public function getFixedLocalChatzos() {
-		return $this->getTimeOffset($this->getDateFromTime(12.0 - $this->getGeoLocation()->getStandardTimeOffset()
-				/ AstronomicalCalendar::HOUR_MILLIS, true), -$this->getGeoLocation()->getLocalMeanTimeOffset());
+		return $this->getLocalMeanTime();
 	}
 
 	public function getSofZmanShmaFixedLocal() {
@@ -930,36 +937,28 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getFixedLocalChatzosBasedZmanim($startOfHalfDay, $endOfHalfDay, $hours) {
-		if ($startOfHalfDay == null || $endOfHalfDay == null) {
-			return null;
-		}
-		$shaahZmanis = ($endOfHalfDay->getPreciseTimestamp() - $startOfHalfDay->getPreciseTimestamp()) / 6000;
-		return Carbon::createFromTimestamp(($startOfHalfDay->getPreciseTimestamp() / 1000) + $shaahZmanis * $hours);
-	}
-
 	public function getSofZmanShmaMGA18DegreesToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos18Degrees(), $this->getFixedLocalChatzos(), 3);
+		return $this->getHalfDayBasedZman($this->getAlos18Degrees(), $this->getFixedLocalChatzos(), 3);
 	}
 
 	public function getSofZmanShmaMGA16Point1DegreesToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos16Point1Degrees(), $this->getFixedLocalChatzos(), 3);
+		return $this->getHalfDayBasedZman($this->getAlos16Point1Degrees(), $this->getFixedLocalChatzos(), 3);
 	}
 
 	public function getSofZmanShmaMGA90MinutesToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos90(), $this->getFixedLocalChatzos(), 3);
+		return $this->getHalfDayBasedZman($this->getAlos90(), $this->getFixedLocalChatzos(), 3);
 	}
 
 	public function getSofZmanShmaMGA72MinutesToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getAlos72(), $this->getFixedLocalChatzos(), 3);
+		return $this->getHalfDayBasedZman($this->getAlos72(), $this->getFixedLocalChatzos(), 3);
 	}
 
 	public function getSofZmanShmaGRASunriseToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getSunrise(), $this->getFixedLocalChatzos(), 3);
+		return $this->getHalfDayBasedZman($this->getSunrise(), $this->getFixedLocalChatzos(), 3);
 	}
 
 	public function getSofZmanTfilaGRASunriseToFixedLocalChatzos() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getSunrise(), $this->getFixedLocalChatzos(), 4);
+		return $this->getHalfDayBasedZman($this->getSunrise(), $this->getFixedLocalChatzos(), 4);
 	}
 
 	public function getMinchaGedolaGRAFixedLocalChatzos30Minutes() {
@@ -967,11 +966,11 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getMinchaKetanaGRAFixedLocalChatzosToSunset() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getFixedLocalChatzos(), $this->getSunset(), 3.5);
+		return $this->getHalfDayBasedZman($this->getFixedLocalChatzos(), $this->getSunset(), 3.5);
 	}
 
 	public function getPlagHaminchaGRAFixedLocalChatzosToSunset() {
-		return $this->getFixedLocalChatzosBasedZmanim($this->getFixedLocalChatzos(), $this->getSunset(), 4.75);
+		return $this->getHalfDayBasedZman($this->getFixedLocalChatzos(), $this->getSunset(), 4.75);
 	}
 
 	/*

@@ -246,7 +246,7 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		if ($startOfHalfDay == null || $endOfHalfDay == null) {
 			return null;
 		}
-		$shaahZmanis = ($endOfHalfDay->getPreciseTimestamp() - $startOfHalfDay->getPreciseTimestamp()) / 6000;
+		$shaahZmanis = ($endOfHalfDay->getPreciseTimestamp() - $startOfHalfDay->getPreciseTimestamp()) / 6;
 
 		return $this->getTimeOffset($startOfHalfDay, $shaahZmanis * $hours);
 	}

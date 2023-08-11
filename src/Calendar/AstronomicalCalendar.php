@@ -314,6 +314,15 @@ class AstronomicalCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
+	public function getLocalMeanTime($hours) {
+		if($hours < 0 || $hours >= 24) {
+			throw new \Exception("Hours must between 0 and 23.9999...");
+		}
+
+		return $this->getTimeOffset($this->getDateFromTime($hours - $this->getGeoLocation()->getStandardTimeOffset()
+				/ AstronomicalCalendar::HOUR_MILLIS, true), -$this->getGeoLocation()->getLocalMeanTimeOffset());
+	}
+
 	private function getAdjustedCalendar() {
 		$offset = $this->getGeoLocation()->getAntimeridianAdjustment();
 		if ($offset == 0) {
