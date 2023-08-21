@@ -161,6 +161,10 @@ class HebrewDateFormatter {
 	|--------------------------------------------------------------------------
 	*/
 
+	public function create() {
+		return new static();
+	}
+
 	public function __construct() {
 		$this->transliteratedParshaMap = [
 			Parsha::NONE => "",
@@ -262,6 +266,8 @@ class HebrewDateFormatter {
 
 	public function setLongWeekFormat($longWeekFormat) {
 		$this->longWeekFormat = $longWeekFormat;
+
+		return $this;
 	}
 
 	public function getTransliteratedShabbosDayOfWeek() {
@@ -270,6 +276,8 @@ class HebrewDateFormatter {
 
 	public function setTransliteratedShabbosDayOfWeek($transliteratedShabbos) {
 		$this->transliteratedShabbosDayOfweek = $transliteratedShabbos;
+
+		return $this;
 	}
 
 	public function getTransliteratedHolidayList() {
@@ -278,6 +286,8 @@ class HebrewDateFormatter {
 
 	public function setTransliteratedHolidayList($transliteratedHolidays) {
 		$this->transliteratedHolidays = $transliteratedHolidays;
+
+		return $this;
 	}
 
 	/*
@@ -328,6 +338,8 @@ class HebrewDateFormatter {
 
 	public function setHebrewFormat($hebrewFormat) {
 		$this->hebrewFormat = $hebrewFormat;
+
+		return $this;
 	}
 
 	public function getHebrewOmerPrefix() {
@@ -336,6 +348,8 @@ class HebrewDateFormatter {
 
 	public function setHebrewOmerPrefix($hebrewOmerPrefix) {
 		$this->hebrewOmerPrefix = $hebrewOmerPrefix;
+
+		return $this;
 	}
 
 	public function getTransliteratedMonthList() {
@@ -344,6 +358,8 @@ class HebrewDateFormatter {
 
 	public function setTransliteratedMonthList($transliteratedMonths) {
 		$this->transliteratedMonths = $transliteratedMonths;
+
+		return $this;
 	}
 
 	/*
@@ -389,6 +405,8 @@ class HebrewDateFormatter {
 
 	public function setUseGershGershayim($useGershGershayim) {
 		$this->useGershGershayim = $useGershGershayim;
+
+		return $this;
 	}
 
 	public function isUseFinalFormLetters() {
@@ -397,6 +415,8 @@ class HebrewDateFormatter {
 
 	public function setUseFinalFormLetters($useFinalFormLetters) {
 		$this->useFinalFormLetters = $useFinalFormLetters;
+
+		return $this;
 	}
 
 	public function isUseLongHebrewYears() {
@@ -405,6 +425,8 @@ class HebrewDateFormatter {
 
 	public function setUseLongHebrewYears($useLongHebrewYears) {
 		$this->useLonghebrewYears = $useLongHebrewYears;
+
+		return $this;
 	}
 
 	/*
@@ -510,7 +532,7 @@ class HebrewDateFormatter {
 		if ($this->hebrewFormat) {
 			return $daf->getMasechta() . " " . $this->formatHebrewNumber($daf->getDaf());
 		} else {
-			return $daf->getMasechtaTransliterated() + " " + $daf->getDaf();
+			return $daf->getMasechtaTransliterated() . " " . $daf->getDaf();
 		}
 	}
 
@@ -525,7 +547,7 @@ class HebrewDateFormatter {
 		if ($this->hebrewFormat) {			
 			return $daf->getYerushalmiMasechta() . " " . $this->formatHebrewNumber($daf->getDaf());
 		} else {
-			return $daf->getYerushalmiMasechtaTransliterated() + " " + $daf->getDaf();
+			return $daf->getYerushalmiMasechtaTransliterated() . " " . $daf->getDaf();
 		}
 	}
 
@@ -621,6 +643,8 @@ class HebrewDateFormatter {
 
 	public function setTransliteratedParshiosList($transliteratedParshaMap) {
 		$this->transliteratedParshaMap = $transliteratedParshaMap;
+
+		return $this;
 	}
 
 	public function formatParsha(JewishCalendar $jewishCalendar) {

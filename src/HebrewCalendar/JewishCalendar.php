@@ -221,8 +221,8 @@ class JewishCalendar extends JewishDate {
 		}
 		
 		$yearType = $this->getParshaYearType();
-		$roshHashanaDayOfWeek = $this->getJewishCalendarElapsedDays($this->getJewishYear()) % 7;
-		$day = $roshHashanaDayOfWeek + $this->getDaysSinceStartOfJewishYear();
+		$roshHashanaDayOfWeek = self::getJewishCalendarElapsedDays($this->getJewishYear()) % 7;
+		$day = $roshHashanaDayOfWeek + self::getDaysSinceStartOfJewishYear($this->getJewishYear(), $this->getJewishMonth(), $this->getJewishDayOfMonth());
 		
 		if ($yearType >= 0) {
 			$week = (int) ($day / 7);

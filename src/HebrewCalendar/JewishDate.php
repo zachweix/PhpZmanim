@@ -75,6 +75,10 @@ class JewishDate {
 	|--------------------------------------------------------------------------
 	*/
 
+	public static function create($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null) {
+		return new static($jewishYear, $jewishMonth, $jewishDayOfMonth);
+	}
+
 	public function __construct($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null) {
 		if (is_null($jewishYear)) {
 			$this->resetDate();
@@ -112,6 +116,8 @@ class JewishDate {
 
 	public function setMoladHours($moladHours) {
 		$this->moladHours = $moladHours;
+
+		return $this;
 	}
 
 	public function getMoladMinutes() {
@@ -120,10 +126,14 @@ class JewishDate {
 
 	public function setMoladMinutes($moladMinutes) {
 		$this->moladMinutes = $moladMinutes;
+
+		return $this;
 	}
 
 	public function setMoladChalakim($moladChalakim) {
 		$this->moladChalakim = $moladChalakim;
+
+		return $this;
 	}
 
 	public function getMoladChalakim() {

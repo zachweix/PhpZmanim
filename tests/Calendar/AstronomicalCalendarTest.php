@@ -404,7 +404,7 @@ class AstronomicalCalendarTest extends TestCase {
 			"2017-10-17T12:24:09+03:00",
 			"2017-10-17T12:39:45-07:00",
 			"2017-10-17T11:26:33+09:00",
-			null,
+			"2017-10-17T12:04:32-04:00", // This would return null if we didn't use astronimical noon
 			"2017-10-17T13:12:42+14:00",
 		];
 
@@ -413,7 +413,9 @@ class AstronomicalCalendarTest extends TestCase {
 
 			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
 
-			$sunTransit = $astronomicalCalendar->getSunTransit();
+			$startOfDay = $astronomicalCalendar->getSeaLevelSunrise();
+			$endOfDay = $astronomicalCalendar->getSeaLevelSunset();
+			$sunTransit = $astronomicalCalendar->getSunTransit($startOfDay, $endOfDay);
 			if (!is_null($sunTransit)) {
 				$sunTransit = $sunTransit->format('Y-m-d\TH:i:sP');
 			}

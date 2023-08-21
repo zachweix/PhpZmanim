@@ -35,6 +35,7 @@ class TefilaRules {
 	private static $tachanunRecitedFridays = true;
 	private static $tachanunRecitedSundays = true;
 	private static $tachanunRecitedMinchaAllYear = true;
+	private static $mizmorLesodaRecitedErevYomKippurAndPesach = true;
 
 	/*
 	|--------------------------------------------------------------------------
@@ -48,29 +49,29 @@ class TefilaRules {
 		$month = $jewishCalendar->getJewishMonth();
 
 		if ($jewishCalendar->getDayOfWeek() == 7
-				|| (!$this->tachanunRecitedSundays && $jewishCalendar->getDayOfWeek() == 1)
-				|| (!$this->tachanunRecitedFridays && $jewishCalendar->getDayOfWeek() == 6)
+				|| (!self::$tachanunRecitedSundays && $jewishCalendar->getDayOfWeek() == 1)
+				|| (!self::$tachanunRecitedFridays && $jewishCalendar->getDayOfWeek() == 6)
 				|| $month == JewishDate::NISSAN
-				|| ($month == JewishDate::TISHREI && ((!$this->tachanunRecitedEndOfTishrei && $day > 8)
-				|| ($this->tachanunRecitedEndOfTishrei && ($day > 8 && $day < 22))))
-				|| ($month == JewishDate::SIVAN && ($this->tachanunRecitedWeekAfterShavuos && $day < 7
-						|| !$this->tachanunRecitedWeekAfterShavuos && $day < (!$jewishCalendar->getInIsrael()
-								&& !$this->tachanunRecited13SivanOutOfIsrael ? 14: 13)))
+				|| ($month == JewishDate::TISHREI && ((!self::$tachanunRecitedEndOfTishrei && $day > 8)
+				|| (self::$tachanunRecitedEndOfTishrei && ($day > 8 && $day < 22))))
+				|| ($month == JewishDate::SIVAN && (self::$tachanunRecitedWeekAfterShavuos && $day < 7
+						|| !self::$tachanunRecitedWeekAfterShavuos && $day < (!$jewishCalendar->getInIsrael()
+								&& !self::$tachanunRecited13SivanOutOfIsrael ? 14: 13)))
 				|| ($jewishCalendar->isYomTov($holidayIndex) && (! $jewishCalendar->isTaanis($holidayIndex)
-						|| (!$this->tachanunRecitedPesachSheni && $holidayIndex == JewishCalendar::PESACH_SHENI))) // Erev YT is included in isYomTov()
-				|| (!$jewishCalendar->getInIsrael() && !$this->tachanunRecitedPesachSheni && !$this->tachanunRecited15IyarOutOfIsrael
+						|| (!self::$tachanunRecitedPesachSheni && $holidayIndex == JewishCalendar::PESACH_SHENI))) // Erev YT is included in isYomTov()
+				|| (!$jewishCalendar->getInIsrael() && !self::$tachanunRecitedPesachSheni && !self::$tachanunRecited15IyarOutOfIsrael
 						&& $jewishCalendar->getJewishMonth() == JewishDate::IYAR && $day == 15)
 				|| $holidayIndex == JewishCalendar::TISHA_BEAV || $jewishCalendar->isIsruChag($holidayIndex)
 				|| $jewishCalendar->isRoshChodesh()
-				|| (!$this->tachanunRecitedShivasYemeiHamiluim &&
+				|| (!self::$tachanunRecitedShivasYemeiHamiluim &&
 						((!$jewishCalendar->isJewishLeapYear() && $month == JewishDate::ADAR)
 								|| ($jewishCalendar->isJewishLeapYear() && $month == JewishDate::ADAR_II)) && $day > 22)
-				|| (!$this->tachanunRecitedWeekOfPurim &&
+				|| (!self::$tachanunRecitedWeekOfPurim &&
 						((!$jewishCalendar->isJewishLeapYear() && $month == JewishDate::ADAR)
 								|| ($jewishCalendar->isJewishLeapYear() && $month == JewishDate::ADAR_II)) && $day > 10 && $day < 18)
 				|| ($jewishCalendar->isUseModernHolidays()
 						&& ($holidayIndex == JewishCalendar::YOM_HAATZMAUT || $holidayIndex == JewishCalendar::YOM_YERUSHALAYIM))
-				|| (!$this->tachanunRecitedWeekOfHod && $month == JewishDate::IYAR && $day > 13 && $day < 21)) {
+				|| (!self::$tachanunRecitedWeekOfHod && $month == JewishDate::IYAR && $day > 13 && $day < 21)) {
 			return false;
 		}
 		return true;
@@ -80,14 +81,14 @@ class TefilaRules {
 		$tomorrow = $jewishCalendar->copy()->addDays(1);
 		$tomorrowHolidayIndex = $jewishCalendar->getYomTovIndex();
 		
-		if (!$this->tachanunRecitedMinchaAllYear
+		if (!self::$tachanunRecitedMinchaAllYear
 					|| $jewishCalendar->getDayOfWeek() == 6
-					|| ! $this->isTachanunRecitedShacharis($jewishCalendar) 
-					|| (! $this->isTachanunRecitedShacharis($tomorrow) && 
+					|| ! self::isTachanunRecitedShacharis($jewishCalendar) 
+					|| (! self::isTachanunRecitedShacharis($tomorrow) && 
 							!($tomorrowHolidayIndex == JewishCalendar::EREV_ROSH_HASHANA) &&
 							!($tomorrowHolidayIndex == JewishCalendar::EREV_YOM_KIPPUR) &&
 							!($tomorrowHolidayIndex == JewishCalendar::PESACH_SHENI))
-					|| ! $this->tachanunRecitedMinchaErevLagBaomer && $tomorrowHolidayIndex == JewishCalendar::LAG_BAOMER) {
+					|| ! self::$tachanunRecitedMinchaErevLagBaomer && $tomorrowHolidayIndex == JewishCalendar::LAG_BAOMER) {
 			return false;
 		}
 		return true;
@@ -152,7 +153,7 @@ class TefilaRules {
 	}
 
 	public static function isVeseinBerachaRecited(JewishCalendar $jewishCalendar) {
-		return !$this->isVeseinTalUmatarRecited($jewishCalendar);
+		return !self::isVeseinTalUmatarRecited($jewishCalendar);
 	}
 
 	/*
@@ -176,7 +177,7 @@ class TefilaRules {
 	}
 
 	public static function isMoridHatalRecited(JewishCalendar $jewishCalendar) {
-		return !$this->isMashivHaruachRecited($jewishCalendar) || $this->isMashivHaruachStartDate($jewishCalendar) || $this->isMashivHaruachEndDate($jewishCalendar);
+		return !self::isMashivHaruachRecited($jewishCalendar) || self::isMashivHaruachStartDate($jewishCalendar) || self::isMashivHaruachEndDate($jewishCalendar);
 	}
 
 	/*
@@ -226,7 +227,7 @@ class TefilaRules {
 		$day = $jewishCalendar->getJewishDayOfMonth();
 		$month = $jewishCalendar->getJewishMonth();
 		$inIsrael = $jewishCalendar->getInIsrael();
-		if($this->isHallelRecited($jewishCalendar)) {
+		if(self::isHallelRecited($jewishCalendar)) {
 			if(($jewishCalendar->isRoshChodesh() && ! $jewishCalendar->isChanukah())
 					|| ($month == JewishDate::NISSAN && (($inIsrael && $day > 15) || (!$inIsrael && $day > 16)))) {
 				return false;
@@ -262,103 +263,132 @@ class TefilaRules {
 
 	/*
 	|--------------------------------------------------------------------------
+	| EXTRA STUFF
+	|--------------------------------------------------------------------------
+	*/
+
+	public static function isMizmorLesodaRecited(JewishCalendar $jewishCalendar) {
+		if($jewishCalendar->isAssurBemelacha()) {
+			return false;
+		}
+
+		$holidayIndex = $jewishCalendar->getYomTovIndex();
+		if(!self::isMizmorLesodaRecitedErevYomKippurAndPesach()
+				&& ($holidayIndex == JewishCalendar::EREV_YOM_KIPPUR
+						|| $holidayIndex == JewishCalendar::EREV_PESACH
+						|| $jewishCalendar->isCholHamoedPesach())) {
+			return false;
+		}
+	    return true;
+	}
+
+	/*
+	|--------------------------------------------------------------------------
 	| SETTERS AND GETTERS
 	|--------------------------------------------------------------------------
 	*/
 
 	public static function isTachanunRecitedWeekOfPurim() {
-		return $this->tachanunRecitedWeekOfPurim;
+		return self::$tachanunRecitedWeekOfPurim;
 	}
 
 	public static function setTachanunRecitedWeekOfPurim($tachanunRecitedWeekOfPurim) {
-		$this->tachanunRecitedWeekOfPurim = $tachanunRecitedWeekOfPurim;
+		self::$tachanunRecitedWeekOfPurim = $tachanunRecitedWeekOfPurim;
 	}
 
 	public static function isTachanunRecitedWeekOfHod() {
-		return $this->tachanunRecitedWeekOfHod;
+		return self::$tachanunRecitedWeekOfHod;
 	}
 
 	public static function setTachanunRecitedWeekOfHod($tachanunRecitedWeekOfHod) {
-		$this->tachanunRecitedWeekOfHod = $tachanunRecitedWeekOfHod;
+		self::$tachanunRecitedWeekOfHod = $tachanunRecitedWeekOfHod;
 	}
 
 	public static function isTachanunRecitedEndOfTishrei() {
-		return $this->tachanunRecitedEndOfTishrei;
+		return self::$tachanunRecitedEndOfTishrei;
 	}
 
 	public static function setTachanunRecitedEndOfTishrei($tachanunRecitedEndOfTishrei) {
-		$this->tachanunRecitedEndOfTishrei = $tachanunRecitedEndOfTishrei;
+		self::$tachanunRecitedEndOfTishrei = $tachanunRecitedEndOfTishrei;
 	}
 
 	public static function isTachanunRecitedWeekAfterShavuos() {
-		return $this->tachanunRecitedWeekAfterShavuos;
+		return self::$tachanunRecitedWeekAfterShavuos;
 	}
 
 	public static function setTachanunRecitedWeekAfterShavuos($tachanunRecitedWeekAfterShavuos) {
-		$this->tachanunRecitedWeekAfterShavuos = $tachanunRecitedWeekAfterShavuos;
+		self::$tachanunRecitedWeekAfterShavuos = $tachanunRecitedWeekAfterShavuos;
 	}
 
 	public static function isTachanunRecited13SivanOutOfIsrael() {
-		return $this->tachanunRecited13SivanOutOfIsrael;
+		return self::$tachanunRecited13SivanOutOfIsrael;
 	}
 
 	public static function setTachanunRecited13SivanOutOfIsrael($tachanunRecitedThirteenSivanOutOfIsrael) {
-		$this->tachanunRecited13SivanOutOfIsrael = $tachanunRecitedThirteenSivanOutOfIsrael;
+		self::$tachanunRecited13SivanOutOfIsrael = $tachanunRecitedThirteenSivanOutOfIsrael;
 	}
 
 	public static function isTachanunRecitedPesachSheni() {
-		return $this->tachanunRecitedPesachSheni;
+		return self::$tachanunRecitedPesachSheni;
 	}
 
 	public static function setTachanunRecitedPesachSheni($tachanunRecitedPesachSheni) {
-		$this->tachanunRecitedPesachSheni = $tachanunRecitedPesachSheni;
+		self::$tachanunRecitedPesachSheni = $tachanunRecitedPesachSheni;
 	}
 
 	public static function isTachanunRecited15IyarOutOfIsrael() {
-		return $this->tachanunRecited15IyarOutOfIsrael;
+		return self::$tachanunRecited15IyarOutOfIsrael;
 	}
 
 	public static function setTachanunRecited15IyarOutOfIsrael($tachanunRecited15IyarOutOfIsrael) {
-		$this->tachanunRecited15IyarOutOfIsrael = $tachanunRecited15IyarOutOfIsrael;
+		self::$tachanunRecited15IyarOutOfIsrael = $tachanunRecited15IyarOutOfIsrael;
 	}
 
 	public static function isTachanunRecitedMinchaErevLagBaomer() {
-		return $this->tachanunRecitedMinchaErevLagBaomer;
+		return self::$tachanunRecitedMinchaErevLagBaomer;
 	}
 
 	public static function setTachanunRecitedMinchaErevLagBaomer($tachanunRecitedMinchaErevLagBaomer) {
-		$this->tachanunRecitedMinchaErevLagBaomer = $tachanunRecitedMinchaErevLagBaomer;
+		self::$tachanunRecitedMinchaErevLagBaomer = $tachanunRecitedMinchaErevLagBaomer;
 	}
 
 	public static function isTachanunRecitedShivasYemeiHamiluim() {
-		return $this->tachanunRecitedShivasYemeiHamiluim;
+		return self::$tachanunRecitedShivasYemeiHamiluim;
 	}
 
 	public static function setTachanunRecitedShivasYemeiHamiluim($tachanunRecitedShivasYemeiHamiluim) {
-		$this->tachanunRecitedShivasYemeiHamiluim = $tachanunRecitedShivasYemeiHamiluim;
+		self::$tachanunRecitedShivasYemeiHamiluim = $tachanunRecitedShivasYemeiHamiluim;
 	}
 
 	public static function isTachanunRecitedFridays() {
-		return $this->tachanunRecitedFridays;
+		return self::$tachanunRecitedFridays;
 	}
 
 	public static function setTachanunRecitedFridays($tachanunRecitedFridays) {
-		$this->tachanunRecitedFridays = $tachanunRecitedFridays;
+		self::$tachanunRecitedFridays = $tachanunRecitedFridays;
 	}
 
 	public static function isTachanunRecitedSundays() {
-		return $this->tachanunRecitedSundays;
+		return self::$tachanunRecitedSundays;
 	}
 
 	public static function setTachanunRecitedSundays($tachanunRecitedSundays) {
-		$this->tachanunRecitedSundays = $tachanunRecitedSundays;
+		self::$tachanunRecitedSundays = $tachanunRecitedSundays;
 	}
 
 	public static function isTachanunRecitedMinchaAllYear() {
-		return $this->tachanunRecitedMinchaAllYear;
+		return self::$tachanunRecitedMinchaAllYear;
 	}
 
 	public static function setTachanunRecitedMinchaAllYear($tachanunRecitedMinchaAllYear) {
-		$this->tachanunRecitedMinchaAllYear = $tachanunRecitedMinchaAllYear;
+		self::$tachanunRecitedMinchaAllYear = $tachanunRecitedMinchaAllYear;
+	}
+
+	public static function setMizmorLesodaRecitedErevYomKippurAndPesach($mizmorLesodaRecitedErevYomKippurAndPesach) {
+		self::$mizmorLesodaRecitedErevYomKippurAndPesach = $mizmorLesodaRecitedErevYomKippurAndPesach;
+	}
+
+	public static function isMizmorLesodaRecitedErevYomKippurAndPesach() {
+		return self::$mizmorLesodaRecitedErevYomKippurAndPesach;
 	}
 }

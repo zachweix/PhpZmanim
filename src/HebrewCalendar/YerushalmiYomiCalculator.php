@@ -26,7 +26,6 @@ use Carbon\Carbon;
 
 class YerushalmiYomiCalculator {
 	const DAF_YOMI_START_DAY = "1980-02-02";
-	const DAY_MILIS = 1000 * 60 * 60 * 24;
 	const WHOLE_SHAS_DAFS = 1554;
 	const BLATT_PER_MASECHTA = [
 			68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
@@ -55,18 +54,19 @@ class YerushalmiYomiCalculator {
 		}
 		
 		// Get the number of days from cycle start until request.
-		$dafNo = $nextCycle->diffInDays($prevCycle);
+		$dafNo = $requested->diffInDays($prevCycle);
+
 		$specialDays = self::getNumOfSpecialDays($prevCycle, $requested);
 
 		$total = $dafNo - $specialDays;
 
 		$masechta = 0;
-		for ($j = 0; $j < count(self::$BLATT_PER_MASECHTA); $j++) {
-			if ($total < self::$BLATT_PER_MASECHTA[$j]) {
+		for ($j = 0; $j < count(self::BLATT_PER_MASECHTA); $j++) {
+			if ($total < self::BLATT_PER_MASECHTA[$j]) {
 				$dafYomi = new Daf($masechta, $total + 1);
 				break;
 			}
-			$total -= self::$BLATT_PER_MASECHTA[$j];
+			$total -= self::BLATT_PER_MASECHTA[$j];
 			$masechta++;
 		}
 
@@ -74,8 +74,8 @@ class YerushalmiYomiCalculator {
 	}
 
 	private static function getNumOfSpecialDays($start, $end) {
-		$startYear = new JewishDate($start)->getJewishYear();
-		$endYear = new JewishDate($end)->getJewishYear();
+		$startYear = JewishDate::create($start)->getJewishYear();
+		$endYear = JewishDate::create($end)->getJewishYear();
 		
 		$specialDays = 0;
 		

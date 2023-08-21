@@ -39,7 +39,7 @@ class YomiCalculator {
 		$julianDay = self::getJulianDay($year, $month, $day);
 
 		if ($julianDay < self::DAF_YOMI_JULIAN_START_DAY) {
-			throw new \Exception($year . '-' . $month . '-' . $day " is prior to organized Daf Yomi Bavli cycles that started on September 11, 1923");
+			throw new \Exception($year . '-' . $month . '-' . $day . " is prior to organized Daf Yomi Bavli cycles that started on September 11, 1923");
 		}
 
 		if ($julianDay >= self::SHEKALIM_JULIAN_CHANGE_DAY) {
