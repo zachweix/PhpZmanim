@@ -391,7 +391,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 
 	public function getMinchaGedolaGreaterThan30() {
 		$fixed = $this->getMinchaGedola30Minutes();
-		$gra = $this->getMinchaGedolaGra();
+		$gra = $this->getMinchaGedola();
 		if ($fixed == null || $gra == null) {
 			return null;
 		} else {
