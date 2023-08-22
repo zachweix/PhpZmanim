@@ -352,6 +352,8 @@ class AstronomicalCalendar {
 
 	public function setGeoLocation(GeoLocation $geoLocation) {
 		$this->geoLocation = $geoLocation;
+
+		return $this;
 	}
 
 	public function getAstronomicalCalculator() {
@@ -360,6 +362,8 @@ class AstronomicalCalendar {
 
 	public function setAstronomicalCalculator(AstronomicalCalculator $astronomicalCalculator) {
 		$this->astronomicalCalculator = $astronomicalCalculator;
+
+		return $this;
 	}
 
 	public function getCalendar() {
@@ -369,18 +373,26 @@ class AstronomicalCalendar {
 	public function setCalendar(Carbon $calendar) {
 		$calendar->startOfDay();
 		$this->calendar = $calendar;
+
+		return $this;
 	}
 
 	public function setDate($year, $month, $day) {
 		$this->getCalendar()->setDate($year, $month, $day);
+
+		return $this;
 	}
 
 	public function addDays($value) {
 		$this->getCalendar()->addDays($value);
+
+		return $this;
 	}
 
 	public function subDays($value) {
 		$this->getCalendar()->subDays($value);
+
+		return $this;
 	}
 
 	public function copy() {
@@ -406,6 +418,8 @@ class AstronomicalCalendar {
 				throw new \Exception("Only SunTimes and Noaa are implemented currently");
 				break;
 		}
+
+		return $this;
 	}
 
 	/*

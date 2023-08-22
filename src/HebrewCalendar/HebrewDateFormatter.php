@@ -161,7 +161,7 @@ class HebrewDateFormatter {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function create() {
+	public static function create() {
 		return new static();
 	}
 
@@ -303,7 +303,7 @@ class HebrewDateFormatter {
 			return $this->hebrewFormat ? ($this->formatHebrewNumber($dayOfChanukah) . " " . self::HEBREW_HOLIDAYS[$index])
 					: ($tihs->transliteratedHolidays[$index] . " " . $dayOfChanukah);
 		}
-		return $index == -1 ? "" : $this->hebrewFormat ? self::HEBREW_HOLIDAYS[$index] : $tihs->transliteratedHolidays[$index];
+		return $index == -1 ? "" : ($this->hebrewFormat ? self::HEBREW_HOLIDAYS[$index] : $tihs->transliteratedHolidays[$index]);
 	}
 
 	public function formatRoshChodesh(JewishCalendar $jewishCalendar) {
@@ -516,7 +516,7 @@ class HebrewDateFormatter {
 		}
 
 		$returnValue = $this->formatHebrewNumber($roshHashanaDayOfweek);
-		$returnValue .= ($kviah == JewishDate::CHASERIM ? "\u05D7" : $kviah == JewishDate::SHELAIMIM ? "\u05E9" : "\u05DB");
+		$returnValue .= ($kviah == JewishDate::CHASERIM ? "\u05D7" : ($kviah == JewishDate::SHELAIMIM ? "\u05E9" : "\u05DB"));
 		$returnValue .= $this->formatHebrewNumber($pesachDayOfweek);
 
 		return str_replace(self::GERESH, "", $returnValue);

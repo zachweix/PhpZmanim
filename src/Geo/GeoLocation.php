@@ -74,6 +74,8 @@ class GeoLocation {
 			throw new \Exception("Elevation cannot be negative");
 		}
 		$this->elevation = $elevation;
+
+		return $this;
 	}
 
 	/*
@@ -88,6 +90,8 @@ class GeoLocation {
 		}
 
 		$this->latitude = $latitude;
+
+		return $this;
 	}
 
 	public function setLatitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
@@ -104,6 +108,8 @@ class GeoLocation {
 		}
 
 		$this->latitude = $tempLat;
+
+		return $this;
 	}
 
 	public function getLatitude() {
@@ -116,6 +122,8 @@ class GeoLocation {
 		}
 
 		$this->longitude = $longitude;
+
+		return $this;
 	}
 
 	public function setLongitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
@@ -132,6 +140,8 @@ class GeoLocation {
 		}
 
 		$this->longitude = $longTemp;
+
+		return $this;
 	}
 
 	public function getLongitude() {
@@ -144,6 +154,8 @@ class GeoLocation {
 
 	public function setLocationName($locationName) {
 		$this->locationName = $locationName;
+
+		return $this;
 	}
 
 	public function getTimeZone() {
@@ -152,6 +164,8 @@ class GeoLocation {
 
 	public function setTimeZone($timeZone) {
 		$this->timeZone = $timeZone;
+
+		return $this;
 	}
 
 	/*

@@ -28,10 +28,7 @@ class JewishDateTest extends TestCase {
 
 	/** @test */
 	public function testDaysInMonth() {
-		$hebrewDate = new JewishDate();
-
-		$cal = Carbon::createMidnightDate(2011, 1, 1);
-		$hebrewDate->setDate($cal);
+		$hebrewDate = JewishDate::create(Carbon::createMidnightDate(2011, 1, 1));
 
 		$this->assertDaysInMonth(false, $hebrewDate);
 	}

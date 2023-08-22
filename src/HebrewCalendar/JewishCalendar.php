@@ -103,7 +103,7 @@ class JewishCalendar extends JewishDate {
 	}
 
 	public function getInIsrael() {
-		return $inIsrael;
+		return $this->inIsrael;
 	}
 
 	public function getIsMukafChoma() {

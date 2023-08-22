@@ -50,6 +50,10 @@ abstract class AstronomicalCalculator {
 		$this->earthRadius = (double) 6356.9;
 	}
 
+	public static function create() {
+		return new static();
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| CALCULATOR
@@ -74,8 +78,10 @@ abstract class AstronomicalCalculator {
 		return $this->earthRadius;
 	}
 
-	public function setEarthRadius(double $earthRadius) {
+	public function setEarthRadius(float $earthRadius) {
 		$this->earthRadius = $earthRadius;
+
+		return $this;
 	}
 
 	/*
@@ -117,16 +123,20 @@ abstract class AstronomicalCalculator {
 		return $this->refraction;
 	}
 
-	public function setRefraction(double $refraction) {
+	public function setRefraction(float $refraction) {
 		$this->refraction = $refraction;
+
+		return $this;
 	}
 
 	public function getSolarRadius() {
 		return $this->solarRadius;
 	}
 
-	public function setSolarRadius(double $solarRadius) {
+	public function setSolarRadius(float $solarRadius) {
 		$this->solarRadius = $solarRadius;
+
+		return $this;
 	}
 
 	/*

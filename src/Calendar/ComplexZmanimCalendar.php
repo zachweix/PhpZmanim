@@ -620,6 +620,8 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 
 	public function setAteretTorahSunsetOffset($ateretTorahSunsetOffset) {
 		$this->ateretTorahSunsetOffset = $ateretTorahSunsetOffset;
+
+		return $this;
 	}
 
 	public function getSofZmanShmaAteretTorah() {
@@ -807,7 +809,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 			$jewishCalendar->addMonths(1);
 			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
 		}
-		return molad;
+		return $molad;
 	}
 
 	private function getMidnightLastNight() {

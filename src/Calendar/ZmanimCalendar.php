@@ -55,6 +55,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	public function setUseElevation($useElevation) {
 		$this->useElevation = $useElevation;
+
+		return $this;
 	}
 
 	public function isUseAstronomicalChatzos() {
@@ -63,6 +65,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	public function setUseAstronomicalChatzos($useAstronomicalChatzos) {
 		$this->useAstronomicalChatzos = $useAstronomicalChatzos;
+
+		return $this;
 	}
 
 	public function isUseAstronomicalChatzosForOtherZmanim() {
@@ -71,6 +75,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	public function setUseAstronomicalChatzosForOtherZmanim($useAstronomicalChatzosForOtherZmanim) {
 		$this->useAstronomicalChatzosForOtherZmanim = $useAstronomicalChatzosForOtherZmanim;
+
+		return $this;
 	}
 
 	protected function getElevationAdjustedSunrise() {
@@ -197,6 +203,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 
 	public function setCandleLightingOffset($candleLightingOffset) {
 		$this->candleLightingOffset = $candleLightingOffset;
+
+		return $this;
 	}
 
 	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, $inIsrael) {

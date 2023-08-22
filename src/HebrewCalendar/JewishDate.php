@@ -75,10 +75,6 @@ class JewishDate {
 	|--------------------------------------------------------------------------
 	*/
 
-	public static function create($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null) {
-		return new static($jewishYear, $jewishMonth, $jewishDayOfMonth);
-	}
-
 	public function __construct($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null) {
 		if (is_null($jewishYear)) {
 			$this->resetDate();
@@ -102,6 +98,10 @@ class JewishDate {
 		$conjunctionDay = (int) ($molad / self::CHALAKIM_PER_DAY);
 		$conjunctionParts = (int) ($molad - $conjunctionDay * self::CHALAKIM_PER_DAY);
 		$this->setMoladTime($conjunctionParts);
+	}
+
+	public static function create($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null) {
+		return new static($jewishYear, $jewishMonth, $jewishDayOfMonth);
 	}
 
 	/*
