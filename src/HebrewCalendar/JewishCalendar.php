@@ -122,7 +122,7 @@ class JewishCalendar extends JewishDate {
 
 	public function isBirkasHachamah() {
 		$elapsedDays = $this->getJewishCalendarElapsedDays($this->getJewishYear());
-		$elapsedDays += $this->getDaysSinceStartOfJewishYear();
+		$elapsedDays += self::getDaysSinceStartOfJewishYear($this->getJewishYear(), $this->getJewishMonth(), $this->getJewishDayOfMonth());
 
 		return ($elapsedDays % (28 * 365.25) == 172);
 	}
@@ -748,7 +748,7 @@ class JewishCalendar extends JewishDate {
 	*/
 
 	public function getTekufasTishreiElapsedDays() {
-		$days = $this->getJewishCalendarElapsedDays($this->getJewishYear()) + ($this->getDaysSinceStartOfJewishYear()-1) + 0.5;
+		$days = $this->getJewishCalendarElapsedDays($this->getJewishYear()) + (self::getDaysSinceStartOfJewishYear($this->getJewishYear(), $this->getJewishMonth(), $this->getJewishDayOfMonth())-1) + 0.5;
 
 		$solar = ($this->getJewishYear() - 1) * 365.25;
 		return floor($days - $solar);
