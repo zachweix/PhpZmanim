@@ -438,7 +438,6 @@ class AstronomicalCalendar {
 	}
 
 	public function __get($arg) {
-		return $this->get($arg);
 		$response = null;
 
 		try {
