@@ -65,7 +65,7 @@ class AstronomicalCalendar {
 		}
 
 		if (!is_null($year) && !is_null($month) && !is_null($day)) {
-			$calendar = Carbon::createFromDate($year, $month, $day);
+			$calendar = Carbon::createFromDate($year, $month, $day, $geoLocation->getTimeZone());
 		}
 
 		$this->setCalendar($calendar ?? Carbon::now("UTC"));
@@ -438,6 +438,7 @@ class AstronomicalCalendar {
 	}
 
 	public function __get($arg) {
+		return $this->get($arg);
 		$response = null;
 
 		try {

@@ -108,7 +108,7 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	}
 
 	public function getChatzos() {
-		if ($useAstronomicalChatzos) {
+		if ($this->useAstronomicalChatzos) {
 			return $this->getSunTransit();
 		} else {
 			return $this->getChatzosAsHalfDay() ?? $this->getSunTransit();

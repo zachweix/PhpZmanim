@@ -98,7 +98,7 @@ class GeoLocation {
 		$tempLat = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
 
 		if ($tempLat > 90 || $tempLat < 0) {
-			throw new \Exception("Latitude must be between 0 and  90. Use direction of S instead of negative.");
+			throw new \Exception("Latitude must be between 0 and 90. Use direction of S instead of negative.");
 		}
 
 		if ($direction == "S") {
@@ -180,6 +180,14 @@ class GeoLocation {
 		$utc_date = new DateTime("now", $utc);
 		$offset = $timeZone->getOffset($utc_date) * 1000;
 		return $this->getLongitude() * 4 * self::MINUTE_MILLIS - $offset;
+	}
+
+	public function getStandardTimeOffset() {
+		$timeZone = new DateTimeZone($this->getTimeZone());
+		$utc = new DateTimeZone("UTC");
+		$utc_date = new DateTime("now", $utc);
+		$offset = $timeZone->getOffset($utc_date) * 1000;
+		return $offset;
 	}
 
 	public function getAntimeridianAdjustment() {

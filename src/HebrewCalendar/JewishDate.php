@@ -405,10 +405,10 @@ class JewishDate {
 
 	private function setMoladTime($chalakim) {
 		$adjustedChalakim = $chalakim;
-		$this->setMoladHours($adjustedChalakim / self::CHALAKIM_PER_HOUR);
+		$this->setMoladHours((int) ($adjustedChalakim / self::CHALAKIM_PER_HOUR));
 		$adjustedChalakim = $adjustedChalakim - ($this->getMoladHours() * self::CHALAKIM_PER_HOUR);
-		$this->setMoladMinutes($adjustedChalakim / self::CHALAKIM_PER_MINUTE);
-		$this->setMoladChalakim($adjustedChalakim - $this->moladMinutes * self::CHALAKIM_PER_MINUTE);
+		$this->setMoladMinutes((int) ($adjustedChalakim / self::CHALAKIM_PER_MINUTE));
+		$this->setMoladChalakim((int) ($adjustedChalakim - $this->moladMinutes * self::CHALAKIM_PER_MINUTE));
 	}
 
 	/*

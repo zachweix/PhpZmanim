@@ -26,6 +26,7 @@ use PhpZmanim\HebrewCalendar\HebrewDateFormatter;
 use PhpZmanim\HebrewCalendar\JewishCalendar;
 use PhpZmanim\HebrewCalendar\JewishDate;
 use PhpZmanim\HebrewCalendar\TefilaRules;
+use PhpZmanim\Zmanim;
 
 class JewishCalendarTest extends TestCase {
 
@@ -56,7 +57,7 @@ class JewishCalendarTest extends TestCase {
 		$this->assertEquals("\u05E7\u05D9\u05D3\u05D5\u05E9\u05D9\u05DF \u05DC\u05F4\u05D3", $formatter->setHebrewFormat(true)->formatDafYomiBavli($daf));
 
 		$daf = $date->getDafYomiYerushalmi();
-		$formatter = HebrewDateFormatter::create();
+		$formatter = Zmanim::format();
 
 		$this->assertEquals("Ma'aser Sheni 7", $formatter->formatDafYomiYerushalmi($daf));
 		$this->assertEquals("\u05de\u05e2\u05e9\u05e8 \u05e9\u05e0\u05d9 \u05D6\u05F3", $formatter->setHebrewFormat(true)->formatDafYomiYerushalmi($daf));
@@ -69,7 +70,7 @@ class JewishCalendarTest extends TestCase {
 		$this->assertEquals("Bereshis", HebrewDateFormatter::create()->formatParsha($date));
 		$this->assertEquals("\u05D1\u05E8\u05D0\u05E9\u05D9\u05EA", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
 
-		$date = new JewishCalendar(Carbon::createMidnightDate(2024, 2, 17));
+		$date = Zmanim::jewishCalendar(Carbon::createMidnightDate(2024, 2, 17));
 
 		$this->assertEquals("Terumah", HebrewDateFormatter::create()->formatParsha($date));
 		$this->assertEquals("\u05EA\u05E8\u05D5\u05DE\u05D4", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));

@@ -1,9 +1,21 @@
 # PhpZmanim
-A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu Hershfeld (code at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). See Kosher Java documentation for comments for every class variable and method. Only calculations for Zmanim times were ported, for a library with most calculations from KosherJava's JewishCalendar you can view [PHP Zman Library](https://github.com/zmanim/zman). See below for how to install and a more detailed list of what you can access and methods you can call. Once instantiated, you can ask for many Zmanim right out of the gate:
+A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu Hershfeld (code at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). See Kosher Java documentation for comments for every class variable and method. See below for how to install and a more detailed list of what you can access and methods you can call. Once instantiated, you can ask for many Zmanim right out of the gate:
 
 ```php
 $zmanim = Zmanim::create(2019, 2, 22, 'Lakewood', 40.0721087, -74.2400243, 39.57, 'America/New_York');
 $zmanim->tzais72->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
+
+$jewishCalendar = Zmanim::jewishCalendar(Carbon::createFromDate(2023, 9, 30)); // This will give you a Jewish calendar date for the given date
+$jewishCalendar = Zmanim::jewishCalendar(5784, 7, 15); // This will give the same date, but with the Jewish date given as parameters
+$jewishCalendar->isRoshHashana(); // false
+$jewishCalendar->isSuccos(); // true
+
+$daf = $jewishCalendar->getDafYomiBavli();
+$format = Zmanim::format();
+$format->formatDafYomiBavli($daf); // Kiddushin 48
+
+$jewishCalendar = Zmanim::jewishCalendar(5784, 7, 26);
+$format->formatParsha($jewishCalendar); // Bereshis
 ```
 
 ## Installation (with Composer)
@@ -15,7 +27,7 @@ $ composer require zachweix/php-zmanim
 ```json
 {
     "require": {
-        "zachweix/php-zmanim": "^1.2"
+        "zachweix/php-zmanim": "^2.0"
     }
 }
 ```
@@ -31,7 +43,7 @@ use PhpZmanim\Zmanim;
 
 ## Instantiation
 
-You can instantiate a new `Zmanim` object with the `Zmanim::create()` function. If you want, you can instantiate by creating a `GeoLocation` object and a `ComplexZmanimCalendar` object. There are currently two ways to calculate the Zmanim times, SunTimesCalculator and NoaaCalculator; the default calculator is NoaaCalculator.
+You can instantiate a new `Zmanim` object with the `Zmanim::create()` function. (If you want, you can instantiate by creating a `GeoLocation` object and a `ComplexZmanimCalendar` object like in KosherJava). There are currently two ways to calculate the Zmanim times, SunTimesCalculator and NoaaCalculator; the default calculator is NoaaCalculator.
 
 ### Via `Zmanim::create()`
 
@@ -122,6 +134,8 @@ $zmanim->shaahZmanis90Minutes;
 $zmanim->shaahZmanis90MinutesZmanis;
 $zmanim->shaahZmanis96MinutesZmanis;
 $zmanim->shaahZmanisAteretTorah;     // See note 1 below
+$zmanim->shaahZmanisAlos16Point1ToTzais3Point8;
+$zmanim->shaahZmanisAlos16Point1ToTzais3Point7;
 $zmanim->shaahZmanis96Minutes;
 $zmanim->shaahZmanis120Minutes;
 $zmanim->shaahZmanis120MinutesZmanis;
@@ -176,9 +190,15 @@ $zmanim->sofZmanShma3HoursBeforeChatzos;
 $zmanim->sofZmanShmaMGA120Minutes;
 $zmanim->sofZmanShmaAlos16Point1ToSunset;
 $zmanim->sofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees;
+$zmanim->sofZmanShmaKolEliyahu;
 $zmanim->sofZmanShmaAteretTorah;     // See note 1 below
 $zmanim->sofZmanShmaFixedLocal;      // See note 2 below
 $zmanim->sofZmanShmaBaalHatanya;     // See note 3 below
+$zmanim->sofZmanShmaMGA18DegreesToFixedLocalChatzos;
+$zmanim->sofZmanShmaMGA16Point1DegreesToFixedLocalChatzos;
+$zmanim->sofZmanShmaMGA90MinutesToFixedLocalChatzos;
+$zmanim->sofZmanShmaMGA72MinutesToFixedLocalChatzos;
+$zmanim->sofZmanShmaGRASunriseToFixedLocalChatzos;
 ```
 
 #### Sof Zman Tfila
@@ -199,6 +219,7 @@ $zmanim->sofZmanTfila2HoursBeforeChatzos;
 $zmanim->sofZmanTfilahAteretTorah;   // See note 1 below
 $zmanim->sofZmanTfilaFixedLocal;     // See note 2 below
 $zmanim->sofZmanTfilaBaalHatanya;    // See note 3 below
+$zmanim->sofZmanTfilaGRASunriseToFixedLocalChatzos;
 ```
 
 #### Erev Pesach
@@ -216,34 +237,43 @@ $zmanim->sofZmanBiurChametzBaalHatanya; // See note 3 below
 
 #### Chatzos
 ```php
-$zmanim->chatzos;
+$zmanim->chatzos;                    // This defaults to astronomical chatzos
+$zmanim->chatzosAsHalfDay;           // This defaults to halfway between sunrise and sunset and falls back to chatzos if that is not possible (e.g. the North Pole during summer)
 $zmanim->fixedLocalChatzos;          // See note 2 below
 ```
 
 #### Mincha Gedola
 ```php
-$zmanim->minchaGedolaGra;
+$zmanim->minchaGedola;
 $zmanim->minchaGedola30Minutes;
 $zmanim->minchaGedola72Minutes;
 $zmanim->minchaGedola16Point1Degrees;
+$zmanim->minchaGedolaAhavatShalom;
 $zmanim->minchaGedolaGreaterThan30;  // Fixed 30 minutes or degrees, whichever is later
 $zmanim->minchaGedolaAteretTorah;    // See note 1 below
 $zmanim->minchaGedolaBaalHatanya;    // See note 3 below
 $zmanim->minchaGedolaBaalHatanyaGreaterThan30;
+$zmanim->minchaGedolaGRAFixedLocalChatzos30Minutes;
 ```
 
 #### Mincha Ketana
 ```php
-$zmanim->minchaKetanaGra;
+$zmanim->minchaKetana;
 $zmanim->minchaKetana16Point1Degrees;
+$zmanim->minchaKetanaAhavatShalom;
 $zmanim->minchaKetana72Minutes;
-$zmanim->minchaKetanaAteretTorah;    // Set note 1 below
+$zmanim->minchaKetanaAteretTorah;    // See note 1 below
 $zmanim->minchaKetanaBaalHatanya;    // See note 3 below
+$zmanim->minchaKetanaGRAFixedLocalChatzosToSunset;
+
+$zmanim->samuchLeMinchaKetanaGRA;
+$zmanim->samuchLeMinchaKetana16Point1Degrees;
+$zmanim->samuchLeMinchaKetana72Minutes;
 ```
 
 #### Plag Hamincha
 ```php
-$zmanim->plagHaminchaGra;
+$zmanim->plagHamincha;
 $zmanim->plagHamincha120MinutesZmanis;
 $zmanim->plagHamincha120Minutes;
 $zmanim->plagHamincha60Minutes;
@@ -259,8 +289,10 @@ $zmanim->plagHamincha26Degrees;
 $zmanim->plagHamincha18Degrees;
 $zmanim->plagAlosToSunset;
 $zmanim->plagAlos16Point1ToTzaisGeonim7Point083Degrees;
-$zmanim->plagHaminchaAteretTorah;    // Set note 1 below
+$zmanim->plagAhavatShalom;
+$zmanim->plagHaminchaAteretTorah;    // See note 1 below
 $zmanim->plagHaminchaBaalHatanya;    // See note 3 below
+$zmanim->plagHaminchaGRAFixedLocalChatzosToSunset;
 ```
 
 #### Candle Lighting
@@ -272,16 +304,22 @@ $zmanim->setCandleLightingOffset($candleLightingOffset);
 #### Start of Bain Hasmashos (According to Rabbeinu Tam)
 
 ```php
-$zmanim->bainHasmashosRT13Point24Degrees;
-$zmanim->bainHasmashosRT58Point5Minutes;
-$zmanim->bainHasmashosRT13Point5MinutesBefore7Point083Degrees;
-$zmanim->bainHasmashosRT2Stars;
+$zmanim->bainHashmashosRT13Point24Degrees;
+$zmanim->bainHashmashosRT58Point5Minutes;
+$zmanim->bainHashmashosRT13Point5MinutesBefore7Point083Degrees;
+$zmanim->bainHashmashosRT2Stars;
+$zmanim->bainHashmashosYereim18Minutes;
+$zmanim->bainHashmashosYereim3Point05Degrees;
+$zmanim->bainHashmashosYereim16Point875Minutes;
+$zmanim->bainHashmashosYereim2Point8Degrees;
+$zmanim->bainHashmashosYereim13Point5Minutes;
+$zmanim->bainHashmashosYereim2Point1Degrees;
 ```
 
 #### Tzais
 ```php
 $zmanim->tzais;                      // Sunset offset by 8.5 degrees
-$zmanim->tzais72;
+$zmanim->tzais72;getTzais()
 $zmanim->tzaisGeonim3Point7Degrees;
 $zmanim->tzaisGeonim3Point8Degrees;
 $zmanim->tzaisGeonim5Point95Degrees;
@@ -298,7 +336,7 @@ $zmanim->tzaisGeonim8Point5Degrees;
 $zmanim->tzaisGeonim9Point3Degrees;
 $zmanim->tzaisGeonim9Point75Degrees;
 $zmanim->tzais60;
-$zmanim->tzaisAteretTorah;           // Set note 1 below
+$zmanim->tzaisAteretTorah;           // See note 1 below
 $zmanim->tzais72Zmanis;
 $zmanim->tzais90Zmanis;
 $zmanim->tzais96Zmanis;
@@ -310,12 +348,22 @@ $zmanim->tzais26Degrees;
 $zmanim->tzais18Degrees;
 $zmanim->tzais19Point8Degrees;
 $zmanim->tzais96;
-$zmanim->tzaisBaalHatanya;           // Set note 3 below
+$zmanim->tzaisBaalHatanya;           // See note 3 below
+$zmanim->tzais50;
 ```
 
 #### Chatzos Halayla (Midnight)
 ```php
 $zmanim->solarMidnight;
+```
+
+#### Molad Zmanim
+```php
+$zmanim->sofZmanKidushLevanaBetweenMoldos;
+$zmanim->sofZmanKidushLevana15Days;
+$zmanim->tchilasZmanKidushLevana3Days;
+$zmanim->zmanMolad;
+$zmanim->tchilasZmanKidushLevana7Days;
 ```
 
 #### Notes
@@ -343,6 +391,10 @@ $zmanim->getMinchaGedola($startOfDay, $endOfDay);
 $zmanim->getMinchaKetana($startOfDay, $endOfDay);
 $zmanim->getPlagHamincha($startOfDay, $endOfDay);
 ```
+
+## Jewish Calendar Calculations
+
+For the usage syntax you can look at the KosherJava documentation. (TODO: Add the methods here as well).
 
 ## GeoLocation Mathematical Calculations
 

@@ -23,6 +23,7 @@
 namespace PhpZmanim\Calendar;
 
 use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\HebrewCalendar\JewishCalendar;
 
 /**
  * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/ComplexZmanimCalendar.java
@@ -726,7 +727,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	*/
 
 	public function getFixedLocalChatzos() {
-		return $this->getLocalMeanTime();
+		return $this->getLocalMeanTime(12.0);
 	}
 
 	public function getSofZmanShmaFixedLocal() {
@@ -789,7 +790,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), $alos, $tzais, true);
 
 		if ($zman == null && $jewishCalendar->getJewishDayOfMonth() == 30) {
-			$jewishCalendar->addMonths(1);
+			$jewishCalendar->addMonthsJewish(1);
 			$zman = $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana3Days(), null, null, true);
 		}
 		
@@ -797,18 +798,24 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 	}
 
 	public function getZmanMolad() {
-		$jewishCalendar = new JewishCalendar($this->getCalendar());
+		$calendar = $this->getCalendar()->copy()->shiftTimezone("GMT+2");
+		$jewishCalendar = new JewishCalendar($calendar);
 
 		if ($jewishCalendar->getJewishDayOfMonth() > 2 && $jewishCalendar->getJewishDayOfMonth() < 27) { 
 			return null;
 		}
 
-		$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+		// We can be up to 2 days off if it's right before midnight somewhere to the West of Jerusalem, but after midnight in Jerusalem
+		for ($i = 0; $i <= 2; $i++) {
+			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate()->timezone($this->getGeoLocation()->getTimeZone()), null, null, true);
 
-		if ($molad == null && $jewishCalendar->getJewishDayOfMonth() > 26) {
-			$jewishCalendar->addMonths(1);
-			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+			if ($molad != null) {
+				break;
+			}
+
+			$jewishCalendar->addDays(1);
 		}
+
 		return $molad;
 	}
 
@@ -836,7 +843,7 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 			return null;
 		}
 		
-		return $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana7Days(), alos, tzais, true);
+		return $this->getMoladBasedTime($jewishCalendar->getTchilasZmanKidushLevana7Days(), $alos, $tzais, true);
 	}
 
 	/*
