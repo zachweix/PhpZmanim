@@ -41,9 +41,9 @@ class AstronomicalCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	private Carbon $calendar;
-	private GeoLocation $geoLocation; 
-	private AstronomicalCalculator $astronomicalCalculator;
+	private $calendar;
+	private $geoLocation; 
+	private $astronomicalCalculator;
 
 	const GEOMETRIC_ZENITH = 90;
 	const CIVIL_ZENITH = 96;
