@@ -23,6 +23,7 @@
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PhpZmanim\HebrewCalendar\JewishDate;
+use PhpZmanim\Zmanim;
 
 class JewishDateTest extends TestCase {
 
@@ -347,6 +348,15 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals(5772, $hebrewDate->getJewishYear());
 		$this->assertEquals(10, $hebrewDate->getJewishMonth());
 		$this->assertEquals(3, $hebrewDate->getJewishDayOfMonth());
+	}
+
+	/** @test */
+	public function testFormat() {
+		$hebrewDate = JewishDate::create(Carbon::createMidnightDate(2011, 1, 1));
+		$format = Zmanim::format();
+		$format->setHebrewFormat(true);
+
+		$this->assertEquals("\u05DB\u05F4\u05D4 \u05D8\u05D1\u05EA \u05EA\u05E9\u05E2\u05F4\u05D0", $format->format($hebrewDate));
 	}
 
 	private function assertDaysInMonth($febIsLeap, $hebrewDate) {

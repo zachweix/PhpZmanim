@@ -311,9 +311,10 @@ class HebrewDateFormatter {
 			return "";
 		}
 
+		$year = $jewishCalendar->getJewishYear();
 		$month = $jewishCalendar->getJewishMonth();
 		if ($jewishCalendar->getJewishDayOfMonth() == 30) {
-			if ($month < JewishCalendar::ADAR || ($month == JewishCalendar::ADAR && $jewishCalendar->isJewishLeapYear())) {
+			if ($month < JewishCalendar::ADAR || ($month == JewishCalendar::ADAR && JewishDate::isJewishLeapYear($year))) {
 				$month++;
 			} else { // roll to Nissan
 				$month = JewishCalendar::NISSAN;
@@ -445,17 +446,18 @@ class HebrewDateFormatter {
 	}
 
 	public function formatMonth(JewishDate $jewishDate) {
+		$year = $jewishDate->getJewishYear();
 		$month = $jewishDate->getJewishMonth();
 		if ($this->isHebrewFormat()) {
-			if ($jewishDate->isJewishLeapYear() && $month == JewishDate::ADAR) {
+			if (JewishDate::isJewishLeapYear($year) && $month == JewishDate::ADAR) {
 				return self::HEBREW_MONTHS[13] . ($this->useGershGershayim ? self::GERESH : ""); // return Adar I, not Adar in a leap year
-			} else if ($jewishDate->isJewishLeapYear() && $month == JewishDate::ADAR_II) {
+			} else if (JewishDate::isJewishLeapYear($year) && $month == JewishDate::ADAR_II) {
 				return self::HEBREW_MONTHS[12] . ($this->useGershGershayim ? self::GERESH : "");
 			} else {
 				return self::HEBREW_MONTHS[$month - 1];
 			}
 		} else {
-			if ($jewishDate->isJewishLeapYear() && $month == JewishDate::ADAR) {
+			if (JewishDate::isJewishLeapYear($year) && $month == JewishDate::ADAR) {
 				return $this->transliteratedMonths[13]; // return Adar I, not Adar in a leap year
 			} else {
 				return $this->transliteratedMonths[$month - 1];
