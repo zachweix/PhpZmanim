@@ -605,7 +605,7 @@ class JewishDate {
 			}
 
 			// If we're moving enough, we'll move to Tishrei of next year
-			if ($diffToEndOfYear > $amount) {
+			if ($diffToEndOfYear < $amount) {
 				$this->jewishMonth = self::TISHREI;
 				$this->jewishYear++;
 				$amount = $amount - $diffToEndOfYear - 1;
@@ -763,7 +763,7 @@ class JewishDate {
 			}
 
 			// If we're moving enough, we'll move to Elul of last year
-			if ($monthOfYear > $amount) {
+			if ($monthOfYear < $amount) {
 				$this->jewishMonth = self::ELUL;
 				$this->jewishYear--;
 				$amount = $amount - $monthOfYear;
@@ -887,12 +887,52 @@ class JewishDate {
 
 	/*
 	|--------------------------------------------------------------------------
-	| CLONEABLE
+	| UTILITIES
 	|--------------------------------------------------------------------------
 	*/
 
 	public function copy() {
 		return clone $this;
+	}
+
+	public function formatGregorian() {
+		$year = $this->gregorianYear;
+		$month = $this->gregorianMonth;
+		$day = $this->gregorianDayOfMonth;
+
+		if ($month < 10) {
+			$month = "0" . $month;
+		}
+
+		if ($day < 10) {
+			$day = "0" . $day;
+		}
+
+		return $year . "-" . $month . "-" . $day;
+	}
+
+	public function formatJewish() {
+		$year = $this->jewishYear;
+		$month = $this->jewishMonth;
+		$day = $this->jewishDay;
+
+		if ($month < 10) {
+			$month = "0" . $month;
+		}
+
+		if ($day < 10) {
+			$day = "0" . $day;
+		}
+
+		return $year . "-" . $month . "-" . $day;
+	}
+
+	public function __debugInfo() {
+		return [
+			'jewishDate' => $this->formatJewish(),
+			'gregorianDate' => $this->formatGregorian(),
+			'dayOfWeek' => $this->dayOfWeek,
+		];
 	}
 
 }
