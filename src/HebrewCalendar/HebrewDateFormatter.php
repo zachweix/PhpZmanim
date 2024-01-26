@@ -301,9 +301,9 @@ class HebrewDateFormatter {
 		if ($index == JewishCalendar::CHANUKAH) {
 			$dayOfChanukah = $jewishCalendar->getDayOfChanukah();
 			return $this->hebrewFormat ? ($this->formatHebrewNumber($dayOfChanukah) . " " . self::HEBREW_HOLIDAYS[$index])
-					: ($tihs->transliteratedHolidays[$index] . " " . $dayOfChanukah);
+					: ($this->transliteratedHolidays[$index] . " " . $dayOfChanukah);
 		}
-		return $index == -1 ? "" : ($this->hebrewFormat ? self::HEBREW_HOLIDAYS[$index] : $tihs->transliteratedHolidays[$index]);
+		return $index == -1 ? "" : ($this->hebrewFormat ? self::HEBREW_HOLIDAYS[$index] : $this->transliteratedHolidays[$index]);
 	}
 
 	public function formatRoshChodesh(JewishCalendar $jewishCalendar) {
@@ -322,7 +322,7 @@ class HebrewDateFormatter {
 		}
 
 		$formattedRoshChodesh = $hebrewFormat ? self::HEBREW_HOLIDAYS[JewishCalendar::ROSH_CHODESH]
-				: $tihs->transliteratedHolidays[JewishCalendar::ROSH_CHODESH];
+				: $this->transliteratedHolidays[JewishCalendar::ROSH_CHODESH];
 		$formattedRoshChodesh .= " " . $this->formatMonth($jewishCalendar->clone()->setJewishMonth($month));
 		return $formattedRoshChodesh;
 	}
