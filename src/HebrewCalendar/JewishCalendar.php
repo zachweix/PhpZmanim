@@ -629,7 +629,7 @@ class JewishCalendar extends JewishDate {
 		$day = $this->getJewishDayOfMonth();
 		if ($this->isChanukah()) {
 			if ($this->getJewishMonth() == JewishDate::KISLEV) {
-				return day - 24;
+				return $day - 24;
 			} else {
 				return self::isKislevShort($this->getJewishYear()) ? $day + 5 : $day + 6;
 			}
