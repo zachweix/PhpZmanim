@@ -32,7 +32,7 @@ class YerushalmiYomiCalculator {
 			19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13];
 
 	public static function getDafYomiYerushalmi(JewishCalendar $calendar) {
-		$requested = $calendar->getGregorianCalendar();
+		$requested = $calendar->getGregorianCalendar()->utc();
 
 		if ($calendar->getYomTovIndex() == JewishCalendar::YOM_KIPPUR ||
 				$calendar->getYomTovIndex() == JewishCalendar::TISHA_BEAV ) {
@@ -43,7 +43,7 @@ class YerushalmiYomiCalculator {
 			throw new \Exception($requested->toDateString() . " is prior to organized Daf Yomi Yerushalmi cycles that started on February 2, 1980");
 		}
 
-		$nextCycle = Carbon::createMidnightDate(1980, 2, 2);
+		$nextCycle = Carbon::createMidnightDate(1980, 2, 2, "UTC");
 		$prevCycle = $nextCycle->clone();
 
 		while ($requested->gt($nextCycle)) {
@@ -54,7 +54,7 @@ class YerushalmiYomiCalculator {
 		}
 		
 		// Get the number of days from cycle start until request.
-		$dafNo = $requested->diffInDays($prevCycle);
+		$dafNo = (int) $requested->diffInDays($prevCycle, true);
 
 		$specialDays = self::getNumOfSpecialDays($prevCycle, $requested);
 

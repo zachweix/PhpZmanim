@@ -246,7 +246,7 @@ class AstronomicalCalendar {
 		$calculatedTime -= $minutes;
 		$seconds = (int) ($calculatedTime *= 60); // retain only the seconds
 		$calculatedTime -= $seconds;
-		$microseconds = $calculatedTime * 1000000;
+		$microseconds = (int) ($calculatedTime * 1000000);
 
 		// Check if a date transition has occurred, or is about to occur - this indicates the date of the event is
 		// actually not the target date, but the day prior or after

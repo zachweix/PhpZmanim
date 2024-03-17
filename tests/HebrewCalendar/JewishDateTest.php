@@ -408,6 +408,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertHaser($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertFalse(JewishDate::isCheshvanLong($jewishDate->getJewishYear()));
@@ -417,6 +418,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertHaserLeap($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertHaser($year);
@@ -426,6 +428,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertQesidrah($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertFalse(JewishDate::isCheshvanLong($jewishDate->getJewishYear()));
@@ -435,6 +438,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertQesidrahLeap($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertQesidrah($year);
@@ -444,6 +448,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertShalem($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertTrue(JewishDate::isCheshvanLong($jewishDate->getJewishYear()));
@@ -453,6 +458,7 @@ class JewishDateTest extends TestCase {
 
 	private function assertShalemLeap($year) {
 		$jewishDate = new JewishDate();
+		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
 		$this->assertShalem($year);

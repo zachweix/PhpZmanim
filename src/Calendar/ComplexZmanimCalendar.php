@@ -300,7 +300,8 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		if ($chatzos == null || $this->getSunrise() == null) {
 			return null;
 		}
-		$diff = $chatzos->diffInMilliseconds($this->getElevationAdjustedSunrise()) / 2;
+		// Carbon v2 returns diff always as positive and as an int. In order to make v3 match that, we have this here. Once we no longer support v2 we can "clean this up"
+		$diff = ((int) $chatzos->diffInMilliseconds($this->getElevationAdjustedSunrise(), true)) / 2;
 		return $this->getTimeOffset($chatzos, -$diff);
 	}
 
