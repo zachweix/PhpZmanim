@@ -54,13 +54,13 @@ class JewishCalendarTest extends TestCase {
 		$formatter = HebrewDateFormatter::create();
 
 		$this->assertEquals("Kiddushin 34", $formatter->formatDafYomiBavli($daf));
-		$this->assertEquals("\u05E7\u05D9\u05D3\u05D5\u05E9\u05D9\u05DF \u05DC\u05F4\u05D3", $formatter->setHebrewFormat(true)->formatDafYomiBavli($daf));
+		$this->assertEquals("קידושין ל״ד", $formatter->setHebrewFormat(true)->formatDafYomiBavli($daf));
 
 		$daf = $date->getDafYomiYerushalmi();
 		$formatter = Zmanim::format();
 
 		$this->assertEquals("Ma'aser Sheni 7", $formatter->formatDafYomiYerushalmi($daf));
-		$this->assertEquals("\u05de\u05e2\u05e9\u05e8 \u05e9\u05e0\u05d9 \u05D6\u05F3", $formatter->setHebrewFormat(true)->formatDafYomiYerushalmi($daf));
+		$this->assertEquals("מעשר שני ז׳", $formatter->setHebrewFormat(true)->formatDafYomiYerushalmi($daf));
 	}
 
 	/** @test */
@@ -68,12 +68,12 @@ class JewishCalendarTest extends TestCase {
 		$date = new JewishCalendar(Carbon::createMidnightDate(2023, 10, 14));
 
 		$this->assertEquals("Bereshis", HebrewDateFormatter::create()->formatParsha($date));
-		$this->assertEquals("\u05D1\u05E8\u05D0\u05E9\u05D9\u05EA", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
+		$this->assertEquals("בראשית", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
 
 		$date = Zmanim::jewishCalendar(Carbon::createMidnightDate(2024, 2, 17));
 
 		$this->assertEquals("Terumah", HebrewDateFormatter::create()->formatParsha($date));
-		$this->assertEquals("\u05EA\u05E8\u05D5\u05DE\u05D4", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
+		$this->assertEquals("תרומה", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
 	}
 
 	/** @test */

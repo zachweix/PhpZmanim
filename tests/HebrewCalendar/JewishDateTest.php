@@ -388,7 +388,7 @@ class JewishDateTest extends TestCase {
 		$format = Zmanim::format();
 		$format->setHebrewFormat(true);
 
-		$this->assertEquals("\u05DB\u05F4\u05D4 \u05D8\u05D1\u05EA \u05EA\u05E9\u05E2\u05F4\u05D0", $format->format($hebrewDate));
+		$this->assertEquals("כ״ה טבת תשע״א", $format->format($hebrewDate));
 	}
 
 	private function assertDaysInMonth($febIsLeap, $hebrewDate) {
