@@ -23,6 +23,7 @@
 namespace PhpZmanim\Calendar;
 
 use Carbon\Carbon;
+use PhpZmanim\HebrewCalendar\JewishCalendar;
 
 /**
  * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/ZmanimCalendar.java
