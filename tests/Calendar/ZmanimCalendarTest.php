@@ -344,4 +344,56 @@ class ZmanimCalendarTest extends TestCase {
 		$this->assertEquals($zmanim->samuchLeMinchaKetana16Point1Degrees->format('Y-m-d\TH:i:sP'), "2023-09-29T16:24:54-04:00");
 		$this->assertEquals($zmanim->samuchLeMinchaKetana72Minutes->format('Y-m-d\TH:i:sP'), "2023-09-29T16:21:27-04:00");
 	}
+
+	/**
+	 * @test
+	 */
+	public function testIsAssurBemlacha() {
+		// Test Friday evening (Erev Shabbos)
+		$zmanim = Zmanim::create(2024, 11, 8, 'Lakewood, NJ', 40.0721087, -74.2400243, 39.57, 'America/New_York');
+		$sunset = $zmanim->getSunset();
+		$tzais = $zmanim->getTzais();
+
+		// Before sunset on Friday - should not be Assur
+		$beforeSunset = $sunset->copy()->subMinutes(30);
+		$this->assertFalse($zmanim->isAssurBemlacha($beforeSunset, $tzais, false));
+
+		// After sunset on Friday - should be Assur (Shabbos begins)
+		$afterSunset = $sunset->copy()->addMinutes(10);
+		$this->assertTrue($zmanim->isAssurBemlacha($afterSunset, $tzais, false));
+
+		// After tzais on Friday - should still be Assur (during Shabbos)
+		$afterTzais = $tzais->copy()->addMinutes(10);
+		$this->assertTrue($zmanim->isAssurBemlacha($afterTzais, $tzais, false));
+
+		// Test Shabbos day
+		$zmanimShabbos = Zmanim::create(2024, 11, 9, 'Lakewood, NJ', 40.0721087, -74.2400243, 39.57, 'America/New_York');
+		$sunsetShabbos = $zmanimShabbos->getSunset();
+		$tzaisShabbos = $zmanimShabbos->getTzais();
+
+		// During Shabbos day (before tzais) - should be Assur
+		$middayShabbos = $tzaisShabbos->copy()->subHours(6);
+		$this->assertTrue($zmanimShabbos->isAssurBemlacha($middayShabbos, $tzaisShabbos, false));
+
+		// After tzais on Shabbos - should not be Assur (Shabbos ends)
+		$afterTzaisShabbos = $tzaisShabbos->copy()->addMinutes(10);
+		$this->assertFalse($zmanimShabbos->isAssurBemlacha($afterTzaisShabbos, $tzaisShabbos, false));
+
+		// Test regular weekday (Thursday)
+		$zmanimWeekday = Zmanim::create(2024, 11, 7, 'Lakewood, NJ', 40.0721087, -74.2400243, 39.57, 'America/New_York');
+		$sunsetWeekday = $zmanimWeekday->getSunset();
+		$tzaisWeekday = $zmanimWeekday->getTzais();
+
+		// Before tzais on weekday - should not be Assur
+		$beforeTzaisWeekday = $tzaisWeekday->copy()->subMinutes(30);
+		$this->assertFalse($zmanimWeekday->isAssurBemlacha($beforeTzaisWeekday, $tzaisWeekday, false));
+
+		// After tzais on weekday - should not be Assur
+		$afterTzaisWeekday = $tzaisWeekday->copy()->addMinutes(10);
+		$this->assertFalse($zmanimWeekday->isAssurBemlacha($afterTzaisWeekday, $tzaisWeekday, false));
+
+		// Test Israel vs Diaspora (should behave the same for Shabbos)
+		$this->assertTrue($zmanim->isAssurBemlacha($afterSunset, $tzais, true));
+		$this->assertTrue($zmanim->isAssurBemlacha($afterSunset, $tzais, false));
+	}
 }
