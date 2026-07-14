@@ -22,29 +22,21 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use PhpZmanim\GeoLocation;
 
-class GeoLocationTest extends TestCase {
-
-	/**
-	 * Convert degrees/minutes/seconds to signed decimal degrees, matching the
-	 * formula the removed setLatitudeFromDegrees()/setLongitudeFromDegrees()
-	 * helpers used, so the geodesic reference values stay identical.
-	 */
-	private function dms($degrees, $minutes, $seconds, $direction) {
-		$value = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
-		return ($direction === 'S' || $direction === 'W') ? -$value : $value;
-	}
-
+class GeoLocationTest extends TestCase
+{
 	/*
 	|--------------------------------------------------------------------------
 	| CONSTRUCTION
 	|--------------------------------------------------------------------------
 	*/
 
-	/** @test */
-	public function constructWithDefaults() {
-		$geoLocation = new GeoLocation();
+	#[Test]
+	public function constructWithDefaults(): void
+	{
+		$geoLocation = GeoLocation::create();
 
 		$this->assertEquals($geoLocation->getLatitude(), 51.4772);
 		$this->assertEquals($geoLocation->getLongitude(), 0.0);
@@ -53,9 +45,10 @@ class GeoLocationTest extends TestCase {
 		$this->assertEquals($geoLocation->getLocationName(), null);
 	}
 
-	/** @test */
-	public function constructWithData() {
-		$geoLocation = new GeoLocation(40.0828, -74.2094, 'America/New_York', 20, 'Lakewood, NJ');
+	#[Test]
+	public function constructWithData(): void
+	{
+		$geoLocation = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
 
 		$this->assertEquals($geoLocation->getLatitude(), 40.0828);
 		$this->assertEquals($geoLocation->getLongitude(), -74.2094);
@@ -64,15 +57,17 @@ class GeoLocationTest extends TestCase {
 		$this->assertEquals($geoLocation->getLocationName(), 'Lakewood, NJ');
 	}
 
-	/** @test */
-	public function createFactoryMatchesConstructor() {
-		$geoLocation = GeoLocation::create(40.0828, -74.2094, 'America/New_York', 20, 'Lakewood, NJ');
+	#[Test]
+	public function createFactoryMatchesConstructor(): void
+	{
+		$geoLocation = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
+		$geoLocation2 = new GeoLocation(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
 
-		$this->assertEquals($geoLocation->getLatitude(), 40.0828);
-		$this->assertEquals($geoLocation->getLongitude(), -74.2094);
-		$this->assertEquals($geoLocation->getTimezone(), 'America/New_York');
-		$this->assertEquals($geoLocation->getElevation(), 20.0);
-		$this->assertEquals($geoLocation->getLocationName(), 'Lakewood, NJ');
+		$this->assertEquals($geoLocation->getLatitude(), $geoLocation2->getLatitude());
+		$this->assertEquals($geoLocation->getLongitude(), $geoLocation2->getLongitude());
+		$this->assertEquals($geoLocation->getTimezone(), $geoLocation2->getTimezone());
+		$this->assertEquals($geoLocation->getElevation(), $geoLocation2->getElevation());
+		$this->assertEquals($geoLocation->getLocationName(), $geoLocation2->getLocationName());
 	}
 
 	/*
@@ -81,9 +76,10 @@ class GeoLocationTest extends TestCase {
 	|--------------------------------------------------------------------------
 	*/
 
-	/** @test */
-	public function settersAreFluentAndUpdateValues() {
-		$geoLocation = new GeoLocation();
+	#[Test]
+	public function settersAreFluentAndUpdateValues(): void
+	{
+		$geoLocation = GeoLocation::create();
 
 		$returned = $geoLocation->setLatitude(41.1181036)
 			->setLongitude(-74.2094)
@@ -99,46 +95,53 @@ class GeoLocationTest extends TestCase {
 		$this->assertEquals($geoLocation->getLocationName(), 'Lakewood, NJ');
 	}
 
-	/** @test */
-	public function setLatitudeRejectsOutOfRange() {
+	#[Test]
+	public function setLatitudeRejectsOutOfRange(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setLatitude(90.1);
+		GeoLocation::create()->setLatitude(90.1);
 	}
 
-	/** @test */
-	public function setLatitudeRejectsNaN() {
+	#[Test]
+	public function setLatitudeRejectsNaN(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setLatitude(NAN);
+		GeoLocation::create()->setLatitude(NAN);
 	}
 
-	/** @test */
-	public function setLongitudeRejectsOutOfRange() {
+	#[Test]
+	public function setLongitudeRejectsOutOfRange(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setLongitude(-180.1);
+		GeoLocation::create()->setLongitude(-180.1);
 	}
 
-	/** @test */
-	public function setLongitudeRejectsNaN() {
+	#[Test]
+	public function setLongitudeRejectsNaN(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setLongitude(NAN);
+		GeoLocation::create()->setLongitude(NAN);
 	}
 
-	/** @test */
-	public function setElevationRejectsNegative() {
+	#[Test]
+	public function setElevationRejectsNegative(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setElevation(-1);
+		GeoLocation::create()->setElevation(-1);
 	}
 
-	/** @test */
-	public function setElevationRejectsInfinite() {
+	#[Test]
+	public function setElevationRejectsInfinite(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new GeoLocation())->setElevation(INF);
+		GeoLocation::create()->setElevation(INF);
 	}
 
-	/** @test */
-	public function constructorValidatesLatitude() {
+	#[Test]
+	public function constructorValidatesLatitude(): void
+	{
 		$this->expectException(\InvalidArgumentException::class);
-		new GeoLocation(100);
+		GeoLocation::create(latitude: 100);
 	}
 
 	/*
@@ -147,45 +150,50 @@ class GeoLocationTest extends TestCase {
 	|--------------------------------------------------------------------------
 	*/
 
-	/** @test */
-	public function getLocalMeanTimeOffset() {
+	#[Test]
+	public function getLocalMeanTimeOffset(): void
+	{
 		$datetime = Carbon::parse('2017-01-01', 'UTC');
 
-		$gmt = new GeoLocation();
+		$gmt = GeoLocation::create();
 		$this->assertEquals($gmt->getLocalMeanTimeOffset($datetime), 0.0);
 
-		$lakewood = new GeoLocation(40.0828, -74.2094, 'America/New_York', 20, 'Lakewood, NJ');
+		$lakewood = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
 		$this->assertEquals($lakewood->getLocalMeanTimeOffset($datetime), 189744.0);
 	}
 
-	/** @test */
-	public function antimeridianAdjustmentGmt() {
+	#[Test]
+	public function antimeridianAdjustmentGmt(): void
+	{
 		$datetime = Carbon::parse('2017-01-01', 'UTC');
-		$geoLocation = new GeoLocation();
+		$geoLocation = GeoLocation::create();
 
 		$this->assertEquals($geoLocation->getAntimeridianAdjustment($datetime), 0);
 	}
 
-	/** @test */
-	public function antimeridianAdjustmentNy() {
+	#[Test]
+	public function antimeridianAdjustmentNy(): void
+	{
 		$datetime = Carbon::parse('2017-01-01', 'UTC');
-		$geoLocation = new GeoLocation(40.0828, -74.2094, 'America/New_York', 20, 'Lakewood, NJ');
+		$geoLocation = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
 
 		$this->assertEquals($geoLocation->getAntimeridianAdjustment($datetime), 0);
 	}
 
-	/** @test */
-	public function antimeridianAdjustmentEast() {
+	#[Test]
+	public function antimeridianAdjustmentEast(): void
+	{
 		$datetime = Carbon::parse('2017-01-01', 'UTC');
-		$geoLocation = new GeoLocation(-13.8599098, -171.8031745, 'Pacific/Apia', 1858, 'Apia, Samoa');
+		$geoLocation = GeoLocation::create(latitude: -13.8599098, longitude: -171.8031745, elevation: 1858, timezone: 'Pacific/Apia', locationName: 'Apia, Samoa');
 
 		$this->assertEquals($geoLocation->getAntimeridianAdjustment($datetime), -1);
 	}
 
-	/** @test */
-	public function antimeridianAdjustmentWest() {
+	#[Test]
+	public function antimeridianAdjustmentWest(): void
+	{
 		$datetime = Carbon::parse('2017-01-01', 'UTC');
-		$geoLocation = new GeoLocation(-13.8599098, 179, 'Etc/GMT+12', 0, 'GMT +12');
+		$geoLocation = GeoLocation::create(latitude: -13.8599098, longitude: 179, elevation: 0, timezone: 'Etc/GMT+12', locationName: 'GMT +12');
 
 		$this->assertEquals($geoLocation->getAntimeridianAdjustment($datetime), 1);
 	}
@@ -194,37 +202,44 @@ class GeoLocationTest extends TestCase {
 	|--------------------------------------------------------------------------
 	| GEODESIC FORMULAS
 	|--------------------------------------------------------------------------
+	| Coordinates are the signed decimal degrees of the classic Ordnance Survey
+	| reference points (Cornwall and Scotland). Vincenty uses fractional-second
+	| precision; the rhumb-line points are rounded to whole seconds.
 	*/
 
-	/** @test */
-	public function vincentyFormulae() {
-		$pointA = new GeoLocation($this->dms(50, 3, 58.76, 'N'), $this->dms(5, 42, 53.1, 'W'), 'Etc/GMT+12');
-		$pointB = new GeoLocation($this->dms(58, 38, 38.48, 'N'), $this->dms(3, 4, 12.34, 'W'), 'Etc/GMT+12');
+	#[Test]
+	public function vincentyFormulae(): void
+	{
+		$pointA = GeoLocation::create(latitude: 50.06632222222222, longitude: -5.71475, timezone: 'Etc/GMT+12');
+		$pointB = GeoLocation::create(latitude: 58.64402222222222, longitude: -3.0700944444444445, timezone: 'Etc/GMT+12');
 
 		$this->assertEquals(round($pointA->getGeodesicInitialBearing($pointB), 8), 9.14186191);
 		$this->assertEquals(round($pointA->getGeodesicFinalBearing($pointB), 8), 11.29720127);
 		$this->assertEquals(round($pointA->getGeodesicDistance($pointB), 8), 969954.11445043);
 	}
 
-	/** @test */
-	public function geodesicDistanceForCoincidentPointsIsZero() {
-		$point = new GeoLocation(40.0828, -74.2094, 'America/New_York');
+	#[Test]
+	public function geodesicDistanceForCoincidentPointsIsZero(): void
+	{
+		$point = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, timezone: 'America/New_York');
 
 		$this->assertEquals($point->getGeodesicDistance($point), 0);
 	}
 
-	/** @test */
-	public function rhumbLineBearing() {
-		$pointA = new GeoLocation($this->dms(50, 3, 59, 'N'), $this->dms(5, 42, 53, 'W'), 'Etc/GMT+12');
-		$pointB = new GeoLocation($this->dms(58, 38, 38, 'N'), $this->dms(3, 4, 12, 'W'), 'Etc/GMT+12');
+	#[Test]
+	public function rhumbLineBearing(): void
+	{
+		$pointA = GeoLocation::create(latitude: 50.06638888888889, longitude: -5.714722222222222, timezone: 'Etc/GMT+12');
+		$pointB = GeoLocation::create(latitude: 58.64388888888889, longitude: -3.07, timezone: 'Etc/GMT+12');
 
 		$this->assertEquals(round($pointA->getRhumbLineBearing($pointB), 8), 10.14069288);
 	}
 
-	/** @test */
-	public function rhumbLineDistance() {
-		$pointA = new GeoLocation($this->dms(50, 3, 59, 'N'), $this->dms(5, 42, 53, 'W'), 'Etc/GMT+12');
-		$pointB = new GeoLocation($this->dms(58, 38, 38, 'N'), $this->dms(3, 4, 12, 'W'), 'Etc/GMT+12');
+	#[Test]
+	public function rhumbLineDistance(): void
+	{
+		$pointA = GeoLocation::create(latitude: 50.06638888888889, longitude: -5.714722222222222, timezone: 'Etc/GMT+12');
+		$pointB = GeoLocation::create(latitude: 58.64388888888889, longitude: -3.07, timezone: 'Etc/GMT+12');
 
 		$this->assertEquals(round($pointA->getRhumbLineDistance($pointB), 8), 969995.8368008);
 	}
@@ -235,9 +250,10 @@ class GeoLocationTest extends TestCase {
 	|--------------------------------------------------------------------------
 	*/
 
-	/** @test */
-	public function copyReturnsIndependentClone() {
-		$geoLocation = new GeoLocation(40.0828, -74.2094, 'America/New_York', 20, 'Lakewood, NJ');
+	#[Test]
+	public function copyReturnsIndependentClone(): void
+	{
+		$geoLocation = GeoLocation::create(latitude: 40.0828, longitude: -74.2094, elevation: 20, timezone: 'America/New_York', locationName: 'Lakewood, NJ');
 		$copy = $geoLocation->copy();
 
 		$this->assertNotSame($geoLocation, $copy);

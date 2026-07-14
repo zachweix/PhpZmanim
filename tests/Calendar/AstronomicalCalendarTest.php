@@ -22,419 +22,292 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PhpZmanim\Calendar\AstronomicalCalendar;
+use PhpZmanim\Calculator\AstronomicalCalculator;
+use PhpZmanim\Calculator\NoaaCalculator;
+use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\GeoLocation;
 
-class AstronomicalCalendarTest extends TestCase {
+class AstronomicalCalendarTest extends TestCase
+{
+	/*
+	|--------------------------------------------------------------------------
+	| LOCATIONS
+	|--------------------------------------------------------------------------
+	*/
 
-	protected $locations;
+	private const NJ = ['lat' => 40.0721087, 'lon' => -74.2400243, 'elev' => 15, 'tz' => 'America/New_York'];
+	private const JLM = ['lat' => 31.7781161, 'lon' => 35.233804, 'elev' => 740, 'tz' => 'Asia/Jerusalem'];
+	private const CONGER = ['lat' => 81.7449398, 'lon' => -64.7945858, 'elev' => 127, 'tz' => 'America/Toronto'];
+	private const APIA = ['lat' => -13.8599098, 'lon' => -171.8031745, 'elev' => 1858, 'tz' => 'Pacific/Apia'];
 
-	protected function setUp(): void {
-		parent::setUp();
+	/*
+	|--------------------------------------------------------------------------
+	| HELPERS
+	|--------------------------------------------------------------------------
+	*/
 
-		/*
-		 * Setup some basic data for our tests
-		 */
+	private function cal(int $year, int $month, int $day, array $loc, ?AstronomicalCalculator $calculator = null): AstronomicalCalendar
+	{
+		$geo = GeoLocation::create($loc['lat'], $loc['lon'], $loc['elev'], $loc['tz']);
 
-		$this->locations = [
-			['Lakewood, NJ', 40.0721087, -74.2400243, 15, 'America/New_York'],
-			['Jerusalem, Israel', 31.7781161, 35.233804, 740, 'Asia/Jerusalem'],
-			['Los Angeles, CA', 34.0201613, -118.6919095, 71, 'America/Los_Angeles'],
-			['Tokyo, Japan', 35.6733227, 139.6403486, 40, 'Asia/Tokyo'],
-			['Fort Conger, NU Canada', 81.7449398, -64.7945858, 127, 'America/Toronto'],
-			['Apia, Samoa', -13.8599098, -171.8031745, 1858, 'Pacific/Apia'],
-		];
+		return new AstronomicalCalendar($year, $month, $day, $geo, $calculator);
 	}
 
-	/** 
-	 * @test
+	/**
+	 * Assert a returned time matches the KosherJava instant (a UTC ISO-8601 string),
+	 * or null when the event does not occur. PHP is microsecond precision and Java
+	 * nanosecond, so compare the absolute instant to within a millisecond.
 	 */
-	public function changeCalculator() {
-		$astronomicalCalendar = new AstronomicalCalendar();
+	private function assertInstant(?string $expectedIso, ?Carbon $actual): void
+	{
+		if ($expectedIso === null) {
+			$this->assertNull($actual);
 
-		$noaa_sunset = $astronomicalCalendar->getSunset();
-		$astronomicalCalendar->setCalculatorType('SunTimes');
-		$suntimes_sunset = $astronomicalCalendar->getSunset();
-		$astronomicalCalendar->setCalculatorType('Noaa');
-		$this->assertEquals($astronomicalCalendar->getSunset(), $noaa_sunset);
-
-		$astronomicalCalendar->setCalculatorType('SunTimes');
-		$this->assertEquals($astronomicalCalendar->getSunset(), $suntimes_sunset);
-	}
-
-	/** 
-	 * @test
-	 */
-	public function testSunrise() {
-		$expected_dates = [
-			"2017-10-17T07:09:11-04:00",
-			"2017-10-17T06:39:32+03:00",
-			"2017-10-17T07:00:25-07:00",
-			"2017-10-17T05:48:20+09:00",
-			null,
-			"2017-10-17T06:54:18+14:00",
-		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunrise = $astronomicalCalendar->getSunrise();
-			if (!is_null($sunrise)) {
-				$sunrise = $sunrise->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunrise, $expected_dates[ $index ]);
+			return;
 		}
+
+		$this->assertNotNull($actual);
+		$this->assertEqualsWithDelta(
+			Carbon::parse($expectedIso, 'UTC')->getPreciseTimestamp() / 1e6,
+			$actual->getPreciseTimestamp() / 1e6,
+			0.001
+		);
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSeaLevelSunrise() {
-		$expected_dates = [
-			"2017-10-17T07:09:51-04:00",
-			"2017-10-17T06:43:43+03:00",
-			"2017-10-17T07:01:45-07:00",
-			"2017-10-17T05:49:21+09:00",
-			null,
-			"2017-10-17T07:00:05+14:00",
+	/*
+	|--------------------------------------------------------------------------
+	| DATA PROVIDERS
+	|--------------------------------------------------------------------------
+	| Expected values are KosherJava ground truth (default NOAA calculator). Fort
+	| Conger exercises the Arctic no-event (null) path; Apia (near the dateline)
+	| exercises the date-transition where the event lands on the prior/next day.
+	*/
+
+	public static function sunriseProvider(): array
+	{
+		return [
+			'NJ' => [2017, 10, 17, self::NJ, '2017-10-17T11:09:11.571783718Z'],
+			'Jerusalem' => [2017, 10, 17, self::JLM, '2017-10-17T03:39:32.238411775Z'],
+			'Fort Conger Polar' => [2017, 6, 21, self::CONGER, null],
+			'Apia Dateline' => [2017, 10, 17, self::APIA, '2017-10-16T16:54:18.595524791Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunrise = $astronomicalCalendar->getSeaLevelSunrise();
-			if (!is_null($sunrise)) {
-				$sunrise = $sunrise->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunrise, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testUTCSunrise() {
-		$expected_dates = [
-			11.15327065,
-			3.65893934,
-			14.00708152,
-			20.8057012,
-			null,
-			16.90510688,
+	public static function sunsetProvider(): array
+	{
+		return [
+			'NJ' => [2017, 10, 17, self::NJ, '2017-10-17T22:14:38.994862349Z'],
+			'Jerusalem' => [2017, 10, 17, self::JLM, '2017-10-17T15:08:46.815316392Z'],
+			'Fort Conger Polar' => [2017, 6, 21, self::CONGER, null],
+			'Apia Dateline' => [2017, 10, 17, self::APIA, '2017-10-17T05:31:07.236182413Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunrise = $astronomicalCalendar->getUTCSunrise(90);
-			if (is_nan($sunrise)) {
-				$sunrise = null;
-			} else {
-				$sunrise = round($sunrise, 8);
-			}
-
-			$this->assertEquals($sunrise, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testUTCSeaLevelSunrise() {
-		$expected_dates = [
-			11.16434723,
-			3.72862262,
-			14.02926518,
-			20.82268461,
-			null,
-			17.00158411,
+	public static function sunTransitProvider(): array
+	{
+		return [
+			'NJ' => [2017, 10, 17, self::NJ, '2017-10-17T16:42:12.781249470Z'],
+			'Jerusalem' => [2017, 10, 17, self::JLM, '2017-10-17T09:24:22.754067158Z'],
+			'Fort Conger Polar' => [2017, 6, 21, self::CONGER, '2017-06-21T16:21:03.597362955Z'],
+			'Apia Dateline' => [2017, 10, 17, self::APIA, '2017-10-16T23:12:36.880248195Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunrise = $astronomicalCalendar->getUTCSeaLevelSunrise(90);
-			if (is_nan($sunrise)) {
-				$sunrise = null;
-			} else {
-				$sunrise = round($sunrise, 8);
-			}
-
-			$this->assertEquals($sunrise, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSunriseOffsetByDegreesForBasicLocations() {
-		$expected_dates = [
-			"2017-10-17T06:10:57-04:00",
-			"2017-10-17T05:50:43+03:00",
-			"2017-10-17T06:07:22-07:00",
-			"2017-10-17T04:53:55+09:00",
-			"2017-10-17T04:47:28-04:00",
-			"2017-10-17T06:13:13+14:00",
+	public static function solarMidnightProvider(): array
+	{
+		return [
+			'NJ' => [2017, 10, 17, self::NJ, '2017-10-18T04:42:06.833038724Z'],
+			'Jerusalem' => [2017, 10, 17, self::JLM, '2017-10-17T21:24:16.713111245Z'],
+			'Fort Conger Polar' => [2017, 6, 21, self::CONGER, '2017-06-22T04:21:10.101321684Z'],
+			'Apia Dateline' => [2017, 10, 17, self::APIA, '2017-10-17T11:12:30.711090221Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunrise = $astronomicalCalendar->getSunriseOffsetByDegrees(102);
-			if (!is_null($sunrise)) {
-				$sunrise = $sunrise->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunrise, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSunriseOffsetByDegreesForArcticTimeZoneExtremities() {
-		$geo = new GeoLocation('Daneborg, Greenland', 74.2999996, -20.2420877, 0, 'America/Godthab');
-
-		$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 4, 20);
-
-		$sunrise = $astronomicalCalendar->getSunriseOffsetByDegrees(94);
-		$sunrise = $sunrise->format('Y-m-d\TH:i:sP');
-
-		$this->assertEquals($sunrise, '2017-04-19T23:54:23-02:00');
-	}
-
-	/** 
-	 * @test
-	 */
-	public function testSunset() {
-		$expected_dates = [
-			"2017-10-17T18:14:38-04:00",
-			"2017-10-17T18:08:46+03:00",
-			"2017-10-17T18:19:05-07:00",
-			"2017-10-17T17:04:46+09:00",
-			null,
-			"2017-10-17T19:31:07+14:00",
+	public static function njSurfaceProvider(): array
+	{
+		return [
+			'sea level sunrise' => ['getSeaLevelSunrise', '2017-10-17T11:09:51.403184642Z'],
+			'sea level sunset' => ['getSeaLevelSunset', '2017-10-17T22:13:59.201432122Z'],
+			'begin civil twilight' => ['getBeginCivilTwilight', '2017-10-17T10:42:27.439221886Z'],
+			'begin nautical twilight' => ['getBeginNauticalTwilight', '2017-10-17T10:10:57.242471901Z'],
+			'begin astronomical twilight' => ['getBeginAstronomicalTwilight', '2017-10-17T09:39:33.523030241Z'],
+			'end civil twilight' => ['getEndCivilTwilight', '2017-10-17T22:41:21.435143220Z'],
+			'end nautical twilight' => ['getEndNauticalTwilight', '2017-10-17T23:12:49.151356447Z'],
+			'end astronomical twilight' => ['getEndAstronomicalTwilight', '2017-10-17T23:44:09.707296295Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunset = $astronomicalCalendar->getSunset();
-			if (!is_null($sunset)) {
-				$sunset = $sunset->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSeaLevelSunset() {
-		$expected_dates = [
-			"2017-10-17T18:13:58-04:00",
-			"2017-10-17T18:04:36+03:00",
-			"2017-10-17T18:17:45-07:00",
-			"2017-10-17T17:03:45+09:00",
-			null,
-			"2017-10-17T19:25:19+14:00",
+	public static function timeAtAzimuthProvider(): array
+	{
+		return [
+			'due east (90)' => [90.0, '2017-10-17T09:56:55.137696391Z'],
+			'due west (270)' => [270.0, '2017-10-17T23:28:31.886147237Z'],
 		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunset = $astronomicalCalendar->getSeaLevelSunset();
-			if (!is_null($sunset)) {
-				$sunset = $sunset->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testUTCSunset() {
-		$expected_dates = [
-			22.24410903,
-			15.14635336,
-			1.31819979,
-			8.07962871,
-			null,
-			5.51873532,
-		];
+	/*
+	|--------------------------------------------------------------------------
+	| SUNRISE / SUNSET / NOON / MIDNIGHT
+	|--------------------------------------------------------------------------
+	*/
 
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunset = $astronomicalCalendar->getUTCSunset(90);
-			if (is_nan($sunset)) {
-				$sunset = null;
-			} else {
-				$sunset = round($sunset, 8);
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
+	#[Test]
+	#[DataProvider('sunriseProvider')]
+	public function getSunrise(int $year, int $month, int $day, array $location, ?string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal($year, $month, $day, $location)->getSunrise());
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testUTCSeaLevelSunset() {
-		$expected_dates = [
-			22.23304301,
-			15.07671429,
-			1.29603174,
-			8.06265871,
-			null,
-			5.42214918,
-		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunset = $astronomicalCalendar->getUTCSeaLevelSunset(90);
-			if (is_nan($sunset)) {
-				$sunset = null;
-			} else {
-				$sunset = round($sunset, 8);
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
+	#[Test]
+	#[DataProvider('sunsetProvider')]
+	public function getSunset(int $year, int $month, int $day, array $location, ?string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal($year, $month, $day, $location)->getSunset());
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSunsetOffsetByDegreesForBasicLocations() {
-		$expected_dates = [
-			"2017-10-17T19:12:49-04:00",
-			"2017-10-17T18:57:33+03:00",
-			"2017-10-17T19:12:05-07:00",
-			"2017-10-17T17:59:08+09:00",
-			"2017-10-17T19:15:04-04:00",
-			"2017-10-17T20:12:15+14:00",
-		];
-
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$sunset = $astronomicalCalendar->getSunsetOffsetByDegrees(102);
-			if (!is_null($sunset)) {
-				$sunset = $sunset->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
+	#[Test]
+	#[DataProvider('sunTransitProvider')]
+	public function getSunTransit(int $year, int $month, int $day, array $location, ?string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal($year, $month, $day, $location)->getSunTransit());
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSunsetOffsetByDegreesForArcticTimeZoneExtremities() {
-		$geo = new GeoLocation('Hooper Bay, Alaska', 61.520182, -166.1740437, 8, 'America/Anchorage');
-
-		$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 6, 21);
-
-		$sunset = $astronomicalCalendar->getSunsetOffsetByDegrees(94);
-		$sunset = $sunset->format('Y-m-d\TH:i:sP');
-
-		$this->assertEquals($sunset, '2017-06-22T02:00:16-08:00');
+	#[Test]
+	#[DataProvider('solarMidnightProvider')]
+	public function getSolarMidnight(int $year, int $month, int $day, array $location, ?string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal($year, $month, $day, $location)->getSolarMidnight());
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testTemporalHour() {
-		$expected_dates = [
-			0.92239132,
-			0.94567431,
-			0.93889721,
-			0.93666451,
-			null,
-			1.03504709,
-		];
+	/*
+	|--------------------------------------------------------------------------
+	| SEA LEVEL / TWILIGHTS (NJ 2017-10-17)
+	|--------------------------------------------------------------------------
+	*/
 
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-			$sunset = $astronomicalCalendar->getTemporalHour();
-			if (!is_null($sunset)) {
-				$sunset = $sunset / AstronomicalCalendar::HOUR_MILLIS;
-				$sunset = round($sunset, 8);
-			}
-
-			$this->assertEquals($sunset, $expected_dates[ $index ]);
-		}
+	#[Test]
+	#[DataProvider('njSurfaceProvider')]
+	public function njSurface(string $method, string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal(2017, 10, 17, self::NJ)->$method());
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testSunTransit() {
-		$expected_dates = [
-			"2017-10-17T12:41:55-04:00",
-			"2017-10-17T12:24:09+03:00",
-			"2017-10-17T12:39:45-07:00",
-			"2017-10-17T11:26:33+09:00",
-			"2017-10-17T12:04:32-04:00", // This would return null if we didn't use astronimical noon
-			"2017-10-17T13:12:42+14:00",
-		];
+	/*
+	|--------------------------------------------------------------------------
+	| TIME AT AZIMUTH
+	|--------------------------------------------------------------------------
+	*/
 
-		foreach ($this->locations as $index => $location) {
-			$geo = new GeoLocation($location[0], $location[1], $location[2], $location[3], $location[4]);
-
-			$astronomicalCalendar = new AstronomicalCalendar($geo, 2017, 10, 17);
-
-			$startOfDay = $astronomicalCalendar->getSeaLevelSunrise();
-			$endOfDay = $astronomicalCalendar->getSeaLevelSunset();
-			$sunTransit = $astronomicalCalendar->getSunTransit($startOfDay, $endOfDay);
-			if (!is_null($sunTransit)) {
-				$sunTransit = $sunTransit->format('Y-m-d\TH:i:sP');
-			}
-
-			$this->assertEquals($sunTransit, $expected_dates[ $index ]);
-		}
+	#[Test]
+	#[DataProvider('timeAtAzimuthProvider')]
+	public function getTimeAtAzimuth90Or270(float $azimuth, string $expected): void
+	{
+		$this->assertInstant($expected, $this->cal(2017, 10, 17, self::NJ)->getTimeAtAzimuth90Or270($azimuth));
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testDefaultData() {
-		$geo = new GeoLocation();
+	/*
+	|--------------------------------------------------------------------------
+	| LOCAL MEAN TIME
+	|--------------------------------------------------------------------------
+	*/
 
-		$astronomicalCalendar1 = new AstronomicalCalendar();
-		$astronomicalCalendar2 = new AstronomicalCalendar(null, 1);
-		$astronomicalCalendar3 = new AstronomicalCalendar($geo, 1, 1);
+	#[Test]
+	public function getLocalMeanTime(): void
+	{
+		$this->assertInstant('2017-10-17T16:56:57.605832Z', $this->cal(2017, 10, 17, self::NJ)->getLocalMeanTime(12));
+	}
 
-		$this->assertEquals($astronomicalCalendar1->getGeoLocation(), $geo);
-		$this->assertEquals($astronomicalCalendar2, $astronomicalCalendar3);
+	/*
+	|--------------------------------------------------------------------------
+	| SOLAR DIP FROM OFFSET
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	public function getSunriseSolarDipFromOffset(): void
+	{
+		$actual = $this->cal(2017, 10, 17, self::NJ)->getSunriseSolarDipFromOffset(72);
+		$this->assertEqualsWithDelta(14.50320, $actual, 0.001);
+	}
+
+	#[Test]
+	public function getSunsetSolarDipFromOffset(): void
+	{
+		$actual = $this->cal(2017, 10, 17, self::NJ)->getSunsetSolarDipFromOffset(72);
+		$this->assertEqualsWithDelta(14.52060, $actual, 0.001);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| CALCULATOR SWAP
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	public function sunTimesCalculatorProducesDifferentSunset(): void
+	{
+		$noaa = $this->cal(2017, 10, 17, self::NJ)->getSunset();
+		$sunTimes = $this->cal(2017, 10, 17, self::NJ, new SunTimesCalculator())->getSunset();
+
+		$this->assertInstant('2017-10-17T22:15:24.498724123Z', $sunTimes);
+		$this->assertNotEquals($noaa->getPreciseTimestamp(), $sunTimes->getPreciseTimestamp());
+	}
+
+	#[Test]
+	public function sunTimesCalculatorReturnsNullAtArcticNoonAndMidnight(): void
+	{
+		$calendar = $this->cal(2017, 6, 21, self::CONGER, new SunTimesCalculator());
+
+		$this->assertNull($calendar->getSunrise());
+		$this->assertNull($calendar->getSunTransit());
+		$this->assertNull($calendar->getSolarMidnight());
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| CONSTRUCTION / STATE
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	public function defaultsToNoaaCalculator(): void
+	{
+		$this->assertInstanceOf(NoaaCalculator::class, (new AstronomicalCalendar())->getAstronomicalCalculator());
+	}
+
+	#[Test]
+	public function setDateRejectsPartialDate(): void
+	{
+		$this->expectException(\InvalidArgumentException::class);
+		(new AstronomicalCalendar())->setDate(2017, 10);
+	}
+
+	#[Test]
+	public function copyReturnsIndependentClone(): void
+	{
+		$calendar = $this->cal(2017, 10, 17, self::NJ);
+		$copy = $calendar->copy();
+
+		$this->assertNotSame($calendar, $copy);
+		$this->assertTrue($calendar->equals($copy));
+
+		$copy->setDate(2020, 1, 1);
+		$this->assertEquals('2017-10-17', $calendar->getDate()->format('Y-m-d'));
+		$this->assertEquals('2020-01-01', $copy->getDate()->format('Y-m-d'));
+		$this->assertFalse($calendar->equals($copy));
+	}
+
+	#[Test]
+	public function equalsComparesDateLocationAndCalculator(): void
+	{
+		$a = $this->cal(2017, 10, 17, self::NJ);
+		$b = $this->cal(2017, 10, 17, self::NJ);
+		$this->assertTrue($a->equals($b));
+
+		$c = $this->cal(2017, 10, 17, self::JLM);
+		$this->assertFalse($a->equals($c));
 	}
 }

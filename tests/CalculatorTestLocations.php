@@ -20,19 +20,19 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim;
-
-use PhpZmanim\Calendar\ComplexZmanimCalendar;
-use PhpZmanim\GeoLocation;
-use PhpZmanim\HebrewCalendar\HebrewDateFormatter;
-use PhpZmanim\HebrewCalendar\JewishCalendar;
-
-class Zmanim extends ComplexZmanimCalendar {
-	public static function jewishCalendar($year = null, $month = null, $date = null) {
-		return JewishCalendar::create($year, $month, $date);
-	}
-
-	public static function format() {
-		return HebrewDateFormatter::create();
-	}
+/**
+ * Shared ['lat', 'lon', 'elev'] fixtures used across the calculator tests. The
+ * calculator suites all exercise the same set of locations, so they live here
+ * once rather than being repeated inline in every data provider.
+ */
+trait CalculatorTestLocations
+{
+	const NJ = ['lat' => 41.1181036, 'lon' => -74.0840691, 'elev' => 167];
+	const LA = ['lat' => 34.0201613, 'lon' => -118.6919095, 'elev' => 71];
+	const JERUSALEM = ['lat' => 31.7962994, 'lon' => 35.1053185, 'elev' => 754];
+	const NORWAY = ['lat' => 70.1498248, 'lon' => 9.1456867, 'elev' => 0];
+	const SYDNEY = ['lat' => -33.8688, 'lon' => 151.2093, 'elev' => 58];
+	const MACAPA = ['lat' => 0.0349, 'lon' => -51.0694, 'elev' => 15];
+	const SUVA = ['lat' => -18.1416, 'lon' => 178.4419, 'elev' => 6];
+	const USHUAIA = ['lat' => -54.8019, 'lon' => -68.3030, 'elev' => 23];
 }

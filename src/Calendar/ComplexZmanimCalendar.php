@@ -820,23 +820,6 @@ class ComplexZmanimCalendar extends ZmanimCalendar {
 		return $molad;
 	}
 
-	private function getMidnightLastNight() {
-		$midnight = $this->getCalendar()->copy();
-
-		$midnight->startOfDay();
-
-		return $midnight;
-	}
-
-	private function getMidnightTonight() {
-		$midnight = $this->getCalendar()->copy();
-
-		$midnight->addDay();
-		$midnight->startOfDay();
-
-		return $midnight;
-	}
-
 	public function getTchilasZmanKidushLevana7Days($alos = null, $tzais = null) {
 		$jewishCalendar = new JewishCalendar($this->getCalendar());
 

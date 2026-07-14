@@ -22,20 +22,24 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use PhpZmanim\HebrewCalendar\JewishDate;
 use PhpZmanim\Zmanim;
 
-class JewishDateTest extends TestCase {
+class JewishDateTest extends TestCase
+{
 
-	/** @test */
-	public function testDaysInMonth() {
+	#[Test]
+	public function daysInMonth(): void
+	{
 		$hebrewDate = JewishDate::create(Carbon::createMidnightDate(2011, 1, 1));
 
 		$this->assertDaysInMonth(false, $hebrewDate);
 	}
 
-	/** @test */
-	public function testDaysInMonthLeapYear() {
+	#[Test]
+	public function daysInMonthLeapYear(): void
+	{
 		$hebrewDate = new JewishDate();
 
 		$cal = Carbon::createMidnightDate(2012, 1, 1);
@@ -44,8 +48,9 @@ class JewishDateTest extends TestCase {
 		$this->assertDaysInMonth(true, $hebrewDate);
 	}
 
-	/** @test */
-	public function testDaysInMonth100Year() {
+	#[Test]
+	public function daysInMonth100Year(): void
+	{
 		$hebrewDate = new JewishDate();
 
 		$cal = Carbon::createMidnightDate(2100, 1, 1);
@@ -54,8 +59,9 @@ class JewishDateTest extends TestCase {
 		$this->assertDaysInMonth(false, $hebrewDate);
 	}
 
-	/** @test */
-	public function testDaysInMonth400Year() {
+	#[Test]
+	public function daysInMonth400Year(): void
+	{
 		$hebrewDate = new JewishDate();
 
 		$cal = Carbon::createMidnightDate(2000, 1, 1);
@@ -64,8 +70,9 @@ class JewishDateTest extends TestCase {
 		$this->assertDaysInMonth(true, $hebrewDate);
 	}
 
-	/** @test */
-	public function daysInMonthsInHaserYear() {
+	#[Test]
+	public function daysInMonthsInHaserYear(): void
+	{
 		$this->assertHaser(5773);
 		$this->assertHaser(5777);
 		$this->assertHaser(5781);
@@ -75,8 +82,9 @@ class JewishDateTest extends TestCase {
 		$this->assertHaserLeap(5793);
 	}
 
-	/** @test */
-	public function daysInMonthsInQesidrahYear() {
+	#[Test]
+	public function daysInMonthsInQesidrahYear(): void
+	{
 		$this->assertQesidrah(5769);
 		$this->assertQesidrah(5772);
 		$this->assertQesidrah(5778);
@@ -87,8 +95,9 @@ class JewishDateTest extends TestCase {
 		$this->assertQesidrahLeap(5782);
 	}
 
-	/** @test */
-	public function daysInMonthsInShalemYear() {
+	#[Test]
+	public function daysInMonthsInShalemYear(): void
+	{
 		$this->assertShalem(5770);
 		$this->assertShalem(5780);
 		$this->assertShalem(5783);
@@ -105,8 +114,9 @@ class JewishDateTest extends TestCase {
 		$this->assertShalemLeap(5795);
 	}
 
-	/** @test */
-	public function gregorianForwardMonthToMonth() {
+	#[Test]
+	public function gregorianForwardMonthToMonth(): void
+	{
 		$cal = Carbon::createMidnightDate(2011, 1, 31);
 
 		$hebrewDate = new JewishDate($cal);
@@ -261,8 +271,9 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	/** @test */
-	public function gregorianBackwardMonthToMonth() {
+	#[Test]
+	public function gregorianBackwardMonthToMonth(): void
+	{
 		$cal = Carbon::createMidnightDate(2011, 1, 1);
 
 		$hebrewDate = new JewishDate($cal);
@@ -382,8 +393,9 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals(3, $hebrewDate->getJewishDayOfMonth());
 	}
 
-	/** @test */
-	public function testFormat() {
+	#[Test]
+	public function format(): void
+	{
 		$hebrewDate = JewishDate::create(Carbon::createMidnightDate(2011, 1, 1));
 		$format = Zmanim::format();
 		$format->setHebrewFormat(true);
@@ -391,7 +403,8 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals("כ״ה טבת תשע״א", $format->format($hebrewDate));
 	}
 
-	private function assertDaysInMonth($febIsLeap, $hebrewDate) {
+	private function assertDaysInMonth(bool $febIsLeap, JewishDate $hebrewDate): void
+	{
 		$this->assertEquals(31, JewishDate::getLastDayOfGregorianMonth(1, $hebrewDate->getGregorianYear()));
 		$this->assertEquals($febIsLeap ? 29 : 28, JewishDate::getLastDayOfGregorianMonth(2, $hebrewDate->getGregorianYear()));
 		$this->assertEquals(31, JewishDate::getLastDayOfGregorianMonth(3, $hebrewDate->getGregorianYear()));
@@ -406,7 +419,8 @@ class JewishDateTest extends TestCase {
 		$this->assertEquals(31, JewishDate::getLastDayOfGregorianMonth(12, $hebrewDate->getGregorianYear()));
 	}
 
-	private function assertHaser($year) {
+	private function assertHaser(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
@@ -416,7 +430,8 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	private function assertHaserLeap($year) {
+	private function assertHaserLeap(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
@@ -426,7 +441,8 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	private function assertQesidrah($year) {
+	private function assertQesidrah(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
@@ -436,7 +452,8 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	private function assertQesidrahLeap($year) {
+	private function assertQesidrahLeap(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
@@ -446,7 +463,8 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	private function assertShalem($year) {
+	private function assertShalem(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
@@ -456,7 +474,8 @@ class JewishDateTest extends TestCase {
 	}
 
 
-	private function assertShalemLeap($year) {
+	private function assertShalemLeap(int $year): void
+	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);

@@ -50,8 +50,8 @@ class GeoLocation
 	public function __construct(
 		private float $latitude = 51.4772,
 		private float $longitude = 0.0,
-		private string $timezone = 'GMT',
 		private float $elevation = 0.0,
+		private string $timezone = 'GMT',
 		private ?string $locationName = null
 	) {
 		// These 3 need more validation
@@ -60,9 +60,15 @@ class GeoLocation
 		$this->setElevation($elevation);
 	}
 
-	public static function create(float $latitude = 51.4772, float $longitude = 0.0, string $timezone = 'GMT', float $elevation = 0.0, ?string $locationName = null): self
+	public static function create(
+		float $latitude = 51.4772,
+		float $longitude = 0.0,
+		float $elevation = 0.0,
+		string $timezone = 'GMT',
+		?string $locationName = null
+	): self
 	{
-		return new static($latitude, $longitude, $timezone, $elevation, $locationName);
+		return new static($latitude, $longitude, $elevation, $timezone, $locationName);
 	}
 
 	/*
@@ -103,18 +109,6 @@ class GeoLocation
 		return $this;
 	}
 
-	public function getTimezone(): string
-	{
-		return $this->timezone;
-	}
-
-	public function setTimezone(string $timezone): self
-	{
-		$this->timezone = $timezone;
-
-		return $this;
-	}
-
 	public function getElevation(): float
 	{
 		return $this->elevation;
@@ -130,6 +124,18 @@ class GeoLocation
 		}
 
 		$this->elevation = $elevation;
+
+		return $this;
+	}
+
+	public function getTimezone(): string
+	{
+		return $this->timezone;
+	}
+
+	public function setTimezone(string $timezone): self
+	{
+		$this->timezone = $timezone;
 
 		return $this;
 	}
@@ -306,12 +312,17 @@ class GeoLocation
 
 	/*
 	|--------------------------------------------------------------------------
-	| CLONEABLE
+	| CLONEABLE AND COMPARABLE
 	|--------------------------------------------------------------------------
 	*/
 
 	public function copy(): self
 	{
 		return clone $this;
+	}
+
+	public function equals(GeoLocation $geoLocation): bool
+	{
+		return $this == $geoLocation;
 	}
 }

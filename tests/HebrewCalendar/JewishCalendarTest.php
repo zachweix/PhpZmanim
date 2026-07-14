@@ -22,16 +22,18 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 use PhpZmanim\HebrewCalendar\HebrewDateFormatter;
 use PhpZmanim\HebrewCalendar\JewishCalendar;
 use PhpZmanim\HebrewCalendar\JewishDate;
 use PhpZmanim\HebrewCalendar\TefilaRules;
 use PhpZmanim\Zmanim;
 
-class JewishCalendarTest extends TestCase {
-
-	/** @test */
-	public function testRoshHashana() {
+class JewishCalendarTest extends TestCase
+{
+	#[Test]
+	public function roshHashana(): void
+	{
 		$date = new JewishCalendar();
 
 		$cal = Carbon::createMidnightDate(2023, 9, 16);
@@ -46,8 +48,9 @@ class JewishCalendarTest extends TestCase {
 		$this->assertTrue($date->isTaanis());
 	}
 
-	/** @test */
-	public function testDafYomi() {
+	#[Test]
+	public function dafYomi(): void
+	{
 		$date = new JewishCalendar(Carbon::createMidnightDate(2023, 9, 16));
 
 		$daf = $date->getDafYomiBavli();
@@ -63,8 +66,9 @@ class JewishCalendarTest extends TestCase {
 		$this->assertEquals("מעשר שני ז׳", $formatter->setHebrewFormat(true)->formatDafYomiYerushalmi($daf));
 	}
 
-	/** @test */
-	public function testParsha() {
+	#[Test]
+	public function parsha(): void
+	{
 		$date = new JewishCalendar(Carbon::createMidnightDate(2023, 10, 14));
 
 		$this->assertEquals("Bereshis", HebrewDateFormatter::create()->formatParsha($date));
@@ -76,8 +80,9 @@ class JewishCalendarTest extends TestCase {
 		$this->assertEquals("תרומה", HebrewDateFormatter::create()->setHebrewFormat(true)->formatParsha($date));
 	}
 
-	/** @test */
-	public function testPurim() {
+	#[Test]
+	public function purim(): void
+	{
 		$date = new JewishCalendar();
 
 		$date->setJewishDate(5783, JewishDate::ADAR, 14);
@@ -101,8 +106,9 @@ class JewishCalendarTest extends TestCase {
 		$this->assertFalse($date->isPurim());
 	}
 
-	/** @test */
-	public function testTefilaRules() {
+	#[Test]
+	public function tefilaRules(): void
+	{
 		$date = new JewishCalendar(Carbon::createMidnightDate(2023, 8, 21));
 
 		$this->assertTrue(TefilaRules::isTachanunRecitedShacharis($date));
