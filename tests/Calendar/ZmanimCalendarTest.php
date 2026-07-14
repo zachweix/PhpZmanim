@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calendar\ComplexZmanimCalendar;
 use PhpZmanim\Calendar\ZmanimCalendar;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\Zmanim;
 
 class ZmanimCalendarTest extends TestCase {

@@ -23,7 +23,7 @@
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PhpZmanim\Calendar\AstronomicalCalendar;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 
 class AstronomicalCalendarTest extends TestCase {
 

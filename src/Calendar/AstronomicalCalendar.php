@@ -28,7 +28,7 @@ use Exception;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\NoaaCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 
 /**
  * See https://github.com/KosherJava/zmanim/blob/master/src/main/java/com/kosherjava/zmanim/AstronomicalCalendar.java

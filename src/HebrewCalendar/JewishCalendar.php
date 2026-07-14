@@ -23,7 +23,7 @@
 namespace PhpZmanim\HebrewCalendar;
 
 use Carbon\Carbon;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 
 class JewishCalendar extends JewishDate {
 	/*

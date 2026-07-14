@@ -22,7 +22,7 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
 
@@ -50,7 +50,7 @@ class SunTimesCalculatorTest extends TestCase {
 
 		foreach ($tests as $test) {
 			$calendar = Carbon::parse($test[0]);
-			$geo = new GeoLocation("", $test[1], $test[2], $test[3], "America/New_York");
+			$geo = new GeoLocation($test[1], $test[2], 'America/New_York', $test[3], '');
 
 			$sunrise = $sunTimesCalculator->getUTCSunrise($calendar, $geo, AstronomicalCalculator::GEOMETRIC_ZENITH, true);
 			if (is_nan($sunrise)) {
@@ -77,7 +77,7 @@ class SunTimesCalculatorTest extends TestCase {
 
 		foreach ($tests as $test) {
 			$calendar = Carbon::parse($test[0]);
-			$geo = new GeoLocation("", $test[1], $test[2], $test[3], "America/New_York");
+			$geo = new GeoLocation($test[1], $test[2], 'America/New_York', $test[3], '');
 
 			$sunset = $sunTimesCalculator->getUTCSunset($calendar, $geo, AstronomicalCalculator::GEOMETRIC_ZENITH, true);
 			if (is_nan($sunset)) {

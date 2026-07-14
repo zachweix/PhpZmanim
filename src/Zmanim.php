@@ -23,7 +23,7 @@
 namespace PhpZmanim;
 
 use PhpZmanim\Calendar\ComplexZmanimCalendar;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\HebrewCalendar\HebrewDateFormatter;
 use PhpZmanim\HebrewCalendar\JewishCalendar;
 

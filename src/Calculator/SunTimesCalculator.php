@@ -22,17 +22,18 @@
 
 namespace PhpZmanim\Calculator;
 
+use BadMethodCallException;
 use Carbon\Carbon;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 
-class SunTimesCalculator extends AstronomicalCalculator {
+class SunTimesCalculator extends AstronomicalCalculator
+{
 	/*
 	|--------------------------------------------------------------------------
 	| CLASS PROPERTIES AND CONSTANTS
 	|--------------------------------------------------------------------------
 	*/
 
-	const CALCULATOR_NAME = "US Naval Almanac Algorithm";
 	const DEG_PER_HOUR = 360.0 / 24.0;
 
 	/*
@@ -41,18 +42,49 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, true);
-		return $doubleTime;
+	public function getUTCSunrise(Carbon $date, GeoLocation $geo, float $zenith, bool $adjustForElevation): float
+	{
+		$elevation = $adjustForElevation ? $geo->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation, $date);
+		return $this->getTimeUTC($date, $geo, $adjustedZenith, true);
 	}
 
-	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$doubleTime = self::getTimeUTC($calendar, $geoLocation, $adjustedZenith, false);
-		return $doubleTime;
+	public function getUTCSunset(Carbon $date, GeoLocation $geo, float $zenith, bool $adjustForElevation): float
+	{
+		$elevation = $adjustForElevation ? $geo->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation, $date);
+		return $this->getTimeUTC($date, $geo, $adjustedZenith, false);
+	}
+
+	public function getUTCNoon(Carbon $date, GeoLocation $geo): float
+	{
+		$sunrise = $this->getUTCSunrise($date, $geo, 90, false);
+		$sunset = $this->getUTCSunset($date, $geo, 90, false);
+		$noon = $sunrise + (($sunset - $sunrise) / 2);
+		if ($noon < $sunrise) {
+			$noon -= 12;
+		}
+		return fmod(fmod($noon, 24) + 24, 24);
+	}
+
+	public function getUTCMidnight(Carbon $date, GeoLocation $geo): float
+	{
+		return fmod($this->getUTCNoon($date, $geo) + 12, 24);
+	}
+
+	public function getTimeAtAzimuth(Carbon $date, GeoLocation $geo, float $azimuth): float
+	{
+		throw new BadMethodCallException('The SunTimesCalculator class does not implement the getTimeAtAzimuth method. Use the NoaaCalculator instead.');
+	}
+
+	public function getSolarElevation(Carbon $datetime, GeoLocation $geo): float
+	{
+		throw new BadMethodCallException('The SunTimesCalculator class does not implement the getSolarElevation method. Use the NoaaCalculator instead.');
+	}
+
+	public function getSolarAzimuth(Carbon $datetime, GeoLocation $geo): float
+	{
+		throw new BadMethodCallException('The SunTimesCalculator class does not implement the getSolarAzimuth method. Use the NoaaCalculator instead.');
 	}
 
 	/*
@@ -61,31 +93,13 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	private static function sinDeg($deg) {
-		return sin($deg * 2.0 * pi() / 360.0);
-	}
-
-	private static function acosDeg($x) {
-		return acos($x) * 360.0 / (2 * pi());
-	}
-
-	private static function asinDeg($x) {
-		return asin($x) * 360.0 / (2 * pi());
-	}
-
-	private static function tanDeg($deg) {
-		return tan($deg * 2.0 * pi() / 360.0);
-	}
-
-	private static function cosDeg($deg) {
-		return cos($deg * 2.0 * pi() / 360.0);
-	}
-
-	private static function getHoursFromMeridian($longitude) {
+	private static function getHoursFromMeridian(float $longitude): float
+	{
 		return $longitude / self::DEG_PER_HOUR;
 	}
 
-	private static function getApproxTimeDays($dayOfYear, $hoursFromMeridian, $isSunrise) {
+	private static function getApproxTimeDays(int $dayOfYear, float $hoursFromMeridian, bool $isSunrise): float
+	{
 		if ($isSunrise) {
 			return $dayOfYear + ((6.0 - $hoursFromMeridian) / 24);
 		} else {
@@ -93,28 +107,21 @@ class SunTimesCalculator extends AstronomicalCalculator {
 		}
 	}
 
-	private static function getMeanAnomaly($dayOfYear, $longitude, $isSunrise) {
-		$hoursFromMeridian = self::getHoursFromMeridian($longitude);
-		$approxTimeDays = self::getApproxTimeDays($dayOfYear, $hoursFromMeridian, $isSunrise);
-		return (0.9856 * $approxTimeDays) - 3.289;
+	private static function getMeanAnomaly(int $dayOfYear, float $longitude, bool $isSunrise): float
+	{
+		return (0.9856 * self::getApproxTimeDays($dayOfYear, self::getHoursFromMeridian($longitude), $isSunrise)) - 3.289;
 	}
 
-	private static function getSunTrueLongitude($sunMeanAnomaly) {
-		$l = $sunMeanAnomaly + (1.916 * self::sinDeg($sunMeanAnomaly)) + (0.020 * self::sinDeg(2 * $sunMeanAnomaly)) + 282.634;
-
-		if ($l >= 360.0) {
-			$l -= 360.0;
-		}
-		if ($l < 0) {
-			$l += 360.0;
-		}
-
-		return $l;
+	private static function getSunTrueLongitude(float $sunMeanAnomaly): float
+	{
+		$l = $sunMeanAnomaly + (1.916 * sin(deg2rad($sunMeanAnomaly))) + (0.020 * sin(deg2rad(2 * $sunMeanAnomaly))) + 282.634;
+		return fmod(fmod($l, 360) + 360, 360);
 	}
 
-	private static function getSunRightAscensionHours($sunTrueLongitude) {
-		$a = 0.91764 * self::tanDeg($sunTrueLongitude);
-		$ra = 360.0 / (2.0 * pi()) * atan($a);
+	private static function getSunRightAscensionHours(float $sunTrueLongitude): float
+	{
+		$a = 0.91764 * tan(deg2rad($sunTrueLongitude));
+		$ra = rad2deg(atan($a));
 
 		$lQuadrant = floor($sunTrueLongitude / 90.0) * 90.0;
 		$raQuadrant = floor($ra / 90.0) * 90.0;
@@ -123,12 +130,16 @@ class SunTimesCalculator extends AstronomicalCalculator {
 		return $ra / self::DEG_PER_HOUR;
 	}
 
-	private static function getCosLocalHourAngle($sunTrueLongitude, $latitude, $zenith) {
-		$sinDec = 0.39782 * self::sinDeg($sunTrueLongitude);
-		$cosDec = self::cosDeg(self::asinDeg($sinDec));
+	private static function getCosLocalHourAngle(float $sunTrueLongitude, float $latitude, float $zenith): float
+	{
+		$sinDec = 0.39782 * sin(deg2rad($sunTrueLongitude));
+		$cosDec = cos(asin($sinDec));
+		return (cos(deg2rad($zenith)) - ($sinDec * sin(deg2rad($latitude)))) / ($cosDec * cos(deg2rad($latitude)));
+	}
 
-		$cosLocalHourAngle = (self::cosDeg($zenith) - ($sinDec * self::sinDeg($latitude))) / ($cosDec * self::cosDeg($latitude));
-		return $cosLocalHourAngle;
+	private static function getLocalMeanTime(float $localHour, float $sunRightAscensionHours, float $approxTimeDays): float
+	{
+		return $localHour + $sunRightAscensionHours - (0.06571 * $approxTimeDays) - 6.622;
 	}
 
 	/*
@@ -137,49 +148,24 @@ class SunTimesCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	private static function getLocalMeanTime($localHour, $sunRightAscensionHours, $approxTimeDays) {
-		return $localHour + $sunRightAscensionHours - (0.06571 * $approxTimeDays) - 6.622;
-	}
-
-	private static function getTimeUTC($calendar, $geoLocation, $zenith, $isSunrise) {
-		$dayOfYear = $calendar->format("z") + 1;
-		$sunMeanAnomaly = self::getMeanAnomaly($dayOfYear, $geoLocation->getLongitude(), $isSunrise);
+	private function getTimeUTC(Carbon $date, GeoLocation $geo, float $zenith, bool $isSunrise): float
+	{
+		$dayOfYear = $date->dayOfYear;
+		$sunMeanAnomaly = self::getMeanAnomaly($dayOfYear, $geo->getLongitude(), $isSunrise);
 		$sunTrueLong = self::getSunTrueLongitude($sunMeanAnomaly);
 		$sunRightAscensionHours = self::getSunRightAscensionHours($sunTrueLong);
-		$cosLocalHourAngle = self::getCosLocalHourAngle($sunTrueLong, $geoLocation->getLatitude(), $zenith);
+		$cosLocalHourAngle = self::getCosLocalHourAngle($sunTrueLong, $geo->getLatitude(), $zenith);
 
-		$localHourAngle = 0;
 		if ($isSunrise) {
-			$localHourAngle = 360.0 - self::acosDeg($cosLocalHourAngle);
+			$localHourAngle = 360.0 - rad2deg(acos($cosLocalHourAngle));
 		} else {
-			$localHourAngle = self::acosDeg($cosLocalHourAngle);
+			$localHourAngle = rad2deg(acos($cosLocalHourAngle));
 		}
-
 		$localHour = $localHourAngle / self::DEG_PER_HOUR;
 
-		$approxTimeDays = self::getApproxTimeDays($dayOfYear, self::getHoursFromMeridian($geoLocation->getLongitude()), $isSunrise);
-		$localMeanTime = self::getLocalMeanTime($localHour, $sunRightAscensionHours, $approxTimeDays);
-		$processedTime = $localMeanTime - self::getHoursFromMeridian($geoLocation->getLongitude());
-
-		while ($processedTime < 0.0) {
-			$processedTime += 24.0;
-		}
-		while ($processedTime >= 24.0) {
-			$processedTime -= 24.0;
-		}
-
-		return $processedTime;
-	}
-
-	public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation) {
-		$sunrise = $this->getUTCSunrise($calendar, $geoLocation, 90, false);
-		$sunset = $this->getUTCSunset($calendar, $geoLocation, 90, false);
-		$noon = $sunrise + (($sunset - $sunrise) / 2);
-		if ($noon < 0) {
-			$noon += 12;
-		}
-		if ($noon < $sunrise) {
-			$noon -= 12;
-		}
+		$localMeanTime = self::getLocalMeanTime($localHour, $sunRightAscensionHours,
+				self::getApproxTimeDays($dayOfYear, self::getHoursFromMeridian($geo->getLongitude()), $isSunrise));
+		$processedTime = $localMeanTime - self::getHoursFromMeridian($geo->getLongitude());
+		return fmod(fmod($processedTime, 24) + 24, 24);
 	}
 }

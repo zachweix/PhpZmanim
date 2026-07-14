@@ -23,18 +23,24 @@
 namespace PhpZmanim\Calculator;
 
 use Carbon\Carbon;
-use PhpZmanim\Geo\GeoLocation;
+use InvalidArgumentException;
+use PhpZmanim\GeoLocation;
 
-class NoaaCalculator extends AstronomicalCalculator {
+class NoaaCalculator extends AstronomicalCalculator
+{
 	/*
 	|--------------------------------------------------------------------------
 	| CLASS PROPERTIES AND CONSTANTS
 	|--------------------------------------------------------------------------
 	*/
 
-	const CALCULATOR_NAME = "US National Oceanic and Atmospheric Administration Algorithm";
 	const JULIAN_DAY_JAN_1_2000 = 2451545.0;
 	const JULIAN_DAYS_PER_CENTURY = 36525.0;
+
+	const SUNRISE = 0;
+	const SUNSET = 1;
+	const NOON = 2;
+	const MIDNIGHT = 3;
 
 	/*
 	|--------------------------------------------------------------------------
@@ -42,38 +48,63 @@ class NoaaCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getUTCSunrise(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$sunrise = self::getSunriseUTC(self::getJulianDay($calendar), $geoLocation->getLatitude(), -$geoLocation->getLongitude(), $adjustedZenith);
-		
-		$sunrise = $sunrise / 60;
-
-		while ($sunrise < 0.0) {
-			$sunrise += 24.0;
-		}
-		while ($sunrise >= 24.0) {
-			$sunrise -= 24.0;
-		}
-
-		return $sunrise;
+	public function getUTCSunrise(Carbon $date, GeoLocation $geo, float $zenith, bool $adjustForElevation): float
+	{
+		return $this->getUTCSunRiseSet($date, $geo, $zenith, $adjustForElevation, self::SUNRISE);
 	}
 
-	public function getUTCSunset(Carbon $calendar, GeoLocation $geoLocation, $zenith, $adjustForElevation) {
-		$elevation = $adjustForElevation ? $geoLocation->getElevation() : 0;
-		$adjustedZenith = $this->adjustZenith($zenith, $elevation);
-		$sunset = self::getSunsetUTC(self::getJulianDay($calendar), $geoLocation->getLatitude(), -$geoLocation->getLongitude(), $adjustedZenith);
+	public function getUTCSunset(Carbon $date, GeoLocation $geo, float $zenith, bool $adjustForElevation): float
+	{
+		return $this->getUTCSunRiseSet($date, $geo, $zenith, $adjustForElevation, self::SUNSET);
+	}
+
+	public function getUTCNoon(Carbon $date, GeoLocation $geo): float
+	{
+		$noon = $this->getSolarNoonMidnightUTC(self::getJulianDay($date), -$geo->getLongitude(), self::NOON);
+		$noon = $noon / 60;
+		return fmod(fmod($noon, 24) + 24, 24);
+	}
+
+	public function getUTCMidnight(Carbon $date, GeoLocation $geo): float
+	{
+		$midnight = $this->getSolarNoonMidnightUTC(self::getJulianDay($date), -$geo->getLongitude(), self::MIDNIGHT);
+		$midnight = $midnight / 60;
+		return fmod(fmod($midnight, 24) + 24, 24);
+	}
+
+	public function getTimeAtAzimuth(Carbon $date, GeoLocation $geo, float $azimuth): float
+	{
+		if ($azimuth != 90.0 && $azimuth != 270.0) {
+			throw new InvalidArgumentException('The azimuth must be 90 or 270. Other azimuth values are not supported');
+		}
+
+		$julianDay = self::getJulianDay($date); 
+		$solarNoonBase = 0.5 - ($geo->getLongitude() / 360.0);
+		$dateTime = $solarNoonBase + (($azimuth == 90.0) ? 0.25 : 0.75);
 		
-		$sunset = $sunset / 60;
+		for ($i = 0; $i < 3; $i++) {
+			$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay + $dateTime);
+			$ratio = tan(deg2rad(self::getSunDeclination($julianCenturies))) / tan(deg2rad($geo->getLatitude()));
 
-		while ($sunset < 0.0) {
-			$sunset += 24.0;
-		}
-		while ($sunset >= 24.0) {
-			$sunset -= 24.0;
+			if (is_nan($ratio) || $ratio > 1.0 || $ratio < -1.0) {
+				return NAN;
+			}
+
+			$offset = (($azimuth == 90.0) ? -1.0 : 1.0) * (rad2deg(acos($ratio)) / 360.0);
+			$dateTime = $solarNoonBase + $offset - (self::getEquationOfTime($julianCenturies) / 1440.0);
 		}
 
-		return $sunset;
+		return fmod(fmod($dateTime * 24, 24) + 24, 24);
+	}
+
+	public function getSolarElevation(Carbon $datetime, GeoLocation $geo): float
+	{
+		return $this->getSolarElevationAzimuth($datetime, $geo, false);
+	}
+
+	public function getSolarAzimuth(Carbon $datetime, GeoLocation $geo): float
+	{
+		return $this->getSolarElevationAzimuth($datetime, $geo, true);
 	}
 
 	/*
@@ -82,10 +113,11 @@ class NoaaCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	private static function getJulianDay($calendar) {
-		$year = $calendar->year;
-		$month = $calendar->month;
-		$day = $calendar->day;
+	private static function getJulianDay(Carbon $date): float
+	{
+		$year = $date->year;
+		$month = $date->month;
+		$day = $date->day;
 
 		if ($month <= 2) {
 			$year -= 1;
@@ -98,156 +130,104 @@ class NoaaCalculator extends AstronomicalCalculator {
 		return floor(365.25 * ($year + 4716)) + floor(30.6001 * ($month + 1)) + $day + $b - 1524.5;
 	}
 
-	private static function getJulianCenturiesFromJulianDay($julianDay) {
+	private static function getJulianCenturiesFromJulianDay(float $julianDay): float
+	{
 		return ($julianDay - self::JULIAN_DAY_JAN_1_2000) / self::JULIAN_DAYS_PER_CENTURY;
 	}
 
-	private static function getJulianDayFromJulianCenturies($julianCenturies) {
-		return $julianCenturies * self::JULIAN_DAYS_PER_CENTURY + self::JULIAN_DAY_JAN_1_2000;
-	}
-
-	private static function getSunGeometricMeanLongitude($julianCenturies) {
+	private static function getSunGeometricMeanLongitude(float $julianCenturies): float
+	{
 		$longitude = 280.46646 + $julianCenturies * (36000.76983 + 0.0003032 * $julianCenturies);
-		while ($longitude >= 360.0) {
-			$longitude -= 360.0;
-		}
-		while ($longitude < 0.0) {
-			$longitude += 360.0;
-		}
-
-		return $longitude; // in degrees
+		return fmod(fmod($longitude, 360) + 360, 360);
 	}
 
-	private static function getSunGeometricMeanAnomaly($julianCenturies) {
-		return 357.52911 + $julianCenturies * (35999.05029 - 0.0001537 * $julianCenturies); // in degrees
+	private static function getSunGeometricMeanAnomaly(float $julianCenturies): float
+	{
+		return 357.52911 + $julianCenturies * (35999.05029 - 0.0001537 * $julianCenturies);
 	}
 
-	private static function getEarthOrbitEccentricity($julianCenturies) {
-		return 0.016708634 - $julianCenturies * (0.000042037 + 0.0000001267 * $julianCenturies); // unitless
+	private static function getEarthOrbitEccentricity(float $julianCenturies): float
+	{
+		return 0.016708634 - $julianCenturies * (0.000042037 + 0.0000001267 * $julianCenturies);
 	}
 
-	private static function getSunEquationOfCenter($julianCenturies) {
+	private static function getSunEquationOfCenter(float $julianCenturies): float
+	{
 		$m = self::getSunGeometricMeanAnomaly($julianCenturies);
 
-		$mrad = deg2rad($m);
-		$sinm = sin($mrad);
-		$sin2m = sin($mrad + $mrad);
-		$sin3m = sin($mrad + $mrad + $mrad);
+		$sinm = sin(deg2rad($m));
+		$sin2m = sin(deg2rad($m + $m));
+		$sin3m = sin(deg2rad($m + $m + $m));
 
 		return $sinm * (1.914602 - $julianCenturies * (0.004817 + 0.000014 * $julianCenturies)) + $sin2m
-				* (0.019993 - 0.000101 * $julianCenturies) + $sin3m * 0.000289;// in degrees
+				* (0.019993 - 0.000101 * $julianCenturies) + $sin3m * 0.000289;
 	}
 
-	private static function getSunTrueLongitude($julianCenturies) {
+	private static function getSunTrueLongitude(float $julianCenturies): float
+	{
 		$sunLongitude = self::getSunGeometricMeanLongitude($julianCenturies);
 		$center = self::getSunEquationOfCenter($julianCenturies);
 
-		return $sunLongitude + $center; // in degrees
+		return $sunLongitude + $center;
 	}
 
-	private static function getSunApparentLongitude($julianCenturies) {
+	private static function getSunApparentLongitude(float $julianCenturies): float
+	{
 		$sunTrueLongitude = self::getSunTrueLongitude($julianCenturies);
-
 		$omega = 125.04 - 1934.136 * $julianCenturies;
-		$lambda = $sunTrueLongitude - 0.00569 - 0.00478 * sin(deg2rad($omega));
-		return $lambda; // in degrees
+		return $sunTrueLongitude - 0.00569 - 0.00478 * sin(deg2rad($omega));
 	}
 
-	private static function getMeanObliquityOfEcliptic($julianCenturies) {
+	private static function getMeanObliquityOfEcliptic(float $julianCenturies): float
+	{
 		$seconds = 21.448 - $julianCenturies
 				* (46.8150 + $julianCenturies * (0.00059 - $julianCenturies * (0.001813)));
-		return 23.0 + (26.0 + ($seconds / 60.0)) / 60.0; // in degrees
+		return 23.0 + (26.0 + ($seconds / 60.0)) / 60.0;
 	}
 
-	private static function getObliquityCorrection($julianCenturies) {
+	private static function getObliquityCorrection(float $julianCenturies): float
+	{
 		$obliquityOfEcliptic = self::getMeanObliquityOfEcliptic($julianCenturies);
-
 		$omega = 125.04 - 1934.136 * $julianCenturies;
-		return $obliquityOfEcliptic + 0.00256 * cos(deg2rad($omega)); // in degrees
+		return $obliquityOfEcliptic + 0.00256 * cos(deg2rad($omega));
 	}
 
-	private static function getSunDeclination($julianCenturies) {
+	private static function getSunDeclination(float $julianCenturies): float
+	{
 		$obliquityCorrection = self::getObliquityCorrection($julianCenturies);
 		$lambda = self::getSunApparentLongitude($julianCenturies);
-
 		$sint = sin(deg2rad($obliquityCorrection)) * sin(deg2rad($lambda));
-		$theta = rad2deg(asin($sint));
-		return $theta; // in degrees
+		return rad2deg(asin($sint));
 	}
 
-	private static function getEquationOfTime($julianCenturies) {
+	private static function getEquationOfTime(float $julianCenturies): float
+	{
 		$epsilon = self::getObliquityCorrection($julianCenturies);
 		$geomMeanLongSun = self::getSunGeometricMeanLongitude($julianCenturies);
 		$eccentricityEarthOrbit = self::getEarthOrbitEccentricity($julianCenturies);
 		$geomMeanAnomalySun = self::getSunGeometricMeanAnomaly($julianCenturies);
-
 		$y = tan(deg2rad($epsilon) / 2.0);
 		$y *= $y;
-
-		$sin2l0 = sin(2.0 * deg2rad($geomMeanLongSun));
+		$sin2l0 = sin(deg2rad(2.0 * $geomMeanLongSun));
 		$sinm = sin(deg2rad($geomMeanAnomalySun));
-		$cos2l0 = cos(2.0 * deg2rad($geomMeanLongSun));
-		$sin4l0 = sin(4.0 * deg2rad($geomMeanLongSun));
-		$sin2m = sin(2.0 * deg2rad($geomMeanAnomalySun));
-
+		$cos2l0 = cos(deg2rad(2.0 * $geomMeanLongSun));
+		$sin4l0 = sin(deg2rad(4.0 * $geomMeanLongSun));
+		$sin2m = sin(deg2rad(2.0 * $geomMeanAnomalySun));
 		$equationOfTime = $y * $sin2l0 - 2.0 * $eccentricityEarthOrbit * $sinm + 4.0 * $eccentricityEarthOrbit * $y
 				* $sinm * $cos2l0 - 0.5 * $y * $y * $sin4l0 - 1.25 * $eccentricityEarthOrbit * $eccentricityEarthOrbit * $sin2m;
-		return rad2deg($equationOfTime) * 4.0; // in minutes of time
+		return rad2deg($equationOfTime) * 4.0;
 	}
 
-	private static function getSunHourAngleAtSunrise($lat, $solarDec, $zenith) {
-		$latRad = deg2rad($lat);
-		$sdRad = deg2rad($solarDec);
-
-		return (acos(cos(deg2rad($zenith)) / (cos($latRad) * cos($sdRad)) - tan($latRad)
-				* tan($sdRad))); // in radians
-	}
-
-	private static function getSunHourAngleAtSunset($lat, $solarDec, $zenith) {
-		$latRad = deg2rad($lat);
-		$sdRad = deg2rad($solarDec);
-
-		$hourAngle = (acos(cos(deg2rad($zenith)) / (cos($latRad) * cos($sdRad))
-				- tan($latRad) * tan($sdRad)));
-		return -$hourAngle; // in radians
-	}
-
-	private static function getSolarElevation($calendar, $lat, $lon) {
-		$julianDay = self::getJulianDay($calendar);
-		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
-
-		$eot = self::getEquationOfTime($julianCenturies);
-
-		$longitude = ($calendar->hour + 12.0)
-				+ ($calendar->minute + $eot + $calendar->second / 60.0) / 60.0;
-
-		$longitude = -($longitude * 360.0 / 24.0) % 360.0;
-		$hourAngle_rad = deg2rad($lon - $longitude);
-		$declination = self::getSunDeclination($julianCenturies);
-		$dec_rad = deg2rad($declination);
-		$lat_rad = deg2rad($lat);
-
-		return rad2deg(asin((sin($lat_rad) * sin($dec_rad))
-				+ (cos($lat_rad) * cos($dec_rad) * cos($hourAngle_rad))));
-	}
-
-	private static function getSolarAzimuth($calendar, $lat, $lon) {
-		$julianDay = self::getJulianDay($calendar);
-		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
-
-		$eot = self::getEquationOfTime($julianCenturies);
-
-		$longitude = ($calendar->hour + 12.0)
-				+ ($calendar->minute + $eot + $calendar->second / 60.0) / 60.0;
-
-		$longitude = -($longitude * 360.0 / 24.0) % 360.0;
-		$hourAngle_rad = deg2rad($lon - $longitude);
-		$declination = self::getSunDeclination($julianCenturies);
-		$dec_rad = deg2rad($declination);
-		$lat_rad = deg2rad($lat);
-
-		return rad2deg(atan(sin($hourAngle_rad)
-				/ ((cos($hourAngle_rad) * sin($lat_rad)) - (tan($dec_rad) * cos($lat_rad)))))+180;
+	private static function getSunHourAngle(float $latitude, float $solarDeclination, float $zenith, $solarEvent): float
+	{
+		$ratio = cos(deg2rad($zenith)) / (cos(deg2rad($latitude)) * cos(deg2rad($solarDeclination))) - tan(deg2rad($latitude))
+				* tan(deg2rad($solarDeclination));
+		$hourAngle = acos($ratio);
+		
+		if ($solarEvent == self::SUNSET) {
+			$hourAngle = -$hourAngle;
+		}
+		return $hourAngle;
 	}
 
 	/*
@@ -256,90 +236,98 @@ class NoaaCalculator extends AstronomicalCalculator {
 	|--------------------------------------------------------------------------
 	*/
 
-	private static function getSunriseUTC($julianDay, $latitude, $longitude, $zenith) {
-		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
+	private function getUTCSunRiseSet(Carbon $date, GeoLocation $geo, float $zenith, bool $adjustForElevation, $solarEvent): float
+	{
+		$elevation = $adjustForElevation ? $geo->getElevation() : 0;
+		$adjustedZenith = $this->adjustZenith($zenith, $elevation, $date);
+		$riseSet = $this->getSunRiseSetUTC($date, $geo->getLatitude(), -$geo->getLongitude(), $adjustedZenith, $solarEvent);
 
-		$noonmin = self::getSolarNoonUTC($julianCenturies, $longitude);
+		$riseSet = $riseSet / 60;
+
+		return fmod(fmod($riseSet, 24) + 24, 24);
+	}
+
+	private function getSolarNoonMidnightUTC(float $julianDay, float $longitude, $solarEvent): float
+	{
+		$tnoon = self::getJulianCenturiesFromJulianDay($julianDay + $longitude / 360.0);
+		$equationOfTime = self::getEquationOfTime($tnoon);
+		$solNoonUTC = ($longitude * 4) - $equationOfTime;
+
+		for ($i = 0; $i < 2; $i++) {
+			$newt = self::getJulianCenturiesFromJulianDay($julianDay + $solNoonUTC / 1440.0);
+			$equationOfTime = self::getEquationOfTime($newt);
+			$solNoonUTC = ($solarEvent == self::NOON ? 720 : 1440) + ($longitude * 4) - $equationOfTime;
+		}
+		return $solNoonUTC;
+	}
+
+	private function getSunRiseSetUTC(Carbon $date, float $latitude, float $longitude, float $zenith, $solarEvent): float
+	{
+		$julianDay = self::getJulianDay($date);
+
+		$noonmin = $this->getSolarNoonMidnightUTC($julianDay, $longitude, self::NOON);
 		$tnoon = self::getJulianCenturiesFromJulianDay($julianDay + $noonmin / 1440.0);
-
-		$eqTime = self::getEquationOfTime($tnoon);
-		$solarDec = self::getSunDeclination($tnoon);
-		$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
-
-
+		$equationOfTime = self::getEquationOfTime($tnoon);
+		$solarDeclination = self::getSunDeclination($tnoon);
+		$hourAngle = self::getSunHourAngle($latitude, $solarDeclination, $zenith, $solarEvent);
 		$delta = $longitude - rad2deg($hourAngle);
-		$timeDiff = 4.0 * $delta;
-		$timeUTC = 720.0 + $timeDiff - $eqTime;
+		$timeDiff = 4 * $delta;
+		$timeUTC = 720 + $timeDiff - $equationOfTime;
 
-		$newt = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $timeUTC
-				/ 1440.0);
-		$eqTime = self::getEquationOfTime($newt);
-		$solarDec = self::getSunDeclination($newt);
-		$hourAngle = self::getSunHourAngleAtSunrise($latitude, $solarDec, $zenith);
-
+		$newt = self::getJulianCenturiesFromJulianDay($julianDay + $timeUTC / 1440.0);
+		$equationOfTime = self::getEquationOfTime($newt);
+		$solarDeclination = self::getSunDeclination($newt);
+		$hourAngle = self::getSunHourAngle($latitude, $solarDeclination, $zenith, $solarEvent);
 		$delta = $longitude - rad2deg($hourAngle);
-		$timeDiff = 4.0 * $delta;
-		$timeUTC = 720.0 + $timeDiff - $eqTime; // in minutes
-
+		$timeDiff = 4 * $delta;
+		$timeUTC = 720 + $timeDiff - $equationOfTime;
 		return $timeUTC;
 	}
 
-	public function getUTCNoon(Carbon $calendar, GeoLocation $geoLocation) {
-		$julianDay = self::getJulianDay($calendar);
-		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
-		
-		$noon = self::getSolarNoonUTC($julianCenturies, -$geoLocation->getLongitude());
-		$noon = $noon / 60;
+	private function getSolarElevationAzimuth(Carbon $datetime, GeoLocation $geo, bool $isAzimuth): float
+	{
+		$lat = $geo->getLatitude();
+		$lon = $geo->getLongitude();
+		$utc = $datetime->copy()->utc();
+		$fractionalDay = $utc->secondsSinceMidnight() / 86400.0;
+		$jd = self::getJulianDay($utc) + $fractionalDay;
+		$jc = self::getJulianCenturiesFromJulianDay($jd);
+		$decl = self::getSunDeclination($jc);
+		$eot = self::getEquationOfTime($jc);
+		$trueSolarTime = fmod(($fractionalDay + $eot / 1440.0 + $lon / 360.0) + 2, 1);
+		$hourAngle = $trueSolarTime * 2 * M_PI - M_PI;
+		$cosZenith = sin(deg2rad($lat)) * sin(deg2rad($decl)) + cos(deg2rad($lat)) * cos(deg2rad($decl)) * cos($hourAngle);
+		$zenithDeg = rad2deg(acos(max(-1, min(1, $cosZenith))));
 
-		// ensure that the time is >= 0 and < 24
-		while ($noon < 0.0) {
-			$noon += 24.0;
+		if (!$isAzimuth) {
+			return (90.0 - $zenithDeg) + $this->adjustElevationForRefraction(90.0 - $zenithDeg);
 		}
-		while ($noon >= 24.0) {
-			$noon -= 24.0;
+
+		$azDenom = cos(deg2rad($lat)) * sin(deg2rad($zenithDeg));
+		if (abs($azDenom) > 0.001) {
+			$az = (sin(deg2rad($lat)) * cos(deg2rad($zenithDeg)) - sin(deg2rad($decl))) / $azDenom;
+			$azimuth = 180 - rad2deg(acos(max(-1, min(1, $az)))) * ($hourAngle > 0 ? -1 : 1);
+		} else {
+			$azimuth = $lat > 0 ? 180 : 0;
 		}
-		return $noon;
+		return fmod($azimuth + 360, 360);
 	}
 
-	private static function getSolarNoonUTC($julianCenturies, $longitude) {
-		// First pass uses approximate solar noon to calculate eqtime
-		$tnoon = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $longitude
-				/ 360.0);
-		$eqTime = self::getEquationOfTime($tnoon);
-		$solNoonUTC = 720.0 + ($longitude * 4.0) - $eqTime; // min
+	private function adjustElevationForRefraction(float $elevation): float
+	{
+		if ($elevation > 85.0) {
+			return 0.0;
+		}
 
-		$newt = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) - 0.5
-				+ $solNoonUTC / 1440.0);
+		$te = tan(deg2rad($elevation));
 
-		$eqTime = self::getEquationOfTime($newt);
-		return 720.0 + ($longitude * 4.0) - $eqTime; // min
-	}
-
-	private static function getSunsetUTC($julianDay, $latitude, $longitude, $zenith) {
-		$julianCenturies = self::getJulianCenturiesFromJulianDay($julianDay);
-
-		$noonmin = self::getSolarNoonUTC($julianCenturies, $longitude);
-		$tnoon = self::getJulianCenturiesFromJulianDay($julianDay + $noonmin / 1440.0);
-
-		$eqTime = self::getEquationOfTime($tnoon);
-		$solarDec = self::getSunDeclination($tnoon);
-		$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
-
-
-		$delta = $longitude - rad2deg($hourAngle);
-		$timeDiff = 4.0 * $delta;
-		$timeUTC = 720.0 + $timeDiff - $eqTime;
-
-		$newt = self::getJulianCenturiesFromJulianDay(self::getJulianDayFromJulianCenturies($julianCenturies) + $timeUTC
-				/ 1440.0);
-		$eqTime = self::getEquationOfTime($newt);
-		$solarDec = self::getSunDeclination($newt);
-		$hourAngle = self::getSunHourAngleAtSunset($latitude, $solarDec, $zenith);
-
-		$delta = $longitude - rad2deg($hourAngle);
-		$timeDiff = 4.0 * $delta;
-		$timeUTC = 720.0 + $timeDiff - $eqTime; // in minutes
-
-		return $timeUTC;
+		if ($elevation > 5.0) {
+			$correction = 58.1 / $te - 0.07 / pow($te, 3) + 0.000086 / pow($te, 5);
+		} else if ($elevation > -0.575) {
+			$correction = 1735.0 + $elevation * (-518.2 + $elevation * (103.4 + $elevation * (-12.79 + 0.711 * $elevation)));
+		} else {
+			$correction = -20.774 / $te;
+		}
+		return $correction / 3600.0;
 	}
 }

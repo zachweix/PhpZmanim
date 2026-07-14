@@ -20,23 +20,19 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Geo;
+namespace PhpZmanim;
 
-use DateTime;
+use Carbon\Carbon;
 use DateTimeZone;
+use InvalidArgumentException;
 
-class GeoLocation {
+class GeoLocation
+{
 	/*
 	|--------------------------------------------------------------------------
 	| CLASS PROPERTIES AND CONSTANTS
 	|--------------------------------------------------------------------------
 	*/
-
-	private $latitude;
-	private $longitude; 
-	private $locationName;
-	private $timeZone;
-	private $elevation;
 
 	const DISTANCE = 0;
 	const INITIAL_BEARING = 1;
@@ -51,31 +47,22 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function __construct($locationName = null, $latitude = 51.4772, $longitude = 0.0, $elevation = 0.0, $timeZone = "GMT") {
-		$this->setLocationName($locationName);
+	public function __construct(
+		private float $latitude = 51.4772,
+		private float $longitude = 0.0,
+		private string $timezone = 'GMT',
+		private float $elevation = 0.0,
+		private ?string $locationName = null
+	) {
+		// These 3 need more validation
 		$this->setLatitude($latitude);
 		$this->setLongitude($longitude);
 		$this->setElevation($elevation);
-		$this->setTimeZone($timeZone);
 	}
 
-	/*
-	|--------------------------------------------------------------------------
-	| ELEVATION
-	|--------------------------------------------------------------------------
-	*/
-
-	public function getElevation() {
-		return $this->elevation;
-	}
-
-	public function setElevation($elevation) {
-		if ($elevation < 0) {
-			throw new \Exception("Elevation cannot be negative");
-		}
-		$this->elevation = $elevation;
-
-		return $this;
+	public static function create(float $latitude = 51.4772, float $longitude = 0.0, string $timezone = 'GMT', float $elevation = 0.0, ?string $locationName = null): self
+	{
+		return new static($latitude, $longitude, $timezone, $elevation, $locationName);
 	}
 
 	/*
@@ -84,9 +71,15 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function setLatitude($latitude) {
-		if ($latitude > 90.0 || $latitude < -90.0) {
-			throw new \Exception("Latitude must be between -90 and 90");
+	public function getLatitude(): float
+	{
+		return $this->latitude;
+	}
+
+	public function setLatitude(float $latitude): self
+	{
+		if ($latitude > 90 || $latitude < -90 || is_nan($latitude)) {
+			throw new InvalidArgumentException('Latitude must be between -90 and 90');
 		}
 
 		$this->latitude = $latitude;
@@ -94,31 +87,15 @@ class GeoLocation {
 		return $this;
 	}
 
-	public function setLatitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
-		$tempLat = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
-
-		if ($tempLat > 90 || $tempLat < 0) {
-			throw new \Exception("Latitude must be between 0 and 90. Use direction of S instead of negative.");
-		}
-
-		if ($direction == "S") {
-			$tempLat *= -1;
-		} else if ($direction != "N") {
-			throw new IllegalArgumentException("Latitude direction must be N or S");
-		}
-
-		$this->latitude = $tempLat;
-
-		return $this;
+	public function getLongitude(): float
+	{
+		return $this->longitude;
 	}
 
-	public function getLatitude() {
-		return $this->latitude;
-	}
-
-	public function setLongitude($longitude) {
-		if ($longitude > 180.0 || $longitude < -180.0) {
-			throw new \Exception("Longitude must be between -180 and 180");
+	public function setLongitude(float $longitude): self
+	{
+		if ($longitude > 180 || $longitude < -180 || is_nan($longitude)) {
+			throw new InvalidArgumentException('Longitude must be between -180 and 180');
 		}
 
 		$this->longitude = $longitude;
@@ -126,44 +103,45 @@ class GeoLocation {
 		return $this;
 	}
 
-	public function setLongitudeFromDegrees($degrees, $minutes, $seconds, $direction) {
-		$longTemp = $degrees + (($minutes + ($seconds / 60.0)) / 60.0);
+	public function getTimezone(): string
+	{
+		return $this->timezone;
+	}
 
-		if ($longTemp > 180 || $longTemp < 0) {
-			throw new \Exception("Latitude must be between 0 and  180. Use direction of W instead of negative.");
-		}
-
-		if ($direction == "W") {
-			$longTemp *= -1;
-		} else if ($direction != "E") {
-			throw new IllegalArgumentException("Logitude direction must be E or W");
-		}
-
-		$this->longitude = $longTemp;
+	public function setTimezone(string $timezone): self
+	{
+		$this->timezone = $timezone;
 
 		return $this;
 	}
 
-	public function getLongitude() {
-		return $this->longitude;
+	public function getElevation(): float
+	{
+		return $this->elevation;
 	}
 
-	public function getLocationName() {
+	public function setElevation(float $elevation): self
+	{
+		if ($elevation < 0) {
+			throw new InvalidArgumentException('Elevation cannot be negative');
+		}
+		if (is_nan($elevation) || is_infinite($elevation)) {
+			throw new InvalidArgumentException('Elevation cannot be NaN or infinite');
+		}
+
+		$this->elevation = $elevation;
+
+		return $this;
+	}
+
+	public function getLocationName(): ?string
+	{
 		return $this->locationName;
 	}
 
-	public function setLocationName($locationName) {
+	public function setLocationName(?string $locationName): self
+	{
 		$this->locationName = $locationName;
-
-		return $this;
-	}
-
-	public function getTimeZone() {
-		return $this->timeZone;
-	}
-
-	public function setTimeZone($timeZone) {
-		$this->timeZone = $timeZone;
 
 		return $this;
 	}
@@ -174,26 +152,17 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getLocalMeanTimeOffset() {
-		$timeZone = new DateTimeZone($this->getTimeZone());
-		$utc = new DateTimeZone("UTC");
-		$utc_date = new DateTime("now", $utc);
-		$offset = $timeZone->getOffset($utc_date) * 1000;
-		return $this->getLongitude() * 4 * self::MINUTE_MILLIS - $offset;
+	public function getLocalMeanTimeOffset(Carbon $datetime): float
+	{
+		$offset = (new DateTimeZone($this->timezone))->getOffset($datetime) * 1000;
+		return $this->longitude * 4 * self::MINUTE_MILLIS - $offset;
 	}
 
-	public function getStandardTimeOffset() {
-		$timeZone = new DateTimeZone($this->getTimeZone());
-		$utc = new DateTimeZone("UTC");
-		$utc_date = new DateTime("now", $utc);
-		$offset = $timeZone->getOffset($utc_date) * 1000;
-		return $offset;
-	}
+	public function getAntimeridianAdjustment(Carbon $datetime): int
+	{
+		$localHoursOffset = $this->getLocalMeanTimeOffset($datetime) / self::HOUR_MILLIS;
 
-	public function getAntimeridianAdjustment() {
-		$localHoursOffset = $this->getLocalMeanTimeOffset() / self::HOUR_MILLIS;
-
-		if ($localHoursOffset >= 20){
+		if ($localHoursOffset >= 20) {
 			return 1;
 		} else if ($localHoursOffset <= -20) {
 			return -1;
@@ -207,22 +176,26 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getGeodesicInitialBearing(GeoLocation $geoLocation) {
+	public function getGeodesicInitialBearing(GeoLocation $geoLocation): float
+	{
 		return $this->vincentyFormula($geoLocation, self::INITIAL_BEARING);
 	}
 
-	public function getGeodesicFinalBearing(GeoLocation $geoLocation) {
+	public function getGeodesicFinalBearing(GeoLocation $geoLocation): float
+	{
 		return $this->vincentyFormula($geoLocation, self::FINAL_BEARING);
 	}
 
-	public function getGeodesicDistance(GeoLocation $geoLocation) {
+	public function getGeodesicDistance(GeoLocation $geoLocation): float
+	{
 		return $this->vincentyFormula($geoLocation, self::DISTANCE);
 	}
 
-	private function vincentyFormula(GeoLocation $geoLocation, $formula) {
-		$a = 6378137; // Equitorial Radius
-		$b = 6356752.3142; // Polar Radius
-		$f = 1 / 298.257223563; // WGS-84 ellipsiod
+	private function vincentyFormula(GeoLocation $geoLocation, int $formula): float
+	{
+		$a = 6378137;
+		$b = 6356752.3142;
+		$f = 1 / 298.257223563;
 		$L = deg2rad($geoLocation->getLongitude() - $this->getLongitude());
 		$U1 = atan((1 - $f) * tan(deg2rad($this->getLatitude())));
 		$U2 = atan((1 - $f) * tan(deg2rad($geoLocation->getLatitude())));
@@ -232,7 +205,7 @@ class GeoLocation {
 		$cosU2 = cos($U2);
 
 		$lambda = $L;
-		$lambdaP = 2 * pi();
+		$lambdaP = 2 * M_PI;
 		$iterLimit = 20;
 
 		$sinLambda = 0;
@@ -244,8 +217,6 @@ class GeoLocation {
 		$cosSqAlpha = 0;
 		$cos2SigmaM = 0;
 
-		$C;
-
 		while (abs($lambda - $lambdaP) > 1e-12 && --$iterLimit > 0) {
 			$sinLambda = sin($lambda);
 			$cosLambda = cos($lambda);
@@ -253,7 +224,7 @@ class GeoLocation {
 					+ ($cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda) * ($cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda));
 
 			if ($sinSigma == 0) {
-				return 0; // co-incident points
+				return 0;
 			}
 
 			$cosSigma = $sinU1 * $sinU2 + $cosU1 * $cosU2 * $cosLambda;
@@ -263,7 +234,7 @@ class GeoLocation {
 			$cos2SigmaM = $cosSigma - 2 * $sinU1 * $sinU2 / $cosSqAlpha;
 
 			if (is_nan($cos2SigmaM)) {
-				$cos2SigmaM = 0; // equatorial line: cosSqAlpha=0 (6)
+				$cos2SigmaM = 0;
 			}
 
 			$C = $f / 16 * $cosSqAlpha * (4 + $f * (4 - 3 * $cosSqAlpha));
@@ -273,7 +244,7 @@ class GeoLocation {
 		}
 
 		if ($iterLimit == 0) {
-			return false; // formula failed to converge
+			return NAN;
 		}
 
 		$uSq = $cosSqAlpha * ($a * $a - $b * $b) / ($b * $b);
@@ -287,9 +258,8 @@ class GeoLocation {
 								* (-3 + 4 * $sinSigma * $sinSigma) * (-3 + 4 * $cos2SigmaM * $cos2SigmaM)));
 		$distance = $b * $A * ($sigma - $deltaSigma);
 
-		// initial bearing
+
 		$fwdAz = rad2deg(atan2($cosU2 * $sinLambda, $cosU1 * $sinU2 - $sinU1 * $cosU2 * $cosLambda));
-		// final bearing
 		$revAz = rad2deg(atan2($cosU1 * $sinLambda, -$sinU1 * $cosU2 + $cosU1 * $sinU2 * $cosLambda));
 
 		if ($formula == self::DISTANCE) {
@@ -298,59 +268,40 @@ class GeoLocation {
 			return $fwdAz;
 		} else if ($formula == self::FINAL_BEARING) {
 			return $revAz;
-		} else { // should never happpen
-			return false;
+		} else {
+			return NAN;
 		}
 	}
 
-	public function getRhumbLineBearing(GeoLocation $geoLocation) {
+	public function getRhumbLineBearing(GeoLocation $geoLocation): float
+	{
 		$dLon = deg2rad($geoLocation->getLongitude() - $this->getLongitude());
-		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + pi() / 4)
-				/ tan(deg2rad($this->getLatitude()) / 2 + pi() / 4));
-		if (abs($dLon) > pi()) {
-			$dLon = $dLon > 0 ? -(2 * pi() - $dLon) : (2 * pi() + $dLon);
+		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + M_PI / 4)
+				/ tan(deg2rad($this->getLatitude()) / 2 + M_PI / 4));
+		if (abs($dLon) > M_PI) {
+			$dLon = $dLon > 0 ? -(2 * M_PI - $dLon) : (2 * M_PI + $dLon);
 		}
 		return rad2deg(atan2($dLon, $dPhi));
 	}
 
-	public function getRhumbLineDistance(GeoLocation $geoLocation) {
-		$earthRadius = 6378137; // Earth's radius in meters (WGS-84)
+	public function getRhumbLineDistance(GeoLocation $geoLocation): float
+	{
+		$earthRadius = 6378137;
 		$dLat = deg2rad($geoLocation->getLatitude()) - deg2rad($this->getLatitude());
 		$dLon = abs(deg2rad($geoLocation->getLongitude()) - deg2rad($this->getLongitude()));
-		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + pi() / 4)
-				/ tan(deg2rad($this->getLatitude()) / 2 + pi() / 4));
+		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + M_PI / 4)
+				/ tan(deg2rad($this->getLatitude()) / 2 + M_PI / 4));
 		$q = $dLat / $dPhi;
 
 		if (!is_finite($q)) {
 			$q = cos(deg2rad($this->getLatitude()));
 		}
-		// if $dLon over 180° take shorter rhumb across 180° meridian:
-		if ($dLon > pi()) {
-			$dLon = 2 * pi() - $dLon;
+
+		if ($dLon > M_PI) {
+			$dLon = 2 * M_PI - $dLon;
 		}
 		$d = sqrt($dLat * $dLat + $q * $q * $dLon * $dLon);
 		return $d * $earthRadius;
-	}
-
-	/*
-	|--------------------------------------------------------------------------
-	| HELPER METHODS
-	|--------------------------------------------------------------------------
-	*/
-
-	public function equals($geoLocation) {
-		if ($this == $geoLocation) {
-			return true;
-		}
-		if (!($object instanceof GeoLocation)) {
-			return false;
-		}
-
-		return $this->latitude == $geoLocation->latitude
-				&& $this->longitude == $geoLocation->longitude
-				&& $this->elevation == $geoLocation->elevation
-				&& $this->locationName == $geoLocation->locationName
-				&& $this->timeZone == $geoLocation->timeZone;
 	}
 
 	/*
@@ -359,7 +310,8 @@ class GeoLocation {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function copy() {
+	public function copy(): self
+	{
 		return clone $this;
 	}
 }

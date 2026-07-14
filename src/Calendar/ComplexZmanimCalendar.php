@@ -22,7 +22,7 @@
 
 namespace PhpZmanim\Calendar;
 
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\HebrewCalendar\JewishCalendar;
 
 /**

@@ -22,19 +22,11 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
-use PhpZmanim\Geo\GeoLocation;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\NoaaCalculator;
 
 class NoaaCalculatorTest extends TestCase {
-
-	/** 
-	 * @test
-	 */
-	public function testCalculatorName() {
-		$noaaCalculator = new NoaaCalculator();
-		$this->assertEquals($noaaCalculator->getCalculatorName(), "US National Oceanic and Atmospheric Administration Algorithm");
-	}
 
 	/** 
 	 * @test

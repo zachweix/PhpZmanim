@@ -402,14 +402,13 @@ There are a few functions that can be run for calculations on GeoLocation object
 
 ```php
 use PhpZmanim\Geo\GeoLocation;
-use PhpZmanim\Geo\GeoLocationUtils;
 
 $new_york = new GeoLocation("New York City", 40.850519, -73.929214, 200, "America/New_York");
 $jerusalem = new GeoLocation('Jerusalem, Israel', 31.7781161, 35.233804, 740, 'Asia/Jerusalem');
 
-GeoLocationUtils::getGeodesicInitialBearing($new_york, $jerusalem);
-GeoLocationUtils::getGeodesicFinalBearing($new_york, $jerusalem);
-GeoLocationUtils::getGeodesicDistance($new_york, $jerusalem);
-GeoLocationUtils::getRhumbLineBearing($new_york, $jerusalem);
-GeoLocationUtils::getRhumbLineDistance($new_york, $jerusalem);
+$new_york->getGeodesicInitialBearing($jerusalem);
+$new_york->getGeodesicFinalBearing($jerusalem);
+$new_york->getGeodesicDistance($jerusalem);
+$new_york->getRhumbLineBearing($jerusalem);
+$new_york->getRhumbLineDistance($jerusalem);
 ```
