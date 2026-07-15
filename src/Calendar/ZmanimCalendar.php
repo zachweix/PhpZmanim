@@ -29,17 +29,18 @@ use PhpZmanim\HebrewCalendar\JewishCalendar;
  * See https://github.com/KosherJava/zmanim/blob/master/src/net/sourceforge/zmanim/ZmanimCalendar.java
  * for more detailed explanations regarding the methods and variables on this page.
  */
-class ZmanimCalendar extends AstronomicalCalendar {
+class ZmanimCalendar extends AstronomicalCalendar
+{
 	/*
 	|--------------------------------------------------------------------------
 	| CLASS PROPERTIES AND CONSTANTS
 	|--------------------------------------------------------------------------
 	*/
 
-	private $useElevation = true;
-	private $candleLightingOffset = 18;
-	private $useAstronomicalChatzos = true;
-	private $useAstronomicalChatzosForOtherZmanim = false;
+	private bool $useElevation = true;
+	private int $candleLightingOffset = 18;
+	private bool $useAstronomicalChatzos = true;
+	private bool $useAstronomicalChatzosForOtherZmanim = false;
 
 	const ZENITH_16_POINT_1 = AstronomicalCalendar::GEOMETRIC_ZENITH + 16.1;
 	const ZENITH_8_POINT_5 = AstronomicalCalendar::GEOMETRIC_ZENITH + 8.5;
@@ -50,37 +51,44 @@ class ZmanimCalendar extends AstronomicalCalendar {
 	|--------------------------------------------------------------------------
 	*/
 
-	public function isUseElevation() {
+	public function isUseElevation(): bool
+	{
 		return $this->useElevation;
 	}
 
-	public function setUseElevation($useElevation) {
+	public function setUseElevation(bool $useElevation): self
+	{
 		$this->useElevation = $useElevation;
 
 		return $this;
 	}
 
-	public function isUseAstronomicalChatzos() {
+	public function isUseAstronomicalChatzos(): bool
+	{
 		return $this->useAstronomicalChatzos;
 	}
 
-	public function setUseAstronomicalChatzos($useAstronomicalChatzos) {
+	public function setUseAstronomicalChatzos(bool $useAstronomicalChatzos): self
+	{
 		$this->useAstronomicalChatzos = $useAstronomicalChatzos;
 
 		return $this;
 	}
 
-	public function isUseAstronomicalChatzosForOtherZmanim() {
+	public function isUseAstronomicalChatzosForOtherZmanim(): bool
+	{
 		return $this->useAstronomicalChatzosForOtherZmanim;
 	}
 
-	public function setUseAstronomicalChatzosForOtherZmanim($useAstronomicalChatzosForOtherZmanim) {
+	public function setUseAstronomicalChatzosForOtherZmanim(bool $useAstronomicalChatzosForOtherZmanim): self
+	{
 		$this->useAstronomicalChatzosForOtherZmanim = $useAstronomicalChatzosForOtherZmanim;
 
 		return $this;
 	}
 
-	protected function getElevationAdjustedSunrise() {
+	protected function getElevationAdjustedSunrise(): Carbon|null
+	{
 		if ($this->isUseElevation()) {
 			return $this->getSunrise();
 		} else {
@@ -88,7 +96,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		}
 	}
 
-	protected function getElevationAdjustedSunset() {
+	protected function getElevationAdjustedSunset(): Carbon|null
+	{
 		if ($this->isUseElevation()) {
 			return $this->getSunset();
 		} else {
@@ -96,19 +105,23 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		}
 	}
 
-	public function getTzais() {
+	public function getTzais(): Carbon|null
+	{
 		return $this->getSunsetOffsetByDegrees(self::ZENITH_8_POINT_5);
 	}
 
-	public function getAlosHashachar() {
+	public function getAlosHashachar(): Carbon|null
+	{
 		return $this->getSunriseOffsetByDegrees(self::ZENITH_16_POINT_1);
 	}
 
-	public function getAlos72() {
+	public function getAlos72(): Carbon|null
+	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
-	public function getChatzos() {
+	public function getChatzos(): Carbon|null
+	{
 		if ($this->useAstronomicalChatzos) {
 			return $this->getSunTransit();
 		} else {
@@ -116,43 +129,53 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		}
 	}
 
-	public function getChatzosAsHalfDay() {
+	public function getChatzosAsHalfDay(): Carbon|null
+	{
 		return $this->getSunTransit($this->getSeaLevelSunrise(), $this->getSeaLevelSunset());
 	}
 
-	public function getSofZmanShma($startOfDay, $endOfDay) {
+	public function getSofZmanShma(?Carbon $startOfDay, ?Carbon $endOfDay): Carbon|null
+	{
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 3);
 	}
 
-	public function getSofZmanShmaGRA() {
+	public function getSofZmanShmaGRA(): Carbon|null
+	{
 		return $this->getSofZmanShma($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
 	}
 
-	public function getSofZmanShmaMGA() {
+	public function getSofZmanShmaMGA(): Carbon|null
+	{
 		return $this->getSofZmanShma($this->getAlos72(), $this->getTzais72());
 	}
 
-	public function getTzais72() {
+	public function getTzais72(): Carbon|null
+	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
-	public function getCandleLighting() {
+	public function getCandleLighting(): Carbon|null
+	{
 		return $this->getTimeOffset($this->getSeaLevelSunset(), -$this->getCandleLightingOffset() * AstronomicalCalendar::MINUTE_MILLIS);
 	}
 
-	public function getSofZmanTfila($startOfDay, $endOfDay) {
+	public function getSofZmanTfila(?Carbon $startOfDay, ?Carbon $endOfDay): Carbon|null
+	{
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 4);
 	}
 
-	public function getSofZmanTfilaGRA() {
+	public function getSofZmanTfilaGRA(): Carbon|null
+	{
 		return $this->getSofZmanTfila($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
 	}
 
-	public function getSofZmanTfilaMGA() {
+	public function getSofZmanTfilaMGA(): Carbon|null
+	{
 		return $this->getSofZmanTfila($this->getAlos72(), $this->getTzais72());
 	}
 
-	public function getMinchaGedola($startOfDay = null, $endOfDay = null) {
+	public function getMinchaGedola(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
+	{
 		if($this->isUseAstronomicalChatzosForOtherZmanim()) {
 			$chatzos = $this->getSunTransit();
 			$sunset = $endOfDay ?? $this->getSunset();
@@ -168,11 +191,13 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 6.5);
 	}
 
-	public function getSamuchLeMinchaKetana($startOfDay, $endOfDay) {
+	public function getSamuchLeMinchaKetana(?Carbon $startOfDay, ?Carbon $endOfDay): Carbon|null
+	{
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9);
 	}
 
-	public function getMinchaKetana($startOfDay = null, $endOfDay = null) {
+	public function getMinchaKetana(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
+	{
 		if (is_null($startOfDay) && is_null($endOfDay)) {
 			$startOfDay = $this->getElevationAdjustedSunrise();
 			$endOfDay = $this->getElevationAdjustedSunset();
@@ -181,7 +206,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9.5);
 	}
 
-	public function getPlagHamincha($startOfDay = null, $endOfDay = null) {
+	public function getPlagHamincha(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
+	{
 		if (is_null($startOfDay) && is_null($endOfDay)) {
 			$startOfDay = $this->getElevationAdjustedSunrise();
 			$endOfDay = $this->getElevationAdjustedSunset();
@@ -190,25 +216,30 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 10.75);
 	}
 
-	public function getShaahZmanisGra() {
+	public function getShaahZmanisGra(): float
+	{
 		return $this->getTemporalHour($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset());
 	}
 
-	public function getShaahZmanisMGA() {
+	public function getShaahZmanisMGA(): float
+	{
 		return $this->getTemporalHour($this->getAlos72(), $this->getTzais72());
 	}
 
-	public function getCandleLightingOffset() {
+	public function getCandleLightingOffset(): int
+	{
 		return $this->candleLightingOffset;
 	}
 
-	public function setCandleLightingOffset($candleLightingOffset) {
+	public function setCandleLightingOffset(int $candleLightingOffset): self
+	{
 		$this->candleLightingOffset = $candleLightingOffset;
 
 		return $this;
 	}
 
-	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, $inIsrael) {
+	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
+	{
 		$jewishCalendar = new JewishCalendar();
 		$jewishCalendar->setGregorianDate($this->getCalendar()->year, $this->getCalendar()->month, $this->getCalendar()->day);
 		$jewishCalendar->setInIsrael($inIsrael);
@@ -224,12 +255,14 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return false;
 	}
 
-	public function getShaahZmanisBasedZman($startOfDay, $endOfDay, $hours) {
+	public function getShaahZmanisBasedZman(?Carbon $startOfDay, ?Carbon $endOfDay, float $hours): Carbon|null
+	{
 		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * $hours);
 	}
 
-	public function getPercentOfShaahZmanisFromDegrees($degrees, $sunset) {
+	public function getPercentOfShaahZmanisFromDegrees(float $degrees, bool $sunset): float|null
+	{
 		$seaLevelSunrise = $this->getSeaLevelSunrise();
 		$seaLevelSunset = $this->getSeaLevelSunset();
 		$twilight = null;
@@ -251,7 +284,8 @@ class ZmanimCalendar extends AstronomicalCalendar {
 		return $riseSetToTwilight / $shaahZmanis;
 	}
 
-	public function getHalfDayBasedZman($startOfHalfDay, $endOfHalfDay, $hours) {
+	public function getHalfDayBasedZman(?Carbon $startOfHalfDay, ?Carbon $endOfHalfDay, float $hours): Carbon|null
+	{
 		if ($startOfHalfDay == null || $endOfHalfDay == null) {
 			return null;
 		}
