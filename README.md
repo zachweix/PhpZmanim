@@ -4,6 +4,8 @@ A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) by Eliyahu Her
 
 Because this is a port, the [KosherJava documentation](https://kosherjava.com) remains the canonical reference for the meaning of every zman and calendar method. This README is the quick start; see [docs/USAGE.md](docs/USAGE.md) for detailed usage.
 
+> **Upgrading from v3?** v4 renames and reorganizes much of the API. See the [v3 → v4 upgrade guide](docs/UPGRADING.md).
+
 ```php
 use PhpZmanim\Zman;
 use PhpZmanim\JewishDate;
@@ -27,6 +29,7 @@ $jewishDate->format()->hebrew()->date();      // ט״ו תשרי תשפ״ד
 ## Requirements
 
 - PHP 8.1 or higher
+- [Carbon](https://carbon.nesbot.com/) 2 or 3 (`^2.0 || ^3.0`)
 
 ## Installation (with Composer)
 
@@ -135,4 +138,5 @@ See **[docs/USAGE.md](docs/USAGE.md)** for the full formatting reference (parsha
 ## Detailed Documentation
 
 - **[docs/USAGE.md](docs/USAGE.md)** — full zmanim reference, configuration, calculators, custom zmanim, and the Jewish calendar & formatting API.
+- **[docs/UPGRADING.md](docs/UPGRADING.md)** — migrating existing code from v3 to v4.
 - **[KosherJava documentation](https://kosherjava.com)** — the canonical reference for what each zman and method means.
