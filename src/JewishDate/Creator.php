@@ -77,13 +77,13 @@ trait Creator
 		return new static($jewishYear, $jewishMonth, $jewishDayOfMonth, $inIsrael);
 	}
 
-	public static function createFromDate(Carbon|int $year, int|null $month = null, int|null $day = null): JewishDate
+	public static function createFromDate(Carbon|int $year, int|null $month = null, int|null $day = null, bool $inIsrael = false): JewishDate
 	{
 		if (! ($year instanceof Carbon)) {
 			$year = Carbon::createFromDate($year, $month, $day);
 		}
 
-		return new static($year);
+		return new static($year, null, null, $inIsrael);
 	}
 
 	public function copy(): JewishDate
