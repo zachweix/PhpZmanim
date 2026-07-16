@@ -692,7 +692,7 @@ class JewishCalendar extends JewishDate {
 		$longitude = 35.2354;
 		$yerushalayimStandardTZ = "GMT+2";
 
-		$geo = new GeoLocation($locationName, $latitude, $longitude, 0.0, $yerushalayimStandardTZ);
+		$geo = new GeoLocation($latitude, $longitude, 0.0, $yerushalayimStandardTZ, $locationName);
 
 		$moladSeconds = $molad->getMoladChalakim() * 10 / 3;
 
@@ -703,7 +703,7 @@ class JewishCalendar extends JewishDate {
 		);
 		$cal->milliseconds = (int) (($moladSeconds - (int) $moladSeconds) * 1000);
 
-		$cal->add(-1 * (int) $geo->getLocalMeanTimeOffset(), "milliseconds");
+		$cal->add(-1 * (int) $geo->getLocalMeanTimeOffset($cal), "milliseconds");
 		return $cal;
 	}
 

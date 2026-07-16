@@ -39,7 +39,7 @@ class AstronomicalCalendar
 	|--------------------------------------------------------------------------
 	*/
 
-	private Carbon $date;
+	protected Carbon $date;
 	private GeoLocation $geoLocation; 
 	private AstronomicalCalculator $astronomicalCalculator;
 
