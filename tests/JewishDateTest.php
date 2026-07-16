@@ -88,7 +88,7 @@ class JewishDateTest extends TestCase
 	{
 		$cal = Carbon::createMidnightDate(2011, 1, 31);
 
-		$hebrewDate = new JewishDate($cal);
+		$hebrewDate = JewishDate::create($cal);
 		$this->assertEquals(5771, $hebrewDate->getJewishYear());
 		$this->assertEquals(11, $hebrewDate->getJewishMonth());
 		$this->assertEquals(26, $hebrewDate->getJewishDayOfMonth());
@@ -244,7 +244,7 @@ class JewishDateTest extends TestCase
 	{
 		$cal = Carbon::createMidnightDate(2011, 1, 1);
 
-		$hebrewDate = new JewishDate($cal);
+		$hebrewDate = JewishDate::create($cal);
 		$hebrewDate->subDays(1);
 		$this->assertEquals(2010, $hebrewDate->getGregorianYear());
 		$this->assertEquals(12, $hebrewDate->getGregorianMonth());
@@ -370,7 +370,7 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function roshHashana(): void
 	{
-		$date = new JewishDate();
+		$date = JewishDate::create();
 
 		$cal = Carbon::createMidnightDate(2023, 9, 16);
 		$date->setDate($cal);
@@ -387,7 +387,7 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function purim(): void
 	{
-		$date = new JewishDate();
+		$date = JewishDate::create();
 
 		$date->setJewishDate(5783, JewishDate::ADAR, 14);
 		$this->assertTrue($date->isPurim());
@@ -419,11 +419,11 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function parshah(): void
 	{
-		$date = new JewishDate(Carbon::createMidnightDate(2023, 10, 14));
+		$date = JewishDate::create(Carbon::createMidnightDate(2023, 10, 14));
 		$this->assertEquals("Bereshis", $date->getParshah()->english());
 		$this->assertEquals("בראשית", $date->getParshah()->hebrew());
 
-		$date = new JewishDate(Carbon::createMidnightDate(2024, 2, 17));
+		$date = JewishDate::create(Carbon::createMidnightDate(2024, 2, 17));
 		$this->assertEquals("Terumah", $date->getParshah()->english());
 		$this->assertEquals("תרומה", $date->getParshah()->hebrew());
 	}
@@ -439,20 +439,20 @@ class JewishDateTest extends TestCase
 	{
 		// The 14th Daf Yomi Bavli cycle began 2020-01-05 with Berachos 2; the prior
 		// cycle's siyum was 2020-01-04 with Niddah 73.
-		$date = new JewishDate(Carbon::createMidnightDate(2020, 1, 5));
+		$date = JewishDate::create(Carbon::createMidnightDate(2020, 1, 5));
 		$daf = $date->getDafYomiBavli();
 		$this->assertEquals("Berachos", $daf->getMasechta()->english());
 		$this->assertEquals(2, $daf->getDaf());
 		$this->assertEquals("Berachos 2", $date->format()->english()->dafYomiBavli());
 		$this->assertEquals("ברכות ב׳", $date->format()->hebrew()->dafYomiBavli());
 
-		$date = new JewishDate(Carbon::createMidnightDate(2020, 1, 4));
+		$date = JewishDate::create(Carbon::createMidnightDate(2020, 1, 4));
 		$daf = $date->getDafYomiBavli();
 		$this->assertEquals("Niddah", $daf->getMasechta()->english());
 		$this->assertEquals(73, $daf->getDaf());
 
 		// A pre-Shekalim-change cycle (before 1975).
-		$date = new JewishDate(Carbon::createMidnightDate(1980, 2, 3));
+		$date = JewishDate::create(Carbon::createMidnightDate(1980, 2, 3));
 		$daf = $date->getDafYomiBavli();
 		$this->assertEquals("Bava Basra", $daf->getMasechta()->english());
 		$this->assertEquals(52, $daf->getDaf());
@@ -462,26 +462,26 @@ class JewishDateTest extends TestCase
 	public function dafYomiBavliBeforeCycleThrows(): void
 	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new JewishDate(Carbon::createMidnightDate(1900, 1, 1)))->getDafYomiBavli();
+		JewishDate::create(Carbon::createMidnightDate(1900, 1, 1))->getDafYomiBavli();
 	}
 
 	#[Test]
 	public function dafYomiYerushalmi(): void
 	{
-		$date = new JewishDate(Carbon::createMidnightDate(1980, 2, 3));
+		$date = JewishDate::create(Carbon::createMidnightDate(1980, 2, 3));
 		$daf = $date->getDafYomiYerushalmi();
 		$this->assertEquals("Berachos", $daf->getMasechta()->english());
 		$this->assertEquals(2, $daf->getDaf());
 		$this->assertEquals("Berachos 2", $date->format()->english()->dafYomiYerushalmi());
 		$this->assertEquals("ברכות ב׳", $date->format()->hebrew()->dafYomiYerushalmi());
 
-		$date = new JewishDate(Carbon::createMidnightDate(2035, 12, 21));
+		$date = JewishDate::create(Carbon::createMidnightDate(2035, 12, 21));
 		$daf = $date->getDafYomiYerushalmi();
 		$this->assertEquals("Pe'ah", $daf->getMasechta()->english());
 		$this->assertEquals(30, $daf->getDaf());
 
 		// No Daf Yomi Yerushalmi on Yom Kippur or Tisha B'Av.
-		$yomKippur = (new JewishDate())->setJewishDate(5784, JewishDate::TISHREI, 10);
+		$yomKippur = JewishDate::create()->setJewishDate(5784, JewishDate::TISHREI, 10);
 		$this->assertNull($yomKippur->getDafYomiYerushalmi());
 		$this->assertEquals("No Daf Today", $yomKippur->format()->english()->dafYomiYerushalmi());
 		$this->assertEquals("אין דף היום", $yomKippur->format()->hebrew()->dafYomiYerushalmi());
@@ -496,7 +496,7 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function tefilaRules(): void
 	{
-		$date = new JewishDate(Carbon::createMidnightDate(2023, 8, 21));
+		$date = JewishDate::create(Carbon::createMidnightDate(2023, 8, 21));
 		$this->assertTrue($date->isTachanunRecitedShacharis());
 		$this->assertTrue($date->isTachanunRecitedMincha());
 		$this->assertFalse($date->isVeseinTalUmatarStartDate());
@@ -513,7 +513,7 @@ class JewishDateTest extends TestCase
 		$this->assertFalse($date->isYaalehVeyavoRecited());
 		$this->assertTrue($date->isMizmorLesodaRecited());
 
-		$date = new JewishDate(Carbon::createMidnightDate(2023, 10, 7));
+		$date = JewishDate::create(Carbon::createMidnightDate(2023, 10, 7));
 		$this->assertFalse($date->isTachanunRecitedShacharis());
 		$this->assertFalse($date->isTachanunRecitedMincha());
 		$this->assertFalse($date->isVeseinTalUmatarStartDate());
@@ -540,21 +540,21 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function yomTov(): void
 	{
-		$this->assertEquals("Pesach", (new JewishDate(Carbon::createMidnightDate(2024, 4, 23)))->getYomTov()->english());
-		$this->assertEquals("Shavuos", (new JewishDate(Carbon::createMidnightDate(2024, 6, 12)))->getYomTov()->english());
-		$this->assertEquals("Rosh Hashana", (new JewishDate(Carbon::createMidnightDate(2024, 10, 3)))->getYomTov()->english());
-		$this->assertEquals("Yom Kippur", (new JewishDate(Carbon::createMidnightDate(2024, 10, 12)))->getYomTov()->english());
-		$this->assertEquals("Purim", (new JewishDate(Carbon::createMidnightDate(2024, 3, 24)))->getYomTov()->english());
-		$this->assertEquals("Lag B'Omer", (new JewishDate(Carbon::createMidnightDate(2024, 5, 26)))->getYomTov()->english());
+		$this->assertEquals("Pesach", JewishDate::create(Carbon::createMidnightDate(2024, 4, 23))->getYomTov()->english());
+		$this->assertEquals("Shavuos", JewishDate::create(Carbon::createMidnightDate(2024, 6, 12))->getYomTov()->english());
+		$this->assertEquals("Rosh Hashana", JewishDate::create(Carbon::createMidnightDate(2024, 10, 3))->getYomTov()->english());
+		$this->assertEquals("Yom Kippur", JewishDate::create(Carbon::createMidnightDate(2024, 10, 12))->getYomTov()->english());
+		$this->assertEquals("Purim", JewishDate::create(Carbon::createMidnightDate(2024, 3, 24))->getYomTov()->english());
+		$this->assertEquals("Lag B'Omer", JewishDate::create(Carbon::createMidnightDate(2024, 5, 26))->getYomTov()->english());
 
 		// The second day of Yom Tov is Chol Hamoed only in Israel.
-		$secondDay = new JewishDate(Carbon::createMidnightDate(2024, 4, 24));
+		$secondDay = JewishDate::create(Carbon::createMidnightDate(2024, 4, 24));
 		$this->assertEquals("Pesach", $secondDay->getYomTov()->english());
 		$secondDay->setInIsrael(true);
 		$this->assertEquals("Chol Hamoed Pesach", $secondDay->getYomTov()->english());
 
 		// Chanukah formatting appends the day of Chanukah.
-		$chanukah = new JewishDate(Carbon::createMidnightDate(2024, 12, 29));
+		$chanukah = JewishDate::create(Carbon::createMidnightDate(2024, 12, 29));
 		$this->assertEquals(4, $chanukah->getDayOfChanukah());
 		$this->assertEquals("Chanukah 4", $chanukah->format()->english()->yomTov());
 		$this->assertEquals("ד׳ חנוכה", $chanukah->format()->hebrew()->yomTov());
@@ -563,24 +563,24 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function dayOfOmer(): void
 	{
-		$this->assertEquals(1, (new JewishDate(Carbon::createMidnightDate(2024, 4, 24)))->getDayOfOmer());
-		$this->assertEquals(33, (new JewishDate(Carbon::createMidnightDate(2024, 5, 26)))->getDayOfOmer());
-		$this->assertEquals(49, (new JewishDate(Carbon::createMidnightDate(2024, 6, 11)))->getDayOfOmer());
-		$this->assertEquals(-1, (new JewishDate(Carbon::createMidnightDate(2024, 1, 1)))->getDayOfOmer());
+		$this->assertEquals(1, JewishDate::create(Carbon::createMidnightDate(2024, 4, 24))->getDayOfOmer());
+		$this->assertEquals(33, JewishDate::create(Carbon::createMidnightDate(2024, 5, 26))->getDayOfOmer());
+		$this->assertEquals(49, JewishDate::create(Carbon::createMidnightDate(2024, 6, 11))->getDayOfOmer());
+		$this->assertEquals(-1, JewishDate::create(Carbon::createMidnightDate(2024, 1, 1))->getDayOfOmer());
 	}
 
 	#[Test]
 	public function roshChodeshRules(): void
 	{
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 5, 8)))->isRoshChodesh());
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 5, 7)))->isErevRoshChodesh());
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 4, 6)))->isShabbosMevorchim());
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 7, 6)))->isMacharChodesh());
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 4, 8)))->isYomKippurKatan());
-		$this->assertTrue((new JewishDate(Carbon::createMidnightDate(2024, 11, 11)))->isBeHaB());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 5, 8))->isRoshChodesh());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 5, 7))->isErevRoshChodesh());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 4, 6))->isShabbosMevorchim());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 7, 6))->isMacharChodesh());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 4, 8))->isYomKippurKatan());
+		$this->assertTrue(JewishDate::create(Carbon::createMidnightDate(2024, 11, 11))->isBeHaB());
 
 		// A plain weekday mid-month is none of the above.
-		$plain = new JewishDate(Carbon::createMidnightDate(2024, 6, 5));
+		$plain = JewishDate::create(Carbon::createMidnightDate(2024, 6, 5));
 		$this->assertFalse($plain->isRoshChodesh());
 		$this->assertFalse($plain->isErevRoshChodesh());
 		$this->assertFalse($plain->isShabbosMevorchim());
@@ -589,31 +589,31 @@ class JewishDateTest extends TestCase
 	#[Test]
 	public function specialShabbos(): void
 	{
-		$date = new JewishDate(Carbon::createMidnightDate(2024, 3, 9));
+		$date = JewishDate::create(Carbon::createMidnightDate(2024, 3, 9));
 		$this->assertEquals("Shekalim", $date->format()->english()->specialShabbos());
 		$this->assertEquals("שקלים", $date->format()->hebrew()->specialShabbos());
 
-		$this->assertEquals("Zachor", (new JewishDate(Carbon::createMidnightDate(2024, 3, 23)))->format()->english()->specialShabbos());
-		$this->assertEquals("Hagadol", (new JewishDate(Carbon::createMidnightDate(2024, 4, 20)))->format()->english()->specialShabbos());
-		$this->assertEquals("Nachamu", (new JewishDate(Carbon::createMidnightDate(2024, 8, 17)))->format()->english()->specialShabbos());
+		$this->assertEquals("Zachor", JewishDate::create(Carbon::createMidnightDate(2024, 3, 23))->format()->english()->specialShabbos());
+		$this->assertEquals("Hagadol", JewishDate::create(Carbon::createMidnightDate(2024, 4, 20))->format()->english()->specialShabbos());
+		$this->assertEquals("Nachamu", JewishDate::create(Carbon::createMidnightDate(2024, 8, 17))->format()->english()->specialShabbos());
 
 		// Empty on an ordinary Shabbos.
-		$this->assertEquals("", (new JewishDate(Carbon::createMidnightDate(2024, 6, 8)))->format()->english()->specialShabbos());
+		$this->assertEquals("", JewishDate::create(Carbon::createMidnightDate(2024, 6, 8))->format()->english()->specialShabbos());
 	}
 
 	#[Test]
 	public function formatMonthDayOfWeekAndKviah(): void
 	{
 		// 5784 is a leap year, so Adar splits into Adar I and Adar II.
-		$adarII = new JewishDate(Carbon::createMidnightDate(2024, 3, 11));
+		$adarII = JewishDate::create(Carbon::createMidnightDate(2024, 3, 11));
 		$this->assertEquals("Adar II", $adarII->format()->english()->month());
 		$this->assertEquals("אדר ב׳", $adarII->format()->hebrew()->month());
 
-		$adarI = new JewishDate(Carbon::createMidnightDate(2024, 2, 25));
+		$adarI = JewishDate::create(Carbon::createMidnightDate(2024, 2, 25));
 		$this->assertEquals("Adar I", $adarI->format()->english()->month());
 		$this->assertEquals("אדר א׳", $adarI->format()->hebrew()->month());
 
-		$date = new JewishDate(Carbon::createMidnightDate(2024, 4, 23)); // a Tuesday
+		$date = JewishDate::create(Carbon::createMidnightDate(2024, 4, 23)); // a Tuesday
 		$this->assertEquals("Tuesday", $date->format()->english()->dayOfWeek());
 		$this->assertEquals("שלישי", $date->format()->hebrew()->dayOfWeek());
 		$this->assertEquals("זחג", $date->format()->hebrew()->kviah());
@@ -633,7 +633,7 @@ class JewishDateTest extends TestCase
 
 	private function assertHaser(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
@@ -643,7 +643,7 @@ class JewishDateTest extends TestCase
 
 	private function assertHaserLeap(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
@@ -653,7 +653,7 @@ class JewishDateTest extends TestCase
 
 	private function assertQesidrah(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
@@ -663,7 +663,7 @@ class JewishDateTest extends TestCase
 
 	private function assertQesidrahLeap(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
@@ -673,7 +673,7 @@ class JewishDateTest extends TestCase
 
 	private function assertShalem(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 
@@ -683,7 +683,7 @@ class JewishDateTest extends TestCase
 
 	private function assertShalemLeap(int $year): void
 	{
-		$jewishDate = new JewishDate();
+		$jewishDate = JewishDate::create();
 		$jewishDate->setJewishMonth(1);
 		$jewishDate->setJewishYear($year);
 

@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,37 +35,47 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Misheyakir
+trait Sunrise
 {
-	// The following are from ComprehensiveZmanimCalendar
-
-	public function getMisheyakir12Point85Degrees(): Carbon|null
+	public function getSunrise(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_12_POINT_85);
+		return $this->getSunriseOffsetByDegrees(Zman::GEOMETRIC_ZENITH);
 	}
 
-	public function getMisheyakir11Point5Degrees(): Carbon|null
+	public function getBeginCivilTwilight(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_11_POINT_5);
+		return $this->getSunriseOffsetByDegrees(Zman::CIVIL_ZENITH);
 	}
 
-	public function getMisheyakir11Degrees(): Carbon|null
+	public function getBeginNauticalTwilight(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_11_DEGREES);
+		return $this->getSunriseOffsetByDegrees(Zman::NAUTICAL_ZENITH);
 	}
 
-	public function getMisheyakir10Point2Degrees(): Carbon|null
+	public function getBeginAstronomicalTwilight(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_10_POINT_2);
+		return $this->getSunriseOffsetByDegrees(Zman::ASTRONOMICAL_ZENITH);
 	}
 
-	public function getMisheyakir9Point5Degrees(): Carbon|null
+	public function getSeaLevelSunrise(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_9_POINT_5);
+		return $this->toAdjustedCarbon($this->getUTCSunrise(Zman::GEOMETRIC_ZENITH, false), Zman::SUNRISE);
 	}
 
-	public function getMisheyakir7Point65Degrees(): Carbon|null
+	public function getSunriseOffsetByDegrees(float $offsetZenith): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_7_POINT_65);
+		return $this->toAdjustedCarbon($this->getUTCSunrise($offsetZenith), Zman::SUNRISE);
+	}
+
+	// The following are from ZmanimCalendar
+
+	protected function getElevationAdjustedSunrise(): Carbon|null
+	{
+		return $this->useElevation ? $this->getSunrise() : $this->getSeaLevelSunrise();
+	}
+
+	protected function getSunriseBaalHatanya(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_1_POINT_583);
 	}
 }

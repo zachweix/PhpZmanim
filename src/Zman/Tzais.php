@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -41,12 +41,12 @@ trait Tzais
 
 	public function getTzais(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_8_POINT_5);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_8_POINT_5);
 	}
 
 	public function getTzais72(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * Zman::MINUTE_MILLIS);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
@@ -64,27 +64,27 @@ trait Tzais
 
 	public function getTzais50Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 50 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 50 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getTzais60Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 60 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 60 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getTzais90Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 90 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 90 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getTzais96Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 96 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 96 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getTzais120Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 120 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 120 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getTzais72Zmanis(): Carbon|null
@@ -109,76 +109,76 @@ trait Tzais
 
 	public function getTzais16Point1Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_16_POINT_1);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_16_POINT_1);
 	}
 
 	public function getTzais18Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ASTRONOMICAL_ZENITH);
+		return $this->getSunsetOffsetByDegrees(Zman::ASTRONOMICAL_ZENITH);
 	}
 
 	public function getTzais19Point8Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_19_POINT_8);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_19_POINT_8);
 	}
 
 	public function getTzais26Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_26_DEGREES);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_26_DEGREES);
 	}
 
 	public function getTzaisGeonim3Point7Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_3_POINT_7);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_3_POINT_7);
 	}
 
 	public function getTzaisGeonim3Point8Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_3_POINT_8);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_3_POINT_8);
 	}
 
 	public function getTzaisGeonim4Point42Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_4_POINT_42);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_4_POINT_42);
 	}
 
 	public function getTzaisGeonim4Point66Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_4_POINT_66);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_4_POINT_66);
 	}
 
 	public function getTzaisGeonim4Point8Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_4_POINT_8);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_4_POINT_8);
 	}
 
 	public function getTzaisGeonim5Point95Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_5_POINT_95);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_5_POINT_95);
 	}
 
 	public function getTzaisGeonim6Point45Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_6_POINT_45);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_6_POINT_45);
 	}
 
 	public function getTzaisGeonim7Point083Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_7_POINT_083);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_7_POINT_083);
 	}
 
 	public function getTzaisGeonim7Point67Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_7_POINT_67);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_7_POINT_67);
 	}
 
 	public function getTzaisGeonim9Point3Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_9_POINT_3);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_9_POINT_3);
 	}
 
 	public function getTzaisGeonim9Point75Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_9_POINT_75);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_9_POINT_75);
 	}
 }

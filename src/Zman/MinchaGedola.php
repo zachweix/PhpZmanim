@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -57,7 +57,7 @@ trait MinchaGedola
 
 	public function getMinchaGedola30Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getChatzosHayom(), 30 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getChatzosHayom(), 30 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getMinchaGedola72Minutes(): Carbon|null
@@ -109,6 +109,6 @@ trait MinchaGedola
 
 	public function getMinchaGedolaGRAFixedLocalChatzos30Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getFixedLocalChatzosHayom(), 30 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getFixedLocalChatzosHayom(), 30 * Zman::MINUTE_MILLIS);
 	}
 }

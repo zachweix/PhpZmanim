@@ -20,10 +20,11 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use InvalidArgumentException;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,47 +36,50 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Sunset
+trait Noon
 {
-	public function getSunset(): Carbon|null
+	public function getSunTransit(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH);
-	}
+		$noon = $this->astronomicalCalculator->getUTCNoon($this->getAdjustedDate(), $this->geoLocation);
 
-	public function getEndCivilTwilight(): Carbon|null
-	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::CIVIL_ZENITH);
-	}
-
-	public function getEndNauticalTwilight(): Carbon|null
-	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::NAUTICAL_ZENITH);
-	}
-
-	public function getEndAstronomicalTwilight(): Carbon|null
-	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ASTRONOMICAL_ZENITH);
-	}
-
-	public function getSeaLevelSunset(): Carbon|null
-	{
-		return $this->toAdjustedCarbon($this->getUTCSunset(Zmanim::GEOMETRIC_ZENITH, false), Zmanim::SUNSET);
-	}
-
-	public function getSunsetOffsetByDegrees(float $offsetZenith): Carbon|null
-	{
-		return $this->toAdjustedCarbon($this->getUTCSunset($offsetZenith), Zmanim::SUNSET);
+		return $this->toAdjustedCarbon($noon, Zman::NOON);
 	}
 
 	// The following are from ZmanimCalendar
 
-	protected function getElevationAdjustedSunset(): Carbon|null
+	public function getChatzos(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
 	{
-		return $this->useElevation ? $this->getSunset() : $this->getSeaLevelSunset();
+		if (is_null($startOfDay) && is_null($endOfDay)) {
+			if ($this->useAstronomicalChatzos) {
+				return $this->getSunTransit();
+			}
+
+			return $this->getChatzosHayomAsHalfDay() ?? $this->getSunTransit();
+		}
+
+		if (is_null($startOfDay) || is_null($endOfDay)) {
+			throw new InvalidArgumentException('You must either provide a startOfDay and endOfDay or leave them all blank');
+		}
+
+		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
+
+		return $this->getTimeOffset($startOfDay, $shaahZmanis * 6);
 	}
 
-	protected function getSunsetBaalHatanya(): Carbon|null
+	public function getChatzosHayomAsHalfDay(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_1_POINT_583);
+		return $this->getChatzos($this->getSeaLevelSunrise(), $this->getSeaLevelSunset());
+	}
+
+	public function getChatzosHayom(): Carbon|null
+	{
+		return $this->getChatzos();
+	}
+
+	// The following are from ComprehensiveZmanimCalendar
+
+	public function getFixedLocalChatzosHayom(): Carbon|null
+	{
+		return $this->getLocalMeanTime(12);
 	}
 }

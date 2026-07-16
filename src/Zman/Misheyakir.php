@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,12 +35,37 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Azimuth
+trait Misheyakir
 {
-	public function getTimeAtAzimuth90Or270(float $azimuth): Carbon|null
-	{
-		$time = $this->astronomicalCalculator->getTimeAtAzimuth($this->getAdjustedDate(), $this->geoLocation, $azimuth);
+	// The following are from ComprehensiveZmanimCalendar
 
-		return $this->toAdjustedCarbon($time, $azimuth == 90 ? Zmanim::SUNRISE : Zmanim::SUNSET);
+	public function getMisheyakir12Point85Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_12_POINT_85);
+	}
+
+	public function getMisheyakir11Point5Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_11_POINT_5);
+	}
+
+	public function getMisheyakir11Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_11_DEGREES);
+	}
+
+	public function getMisheyakir10Point2Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_10_POINT_2);
+	}
+
+	public function getMisheyakir9Point5Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_9_POINT_5);
+	}
+
+	public function getMisheyakir7Point65Degrees(): Carbon|null
+	{
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_7_POINT_65);
 	}
 }

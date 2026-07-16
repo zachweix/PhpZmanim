@@ -20,11 +20,11 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use InvalidArgumentException;
-use PhpZmanim\Zmanim;
+use PhpZmanim\JewishDate;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -36,50 +36,26 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Noon
+trait Melacha
 {
-	public function getSunTransit(): Carbon|null
-	{
-		$noon = $this->astronomicalCalculator->getUTCNoon($this->getAdjustedDate(), $this->geoLocation);
-
-		return $this->toAdjustedCarbon($noon, Zmanim::NOON);
-	}
-
 	// The following are from ZmanimCalendar
 
-	public function getChatzos(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
+	public function getCandleLighting(): Carbon|null
 	{
-		if (is_null($startOfDay) && is_null($endOfDay)) {
-			if ($this->useAstronomicalChatzos) {
-				return $this->getSunTransit();
-			}
+		return $this->getTimeOffset($this->getSeaLevelSunset(), -$this->candleLightingOffset * Zman::MINUTE_MILLIS);
+	}
 
-			return $this->getChatzosHayomAsHalfDay() ?? $this->getSunTransit();
+	// Note that jewishCalendar may change and this will need to change too
+	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
+	{
+		$jewishDate = new JewishDate();
+		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
+		$jewishDate->setInIsrael($inIsrael);
+
+		if ($jewishDate->hasCandleLighting() && $currentTime->gte($this->getElevationAdjustedSunset())) {
+			return true;
 		}
 
-		if (is_null($startOfDay) || is_null($endOfDay)) {
-			throw new InvalidArgumentException('You must either provide a startOfDay and endOfDay or leave them all blank');
-		}
-
-		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
-
-		return $this->getTimeOffset($startOfDay, $shaahZmanis * 6);
-	}
-
-	public function getChatzosHayomAsHalfDay(): Carbon|null
-	{
-		return $this->getChatzos($this->getSeaLevelSunrise(), $this->getSeaLevelSunset());
-	}
-
-	public function getChatzosHayom(): Carbon|null
-	{
-		return $this->getChatzos();
-	}
-
-	// The following are from ComprehensiveZmanimCalendar
-
-	public function getFixedLocalChatzosHayom(): Carbon|null
-	{
-		return $this->getLocalMeanTime(12);
+		return $jewishDate->isAssurBemelacha() && $currentTime->lte($tzais);
 	}
 }

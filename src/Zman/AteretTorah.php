@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,47 +35,35 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Sunrise
+trait AteretTorah
 {
-	public function getSunrise(): Carbon|null
+	public function getTzaisAteretTorah(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->getAteretTorahSunsetOffset() * Zman::MINUTE_MILLIS);
 	}
 
-	public function getBeginCivilTwilight(): Carbon|null
+	public function getSofZmanShmaAteretTorah(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::CIVIL_ZENITH);
+		return $this->getSofZmanShma($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
 	}
 
-	public function getBeginNauticalTwilight(): Carbon|null
+	public function getSofZmanTfilaAteretTorah(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::NAUTICAL_ZENITH);
+		return $this->getSofZmanTfila($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
 	}
 
-	public function getBeginAstronomicalTwilight(): Carbon|null
+	public function getMinchaGedolaAteretTorah(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ASTRONOMICAL_ZENITH);
+		return $this->getMinchaGedola($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
 	}
 
-	public function getSeaLevelSunrise(): Carbon|null
+	public function getMinchaKetanaAteretTorah(): Carbon|null
 	{
-		return $this->toAdjustedCarbon($this->getUTCSunrise(Zmanim::GEOMETRIC_ZENITH, false), Zmanim::SUNRISE);
+		return $this->getMinchaKetana($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
 	}
 
-	public function getSunriseOffsetByDegrees(float $offsetZenith): Carbon|null
+	public function getPlagHaminchaAteretTorah(): Carbon|null
 	{
-		return $this->toAdjustedCarbon($this->getUTCSunrise($offsetZenith), Zmanim::SUNRISE);
-	}
-
-	// The following are from ZmanimCalendar
-
-	protected function getElevationAdjustedSunrise(): Carbon|null
-	{
-		return $this->useElevation ? $this->getSunrise() : $this->getSeaLevelSunrise();
-	}
-
-	protected function getSunriseBaalHatanya(): Carbon|null
-	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_1_POINT_583);
+		return $this->getPlagHamincha($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
 	}
 }

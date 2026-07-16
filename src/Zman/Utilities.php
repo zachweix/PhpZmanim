@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -58,18 +58,18 @@ trait Utilities
 
 		// A date transition may have occurred: the event actually falls on the day before or after the target date.
 		$dayOffset = match (true) {
-			$solarEvent === Zmanim::SUNRISE  && $localTimeHours > 18 => -1,
-			$solarEvent === Zmanim::SUNSET   && $localTimeHours < 6  => 1,
-			$solarEvent === Zmanim::MIDNIGHT && $localTimeHours < 12 => 1,
-			$solarEvent === Zmanim::NOON     && $localTimeHours < 0  => 1,
-			$solarEvent === Zmanim::NOON     && $localTimeHours > 24 => -1,
+			$solarEvent === Zman::SUNRISE  && $localTimeHours > 18 => -1,
+			$solarEvent === Zman::SUNSET   && $localTimeHours < 6  => 1,
+			$solarEvent === Zman::MIDNIGHT && $localTimeHours < 12 => 1,
+			$solarEvent === Zman::NOON     && $localTimeHours < 0  => 1,
+			$solarEvent === Zman::NOON     && $localTimeHours > 24 => -1,
 			default => 0,
 		};
 
 		// The computed time is UTC fractional hours; anchor midnight in UTC, then convert to the location's zone.
 		return Carbon::create($date->year, $date->month, $date->day, 0, 0, 0, 'UTC')
 			->addDays($dayOffset)
-			->addMicroseconds((int) round($time * Zmanim::HOUR_MILLIS * 1000))
+			->addMicroseconds((int) round($time * Zman::HOUR_MILLIS * 1000))
 			->setTimezone($this->geoLocation->getTimezone());
 	}
 
@@ -87,7 +87,7 @@ trait Utilities
 			return NAN;
 		}
 
-		$offsetByTime = $this->getTimeOffset($seaLevelSunrise, -($minutes * Zmanim::MINUTE_MILLIS));
+		$offsetByTime = $this->getTimeOffset($seaLevelSunrise, -($minutes * Zman::MINUTE_MILLIS));
 
 		$degrees = 0.0;
 		$incrementor = 0.0001;
@@ -95,7 +95,7 @@ trait Utilities
 		do {
 			$degrees += $minutes > 0.0 ? $incrementor : -$incrementor;
 
-			$offsetByDegrees = $this->getSunriseOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH + $degrees);
+			$offsetByDegrees = $this->getSunriseOffsetByDegrees(Zman::GEOMETRIC_ZENITH + $degrees);
 
 			if ($offsetByDegrees === null || abs($degrees) > 30.0) {
 				return NAN;
@@ -122,7 +122,7 @@ trait Utilities
 			return NAN;
 		}
 
-		$offsetByTime = $this->getTimeOffset($seaLevelSunset, $minutes * Zmanim::MINUTE_MILLIS);
+		$offsetByTime = $this->getTimeOffset($seaLevelSunset, $minutes * Zman::MINUTE_MILLIS);
 
 		$degrees = 0.0;
 		$incrementor = 0.0001;
@@ -130,7 +130,7 @@ trait Utilities
 		do {
 			$degrees += $minutes > 0.0 ? $incrementor : -$incrementor;
 
-			$offsetByDegrees = $this->getSunsetOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH + $degrees);
+			$offsetByDegrees = $this->getSunsetOffsetByDegrees(Zman::GEOMETRIC_ZENITH + $degrees);
 
 			if ($offsetByDegrees === null || abs($degrees) > 30.0) {
 				return NAN;
@@ -187,9 +187,9 @@ trait Utilities
 		$seaLevelSunrise = $this->getSeaLevelSunrise();
 		$seaLevelSunset = $this->getSeaLevelSunset();
 		if ($sunset) {
-			$twilight = $this->getSunsetOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH + $degrees);
+			$twilight = $this->getSunsetOffsetByDegrees(Zman::GEOMETRIC_ZENITH + $degrees);
 		} else {
-			$twilight = $this->getSunriseOffsetByDegrees(Zmanim::GEOMETRIC_ZENITH + $degrees);
+			$twilight = $this->getSunriseOffsetByDegrees(Zman::GEOMETRIC_ZENITH + $degrees);
 		}
 		if ($seaLevelSunrise == null || $seaLevelSunset == null || $twilight == null) {
 			return null;

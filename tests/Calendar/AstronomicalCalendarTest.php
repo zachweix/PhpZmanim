@@ -27,8 +27,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\NoaaCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
-use PhpZmanim\GeoLocation;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 class AstronomicalCalendarTest extends TestCase
 {
@@ -49,11 +48,9 @@ class AstronomicalCalendarTest extends TestCase
 	|--------------------------------------------------------------------------
 	*/
 
-	private function cal(int $year, int $month, int $day, array $loc, ?AstronomicalCalculator $calculator = null): Zmanim
+	private function cal(int $year, int $month, int $day, array $loc, ?AstronomicalCalculator $calculator = null): Zman
 	{
-		$geo = GeoLocation::create($loc['lat'], $loc['lon'], $loc['elev'], $loc['tz']);
-
-		return new Zmanim($year, $month, $day, $geo, $calculator);
+		return Zman::create($year, $month, $day, $loc['lat'], $loc['lon'], $loc['elev'], $loc['tz'], $calculator);
 	}
 
 	/**
@@ -251,7 +248,7 @@ class AstronomicalCalendarTest extends TestCase
 	public function sunTimesCalculatorProducesDifferentSunset(): void
 	{
 		$noaa = $this->cal(2017, 10, 17, self::NJ)->getSunset();
-		$sunTimes = $this->cal(2017, 10, 17, self::NJ, new SunTimesCalculator())->getSunset();
+		$sunTimes = $this->cal(2017, 10, 17, self::NJ, SunTimesCalculator::create())->getSunset();
 
 		$this->assertInstant('2017-10-17T22:15:24.498724123Z', $sunTimes);
 		$this->assertNotEquals($noaa->getPreciseTimestamp(), $sunTimes->getPreciseTimestamp());
@@ -260,7 +257,7 @@ class AstronomicalCalendarTest extends TestCase
 	#[Test]
 	public function sunTimesCalculatorReturnsNullAtArcticNoonAndMidnight(): void
 	{
-		$calendar = $this->cal(2017, 6, 21, self::CONGER, new SunTimesCalculator());
+		$calendar = $this->cal(2017, 6, 21, self::CONGER, SunTimesCalculator::create());
 
 		$this->assertNull($calendar->getSunrise());
 		$this->assertNull($calendar->getSunTransit());
@@ -276,14 +273,14 @@ class AstronomicalCalendarTest extends TestCase
 	#[Test]
 	public function defaultsToNoaaCalculator(): void
 	{
-		$this->assertInstanceOf(NoaaCalculator::class, Zmanim::create()->getAstronomicalCalculator());
+		$this->assertInstanceOf(NoaaCalculator::class, Zman::create()->getAstronomicalCalculator());
 	}
 
 	#[Test]
 	public function setDateRejectsPartialDate(): void
 	{
 		$this->expectException(\InvalidArgumentException::class);
-		Zmanim::create()->setDate(2017, 10);
+		Zman::create()->setDate(2017, 10);
 	}
 
 	#[Test]

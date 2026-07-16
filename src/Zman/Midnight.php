@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,35 +35,26 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait AteretTorah
+trait Midnight
 {
-	public function getTzaisAteretTorah(): Carbon|null
+	public function getSolarMidnight(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->getAteretTorahSunsetOffset() * Zmanim::MINUTE_MILLIS);
+		$midnight = $this->astronomicalCalculator->getUTCMidnight($this->getAdjustedDate(), $this->geoLocation);
+
+		return $this->toAdjustedCarbon($midnight, Zman::MIDNIGHT);
 	}
 
-	public function getSofZmanShmaAteretTorah(): Carbon|null
-	{
-		return $this->getSofZmanShma($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
-	}
+	// The following are from ZmanimCalendar
 
-	public function getSofZmanTfilaAteretTorah(): Carbon|null
+	public function getChatzosHalayla(): Carbon|null
 	{
-		return $this->getSofZmanTfila($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
-	}
+		if ($this->useAstronomicalChatzos) {
+			return $this->getSolarMidnight();
+		}
 
-	public function getMinchaGedolaAteretTorah(): Carbon|null
-	{
-		return $this->getMinchaGedola($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
-	}
+		$tomorrow = $this->copy()->addDays(1);
 
-	public function getMinchaKetanaAteretTorah(): Carbon|null
-	{
-		return $this->getMinchaKetana($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
-	}
-
-	public function getPlagHaminchaAteretTorah(): Carbon|null
-	{
-		return $this->getPlagHamincha($this->getAlos72Zmanis(), $this->getTzaisAteretTorah(), false);
+		return $this->getChatzos($this->getSeaLevelSunset(), $tomorrow->getSeaLevelSunrise())
+			?? $this->getSolarMidnight();
 	}
 }

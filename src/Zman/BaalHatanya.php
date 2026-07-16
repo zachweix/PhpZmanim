@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -39,7 +39,7 @@ trait BaalHatanya
 {
 	public function getAlosBaalHatanya(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_16_POINT_9);
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_16_POINT_9);
 	}
 
 	public function getSofZmanShmaBaalHatanya(): Carbon|null
@@ -79,6 +79,6 @@ trait BaalHatanya
 
 	public function getTzaisBaalHatanya(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_6_DEGREES);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_6_DEGREES);
 	}
 }

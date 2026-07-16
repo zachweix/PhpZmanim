@@ -23,8 +23,7 @@
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
-use PhpZmanim\GeoLocation;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * Coverage for the location- and date-gated zmanim that only produce a value under specific
@@ -39,16 +38,14 @@ class SpecialDayZmanimTest extends TestCase
 	private const LAKEWOOD = ['lat' => 40.0721087, 'lon' => -74.2400243, 'elev' => 15, 'tz' => 'America/New_York'];
 	private const NORWAY = ['lat' => 70.1498248, 'lon' => 9.1456867, 'elev' => 0, 'tz' => 'Europe/Oslo'];
 
-	private function lakewoodFor(int $year, int $month, int $day): Zmanim
+	private function lakewoodFor(int $year, int $month, int $day): Zman
 	{
-		return new Zmanim($year, $month, $day, GeoLocation::create(
-			self::LAKEWOOD['lat'], self::LAKEWOOD['lon'], self::LAKEWOOD['elev'], self::LAKEWOOD['tz']));
+		return Zman::create($year, $month, $day, self::LAKEWOOD['lat'], self::LAKEWOOD['lon'], self::LAKEWOOD['elev'], self::LAKEWOOD['tz']);
 	}
 
-	private function norwayFor(int $year, int $month, int $day): Zmanim
+	private function norwayFor(int $year, int $month, int $day): Zman
 	{
-		return new Zmanim($year, $month, $day, GeoLocation::create(
-			self::NORWAY['lat'], self::NORWAY['lon'], self::NORWAY['elev'], self::NORWAY['tz']));
+		return Zman::create($year, $month, $day, self::NORWAY['lat'], self::NORWAY['lon'], self::NORWAY['elev'], self::NORWAY['tz']);
 	}
 
 	private function assertInstant(string $expectedIso, ?Carbon $actual): void

@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -35,26 +35,47 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Midnight
+trait Sunset
 {
-	public function getSolarMidnight(): Carbon|null
+	public function getSunset(): Carbon|null
 	{
-		$midnight = $this->astronomicalCalculator->getUTCMidnight($this->getAdjustedDate(), $this->geoLocation);
+		return $this->getSunsetOffsetByDegrees(Zman::GEOMETRIC_ZENITH);
+	}
 
-		return $this->toAdjustedCarbon($midnight, Zmanim::MIDNIGHT);
+	public function getEndCivilTwilight(): Carbon|null
+	{
+		return $this->getSunsetOffsetByDegrees(Zman::CIVIL_ZENITH);
+	}
+
+	public function getEndNauticalTwilight(): Carbon|null
+	{
+		return $this->getSunsetOffsetByDegrees(Zman::NAUTICAL_ZENITH);
+	}
+
+	public function getEndAstronomicalTwilight(): Carbon|null
+	{
+		return $this->getSunsetOffsetByDegrees(Zman::ASTRONOMICAL_ZENITH);
+	}
+
+	public function getSeaLevelSunset(): Carbon|null
+	{
+		return $this->toAdjustedCarbon($this->getUTCSunset(Zman::GEOMETRIC_ZENITH, false), Zman::SUNSET);
+	}
+
+	public function getSunsetOffsetByDegrees(float $offsetZenith): Carbon|null
+	{
+		return $this->toAdjustedCarbon($this->getUTCSunset($offsetZenith), Zman::SUNSET);
 	}
 
 	// The following are from ZmanimCalendar
 
-	public function getChatzosHalayla(): Carbon|null
+	protected function getElevationAdjustedSunset(): Carbon|null
 	{
-		if ($this->useAstronomicalChatzos) {
-			return $this->getSolarMidnight();
-		}
+		return $this->useElevation ? $this->getSunset() : $this->getSeaLevelSunset();
+	}
 
-		$tomorrow = $this->copy()->addDays(1);
-
-		return $this->getChatzos($this->getSeaLevelSunset(), $tomorrow->getSeaLevelSunrise())
-			?? $this->getSolarMidnight();
+	protected function getSunsetBaalHatanya(): Carbon|null
+	{
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_1_POINT_583);
 	}
 }

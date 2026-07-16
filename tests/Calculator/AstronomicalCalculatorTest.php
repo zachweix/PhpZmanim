@@ -73,7 +73,7 @@ class AstronomicalCalculatorTest extends TestCase
 		$default = AstronomicalCalculator::getDefault();
 
 		$this->assertInstanceOf(NoaaCalculator::class, $default);
-		$this->assertEquals(new NoaaCalculator(), $default);
+		$this->assertEquals(NoaaCalculator::create(), $default);
 	}
 
 	/*

@@ -29,32 +29,32 @@ use PhpZmanim\Calculator\NoaaCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\GeoLocation;
 
-class Zmanim
+class Zman
 {
-	use Zmanim\Creator;
-	use Zmanim\Utilities;
-	use Zmanim\Helpers;
-	use Zmanim\Alos;
-	use Zmanim\Misheyakir;
-	use Zmanim\Sunrise;
-	use Zmanim\SofZmanShma;
-	use Zmanim\SofZmanTfila;
-	use Zmanim\Noon;
-	use Zmanim\MinchaGedola;
-	use Zmanim\MinchaKetana;
-	use Zmanim\Plag;
-	use Zmanim\Sunset;
-	use Zmanim\BainHashmashos;
-	use Zmanim\Midnight;
-	use Zmanim\Azimuth;
-	use Zmanim\ShaahZmanis;
-	use Zmanim\Tzais;
-	use Zmanim\Melacha;
-	use Zmanim\Chametz;
-	use Zmanim\BaalHatanya;
-	use Zmanim\AteretTorah;
-	use Zmanim\Polar;
-	use Zmanim\Molad;
+	use Zman\Creator;
+	use Zman\Utilities;
+	use Zman\Helpers;
+	use Zman\Alos;
+	use Zman\Misheyakir;
+	use Zman\Sunrise;
+	use Zman\SofZmanShma;
+	use Zman\SofZmanTfila;
+	use Zman\Noon;
+	use Zman\MinchaGedola;
+	use Zman\MinchaKetana;
+	use Zman\Plag;
+	use Zman\Sunset;
+	use Zman\BainHashmashos;
+	use Zman\Midnight;
+	use Zman\Azimuth;
+	use Zman\ShaahZmanis;
+	use Zman\Tzais;
+	use Zman\Melacha;
+	use Zman\Chametz;
+	use Zman\BaalHatanya;
+	use Zman\AteretTorah;
+	use Zman\Polar;
+	use Zman\Molad;
 
 	/*
 	|--------------------------------------------------------------------------

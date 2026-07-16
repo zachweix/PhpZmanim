@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -41,17 +41,17 @@ trait BainHashmashos
 
 	public function getBainHashmashosRT13Point24Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_13_POINT_24);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_13_POINT_24);
 	}
 
 	public function getBainHashmashosRT58Point5Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 58.5 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 58.5 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getBainHashmashosRT13Point5MinutesBefore7Point083Degrees(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getTzaisGeonim7Point083Degrees(), -13.5 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getTzaisGeonim7Point083Degrees(), -13.5 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getBainHashmashosRT2Stars(): Carbon|null
@@ -69,31 +69,31 @@ trait BainHashmashos
 
 	public function getBainHashmashosYereim18Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -18 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -18 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getBainHashmashosYereim16Point875Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -16.875 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -16.875 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getBainHashmashosYereim13Point5Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -13.5 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), -13.5 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getBainHashmashosYereim3Point05Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_MINUS_3_POINT_05);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_MINUS_3_POINT_05);
 	}
 
 	public function getBainHashmashosYereim2Point8Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_MINUS_2_POINT_8);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_MINUS_2_POINT_8);
 	}
 
 	public function getBainHashmashosYereim2Point1Degrees(): Carbon|null
 	{
-		return $this->getSunsetOffsetByDegrees(Zmanim::ZENITH_MINUS_2_POINT_1);
+		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_MINUS_2_POINT_1);
 	}
 }

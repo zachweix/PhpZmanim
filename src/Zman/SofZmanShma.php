@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -112,7 +112,7 @@ trait SofZmanShma
 
 	public function getSofZmanShma3HoursBeforeChatzos(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getChatzosHayom(), -3 * Zmanim::HOUR_MILLIS);
+		return $this->getTimeOffset($this->getChatzosHayom(), -3 * Zman::HOUR_MILLIS);
 	}
 
 	public function getSofZmanShmaAlos16Point1ToSunset(): Carbon|null

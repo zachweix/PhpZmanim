@@ -20,12 +20,12 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\GeoLocation;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -47,10 +47,10 @@ trait Creator
 	}
 
 	public static function create(Carbon|int|null $year = null, ?int $month = null, ?int $day = null,
-		$latitude = 51.4772, $longitude = 0.0, $elevation = 0.0, $timezone = 'GMT') {
+		$latitude = 51.4772, $longitude = 0.0, $elevation = 0.0, $timezone = 'GMT', ?AstronomicalCalculator $calculator = null) {
 		$geoLocation = GeoLocation::create($latitude, $longitude, $elevation, $timezone);
 
-		return new static($year, $month, $day, $geoLocation);
+		return new static($year, $month, $day, $geoLocation, $calculator);
 	}
 
 	public function __clone()
@@ -60,12 +60,12 @@ trait Creator
 		$this->astronomicalCalculator = $this->astronomicalCalculator->copy();
 	}
 
-	public function copy(): Zmanim
+	public function copy(): Zman
 	{
 		return clone $this;
 	}
 
-	public function equals(Zmanim $zmanim): bool
+	public function equals(Zman $zmanim): bool
 	{
 		if ($this === $zmanim) {
 			return true;

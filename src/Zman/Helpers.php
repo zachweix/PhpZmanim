@@ -20,11 +20,11 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
 use InvalidArgumentException;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -46,9 +46,9 @@ trait Helpers
 
 		$date = $this->getAdjustedDate();
 		$localMeanTime = Carbon::create($date->year, $date->month, $date->day, 0, 0, 0, 'UTC')
-			->addMicroseconds((int) round($hours * Zmanim::HOUR_MILLIS * 1000));
+			->addMicroseconds((int) round($hours * Zman::HOUR_MILLIS * 1000));
 
-		return $this->getTimeOffset($localMeanTime, -($this->geoLocation->getLongitude() * 4 * Zmanim::MINUTE_MILLIS));
+		return $this->getTimeOffset($localMeanTime, -($this->geoLocation->getLongitude() * 4 * Zman::MINUTE_MILLIS));
 	}
 
 	protected function getAdjustedDate(): Carbon

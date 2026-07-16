@@ -20,10 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -41,12 +41,12 @@ trait Alos
 
 	public function getAlosHashachar(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_16_POINT_1);
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_16_POINT_1);
 	}
 
 	public function getAlos72(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * Zman::MINUTE_MILLIS);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
@@ -63,22 +63,22 @@ trait Alos
 
 	public function getAlos60Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -60 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -60 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getAlos90Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -90 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -90 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getAlos96Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -96 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -96 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getAlos120Minutes(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -120 * Zmanim::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -120 * Zman::MINUTE_MILLIS);
 	}
 
 	public function getAlos72Zmanis(): Carbon|null
@@ -103,21 +103,21 @@ trait Alos
 
 	public function getAlos18Degrees(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ASTRONOMICAL_ZENITH);
+		return $this->getSunriseOffsetByDegrees(Zman::ASTRONOMICAL_ZENITH);
 	}
 
 	public function getAlos19Degrees(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_19_DEGREES);
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_19_DEGREES);
 	}
 
 	public function getAlos19Point8Degrees(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_19_POINT_8);
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_19_POINT_8);
 	}
 
 	public function getAlos26Degrees(): Carbon|null
 	{
-		return $this->getSunriseOffsetByDegrees(Zmanim::ZENITH_26_DEGREES);
+		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_26_DEGREES);
 	}
 }

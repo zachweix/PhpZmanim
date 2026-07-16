@@ -20,11 +20,10 @@
  * http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
  */
 
-namespace PhpZmanim\Zmanim;
+namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use PhpZmanim\JewishDate;
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 
 /**
  * @property Carbon $date;
@@ -36,26 +35,12 @@ use PhpZmanim\Zmanim;
  * @property bool $useAstronomicalChatzosForOtherZmanim;
  * @property float $ateretTorahSunsetOffset;
  */
-trait Melacha
+trait Azimuth
 {
-	// The following are from ZmanimCalendar
-
-	public function getCandleLighting(): Carbon|null
+	public function getTimeAtAzimuth90Or270(float $azimuth): Carbon|null
 	{
-		return $this->getTimeOffset($this->getSeaLevelSunset(), -$this->candleLightingOffset * Zmanim::MINUTE_MILLIS);
-	}
+		$time = $this->astronomicalCalculator->getTimeAtAzimuth($this->getAdjustedDate(), $this->geoLocation, $azimuth);
 
-	// Note that jewishCalendar may change and this will need to change too
-	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
-	{
-		$jewishDate = new JewishDate();
-		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
-		$jewishDate->setInIsrael($inIsrael);
-
-		if ($jewishDate->hasCandleLighting() && $currentTime->gte($this->getElevationAdjustedSunset())) {
-			return true;
-		}
-
-		return $jewishDate->isAssurBemelacha() && $currentTime->lte($tzais);
+		return $this->toAdjustedCarbon($time, $azimuth == 90 ? Zman::SUNRISE : Zman::SUNSET);
 	}
 }

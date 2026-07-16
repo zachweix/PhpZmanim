@@ -24,8 +24,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PhpZmanim\Zmanim;
-use PhpZmanim\GeoLocation;
+use PhpZmanim\Zman;
 
 /**
  * Behavioral coverage for ZmanimCalendar, mirroring KosherJava's ZmanimCalendarTest. Every zero-argument
@@ -49,16 +48,14 @@ class ZmanimCalendarTest extends TestCase
 	|--------------------------------------------------------------------------
 	*/
 
-	private function fixtureCalendar(): Zmanim
+	private function fixtureCalendar(): Zman
 	{
 		return $this->calendarFor(2017, 10, 17);
 	}
 
-	private function calendarFor(int $year, int $month, int $day): Zmanim
+	private function calendarFor(int $year, int $month, int $day): Zman
 	{
-		$geo = GeoLocation::create(self::NJ['lat'], self::NJ['lon'], self::NJ['elev'], self::NJ['tz']);
-
-		return new Zmanim($year, $month, $day, $geo);
+		return Zman::create($year, $month, $day, self::NJ['lat'], self::NJ['lon'], self::NJ['elev'], self::NJ['tz']);
 	}
 
 	/**
