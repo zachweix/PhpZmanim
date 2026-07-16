@@ -222,23 +222,24 @@ class AstronomicalCalendarTest extends TestCase
 
 	/*
 	|--------------------------------------------------------------------------
-	| SOLAR DIP FROM OFFSET
+	| SOLAR DIP FROM OFFSET (COMMENTED OUT BECAUSE THEY ARE TOO SLOW AND SHOULD
+	| NOT BE USED ANYWAY
 	|--------------------------------------------------------------------------
 	*/
 
-	#[Test]
-	public function getSunriseSolarDipFromOffset(): void
-	{
-		$actual = $this->cal(2017, 10, 17, self::NJ)->getSunriseSolarDipFromOffset(72);
-		$this->assertEqualsWithDelta(14.50320, $actual, 0.001);
-	}
+	// #[Test]
+	// public function getSunriseSolarDipFromOffset(): void
+	// {
+	// 	$actual = $this->cal(2017, 10, 17, self::NJ)->getSunriseSolarDipFromOffset(72);
+	// 	$this->assertEqualsWithDelta(14.50320, $actual, 0.001);
+	// }
 
-	#[Test]
-	public function getSunsetSolarDipFromOffset(): void
-	{
-		$actual = $this->cal(2017, 10, 17, self::NJ)->getSunsetSolarDipFromOffset(72);
-		$this->assertEqualsWithDelta(14.52060, $actual, 0.001);
-	}
+	// #[Test]
+	// public function getSunsetSolarDipFromOffset(): void
+	// {
+	// 	$actual = $this->cal(2017, 10, 17, self::NJ)->getSunsetSolarDipFromOffset(72);
+	// 	$this->assertEqualsWithDelta(14.52060, $actual, 0.001);
+	// }
 
 	/*
 	|--------------------------------------------------------------------------

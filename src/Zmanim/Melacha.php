@@ -23,7 +23,7 @@
 namespace PhpZmanim\Zmanim;
 
 use Carbon\Carbon;
-use PhpZmanim\HebrewCalendar\JewishCalendar;
+use PhpZmanim\JewishDate;
 use PhpZmanim\Zmanim;
 
 /**
@@ -48,14 +48,14 @@ trait Melacha
 	// Note that jewishCalendar may change and this will need to change too
 	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
 	{
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
-		$jewishCalendar->setInIsrael($inIsrael);
+		$jewishDate = new JewishDate();
+		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
+		$jewishDate->setInIsrael($inIsrael);
 
-		if ($jewishCalendar->hasCandleLighting() && $currentTime->gte($this->getElevationAdjustedSunset())) {
+		if ($jewishDate->hasCandleLighting() && $currentTime->gte($this->getElevationAdjustedSunset())) {
 			return true;
 		}
 
-		return $jewishCalendar->isAssurBemelacha() && $currentTime->lte($tzais);
+		return $jewishDate->isAssurBemelacha() && $currentTime->lte($tzais);
 	}
 }

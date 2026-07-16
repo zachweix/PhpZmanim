@@ -23,7 +23,7 @@
 namespace PhpZmanim\Zmanim;
 
 use Carbon\Carbon;
-use PhpZmanim\HebrewCalendar\JewishCalendar;
+use PhpZmanim\JewishDate;
 
 /**
  * @property Carbon $date;
@@ -40,7 +40,7 @@ trait Molad
 {
 	public function getSofZmanKidushLevanaBetweenMoldos(?Carbon $alos = null, ?Carbon $tzais = null): Carbon|null
 	{
-		$jewishCalendar = $this->jewishCalendar();
+		$jewishCalendar = $this->jewishDate();
 		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 16) {
 			return null;
 		}
@@ -50,7 +50,7 @@ trait Molad
 
 	public function getSofZmanKidushLevana15Days(?Carbon $alos = null, ?Carbon $tzais = null): Carbon|null
 	{
-		$jewishCalendar = $this->jewishCalendar();
+		$jewishCalendar = $this->jewishDate();
 		if ($jewishCalendar->getJewishDayOfMonth() < 11 || $jewishCalendar->getJewishDayOfMonth() > 17) {
 			return null;
 		}
@@ -60,7 +60,7 @@ trait Molad
 
 	public function getTchilasZmanKidushLevana3Days(?Carbon $alos = null, ?Carbon $tzais = null): Carbon|null
 	{
-		$jewishCalendar = $this->jewishCalendar();
+		$jewishCalendar = $this->jewishDate();
 		if ($jewishCalendar->getJewishDayOfMonth() > 5 && $jewishCalendar->getJewishDayOfMonth() < 30) {
 			return null;
 		}
@@ -76,7 +76,7 @@ trait Molad
 
 	public function getTchilasZmanKidushLevana7Days(?Carbon $alos = null, ?Carbon $tzais = null): Carbon|null
 	{
-		$jewishCalendar = $this->jewishCalendar();
+		$jewishCalendar = $this->jewishDate();
 		if ($jewishCalendar->getJewishDayOfMonth() < 4 || $jewishCalendar->getJewishDayOfMonth() > 9) {
 			return null;
 		}
@@ -86,26 +86,26 @@ trait Molad
 
 	public function getZmanMolad(): Carbon|null
 	{
-		$jewishCalendar = $this->jewishCalendar();
+		$jewishCalendar = $this->jewishDate();
 		if ($jewishCalendar->getJewishDayOfMonth() > 2 && $jewishCalendar->getJewishDayOfMonth() < 27) {
 			return null;
 		}
 
-		$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+		$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsCarbon(), null, null, true);
 		if ($molad == null && $jewishCalendar->getJewishDayOfMonth() > 26) {
 			$jewishCalendar->addMonthsJewish(1);
-			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsDate(), null, null, true);
+			$molad = $this->getMoladBasedTime($jewishCalendar->getMoladAsCarbon(), null, null, true);
 		}
 
 		return $molad;
 	}
 
-	private function jewishCalendar(): JewishCalendar
+	private function jewishDate(): JewishDate
 	{
-		$jewishCalendar = new JewishCalendar();
-		$jewishCalendar->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
+		$jewishDate = new JewishDate();
+		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
 
-		return $jewishCalendar;
+		return $jewishDate;
 	}
 
 	private function getMoladBasedTime(?Carbon $moladBasedTime, ?Carbon $alos, ?Carbon $tzais, bool $techila): Carbon|null

@@ -23,6 +23,7 @@
 namespace PhpZmanim\Zmanim;
 
 use Carbon\Carbon;
+use PhpZmanim\JewishDate;
 
 /**
  * @property Carbon $date;
@@ -38,12 +39,13 @@ trait Chametz
 {
 	// The following are from ZmanimCalendar
 
-	/*
-	 * TODO: Java gates this on it being erev Pesach (Nissan 14) via JewishCalendar and returns null otherwise.
-	 * That date check is intentionally omitted for now and should be added back.
-	 */
+	// Chametz zmanim only apply on Erev Pesach (Nissan 14); null is returned on any other day.
 	public function getSofZmanBiurChametz(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
+		if (!$this->isErevPesach()) {
+			return null;
+		}
+
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
 			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzos(), 5);
 		}
@@ -51,13 +53,21 @@ trait Chametz
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 5);
 	}
 
-	/*
-	 * TODO: Java gates this on it being erev Pesach (Nissan 14) via JewishCalendar and returns null otherwise.
-	 * That date check is intentionally omitted for now and should be added back.
-	 */
 	public function getSofZmanAchilasChametz(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
+		if (!$this->isErevPesach()) {
+			return null;
+		}
+
 		return $this->getSofZmanTfila($startOfDay, $endOfDay, $synchronous);
+	}
+
+	private function isErevPesach(): bool
+	{
+		$jewishDate = new JewishDate();
+		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);
+
+		return $jewishDate->getJewishMonth() == JewishDate::NISSAN && $jewishDate->getJewishDayOfMonth() == 14;
 	}
 
 	// The following are from ZmanimCalendar

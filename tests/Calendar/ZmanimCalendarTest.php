@@ -152,6 +152,17 @@ class ZmanimCalendarTest extends TestCase
 		$this->assertNull($calendar->getSofZmanAchilasChametz($sunrise, $sunset, true));
 	}
 
+	#[Test]
+	public function chametzZmanimReturnTimesOnErevPesach(): void
+	{
+		$calendar = $this->calendarFor(2017, 4, 10); // Erev Pesach (14 Nissan 5777)
+		$sunrise = $calendar->getSeaLevelSunrise();
+		$sunset = $calendar->getSeaLevelSunset();
+
+		$this->assertInstanceOf(Carbon::class, $calendar->getSofZmanBiurChametz($sunrise, $sunset, true));
+		$this->assertInstanceOf(Carbon::class, $calendar->getSofZmanAchilasChametz($sunrise, $sunset, true));
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| ELEVATION TOGGLE

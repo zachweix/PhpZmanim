@@ -22,7 +22,6 @@
 
 namespace PhpZmanim;
 
-use ArgumentCountError;
 use Carbon\Carbon;
 use InvalidArgumentException;
 use PhpZmanim\Calculator\AstronomicalCalculator;
@@ -67,7 +66,7 @@ class Zmanim
 	private GeoLocation $geoLocation;
 	private AstronomicalCalculator $astronomicalCalculator;
 	private bool $useElevation = false;
-	private int $candleLightingOffset = 18;
+	private float $candleLightingOffset = 18;
 	private bool $useAstronomicalChatzos = true;
 	private bool $useAstronomicalChatzosForOtherZmanim = false;
 	private float $ateretTorahSunsetOffset = 40;
@@ -200,12 +199,12 @@ class Zmanim
 		return $this;
 	}
 
-	public function getCandleLightingOffset(): int
+	public function getCandleLightingOffset(): float
 	{
 		return $this->candleLightingOffset;
 	}
 
-	public function setCandleLightingOffset(int $candleLightingOffset): self
+	public function setCandleLightingOffset(float $candleLightingOffset): self
 	{
 		$this->candleLightingOffset = $candleLightingOffset;
 
