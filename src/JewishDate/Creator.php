@@ -45,7 +45,7 @@ trait Creator
 {
 	// The following are from JewishDate and JewishCalendar
 
-	public function __construct($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null, bool $inIsrael = false)
+	public function __construct(Carbon|int|null $jewishYear = null, int|null $jewishMonth = null, int|null $jewishDayOfMonth = null, bool $inIsrael = false)
 	{
 		$this->setInIsrael($inIsrael);
 
@@ -72,9 +72,18 @@ trait Creator
 		$this->setMoladTime($molad - $conjunctionDay * JewishDate::CHALAKIM_PER_DAY);
 	}
 
-	public static function create($jewishYear = null, $jewishMonth = null, $jewishDayOfMonth = null, bool $inIsrael = false)
+	public static function create(Carbon|int|null $jewishYear = null, int|null $jewishMonth = null, int|null $jewishDayOfMonth = null, bool $inIsrael = false): JewishDate
 	{
 		return new static($jewishYear, $jewishMonth, $jewishDayOfMonth, $inIsrael);
+	}
+
+	public static function createFromDate(Carbon|int $year, int|null $month = null, int|null $day = null): JewishDate
+	{
+		if (! ($year instanceof Carbon)) {
+			$year = Carbon::createFromDate($year, $month, $day);
+		}
+
+		return new static($year);
 	}
 
 	public function copy(): JewishDate

@@ -2,20 +2,20 @@
 A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) from Eliyahu Hershfeld (code at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). See Kosher Java documentation for comments for every class variable and method. See below for how to install and a more detailed list of what you can access and methods you can call. Once instantiated, you can ask for many Zmanim right out of the gate:
 
 ```php
-$zmanim = Zmanim::create(2019, 2, 22, 'Lakewood', 40.0721087, -74.2400243, 39.57, 'America/New_York');
-$zmanim->tzais72->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
+$zmanim = Zman::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_York');
+$zmanim->getTzais72()->format('Y-m-d\TH:i:sP'); // 2019-02-22T18:52:38-05:00
 
-$jewishCalendar = Zmanim::jewishCalendar(Carbon::createFromDate(2023, 9, 30)); // This will give you a Jewish calendar date for the given date
-$jewishCalendar = Zmanim::jewishCalendar(5784, 7, 15); // This will give the same date, but with the Jewish date given as parameters
-$jewishCalendar->isRoshHashana(); // false
-$jewishCalendar->isSuccos(); // true
+$jewishDate = JewishDate::createFromDate(2023, 9, 30); // This will give you a Jewish date for the given date
+$jewishDate = JewishDate::create(5784, 7, 15); // This will give the same date, but with the Jewish date given as parameters
+$jewishDate->isRoshHashana(); // false
+$jewishDate->isSuccos(); // true
 
-$daf = $jewishCalendar->getDafYomiBavli();
-$format = Zmanim::format();
+$daf = $jewishDate->getDafYomiBavli();
+$format = Zman::format();
 $format->formatDafYomiBavli($daf); // Kiddushin 48
 
-$jewishCalendar = Zmanim::jewishCalendar(5784, 7, 26);
-$format->formatParsha($jewishCalendar); // Bereshis
+$jewishDate = JewishDate::create(5784, 7, 26);
+$format->formatParsha($jewishDate); // Bereshis
 ```
 
 ## Installation (with Composer)
@@ -27,7 +27,7 @@ $ composer require zachweix/php-zmanim
 ```json
 {
     "require": {
-        "zachweix/php-zmanim": "^2.0"
+        "zachweix/php-zmanim": "^4.0"
     }
 }
 ```
@@ -38,14 +38,14 @@ $ composer require zachweix/php-zmanim
 <?php
 require 'vendor/autoload.php';
 
-use PhpZmanim\Zmanim;
+use PhpZmanim\Zman;
 ```
 
 ## Instantiation
 
-You can instantiate a new `Zmanim` object with the `Zmanim::create()` function. (If you want, you can instantiate by creating a `GeoLocation` object and a `ComplexZmanimCalendar` object like in KosherJava). There are currently two ways to calculate the Zmanim times, SunTimesCalculator and NoaaCalculator; the default calculator is NoaaCalculator.
+You can instantiate a new `Zman` object with the `Zman::create()` function. (If you want, you can instantiate by creating a `GeoLocation` object and a `ComplexZmanimCalendar` object like in KosherJava). There are currently two ways to calculate the Zmanim times, SunTimesCalculator and NoaaCalculator; the default calculator is NoaaCalculator.
 
-### Via `Zmanim::create()`
+### Via `Zman::create()`
 
 The expected arguments are:
 `$year`, `$month`, `$day`, `$locationName`, `$latitude`, `$longitude`, `$elevation`, `$timeZone`
@@ -55,8 +55,8 @@ All arguments are optional. The default values are today in Greenwich Mean Time 
 If you give `null` as the year, month or day, today's UTC date will be used, which may be different than your current date (e.g. 9:00PM in New York on February 21 is 2:00AM in UTC on February 22).
 
 ```php
-$zmanimInGMT = Zmanim::create(2019, 2, 21, "Greenwich");
-$zmanim = Zmanim::create(2019, 2, 21, "New York City", 40.850519, -73.929214, 200, "America/New_York");
+$zmanimInGMT = Zman::create(2019, 2, 21, "Greenwich");
+$zmanim = Zman::create(2019, 2, 21, "New York City", 40.850519, -73.929214, 200, "America/New_York");
 ```
 
 ### Via `GeoLocation` and `ComplexZmanimCalendar`

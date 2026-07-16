@@ -79,6 +79,22 @@ class JewishDateTest extends TestCase
 
 	/*
 	|--------------------------------------------------------------------------
+	| BASIC CREATION
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	public function create(): void
+	{
+		$date = JewishDate::create(5786, 5, 2);
+		$this->assertEquals('2 Av, 5786', $date->format()->english()->date());
+
+		$date = JewishDate::createFromDate(2026, 7, 16);
+		$this->assertEquals('2 Av, 5786', $date->format()->english()->date());
+	}
+
+	/*
+	|--------------------------------------------------------------------------
 	| GREGORIAN <-> JEWISH CONVERSION AND MANIPULATION
 	|--------------------------------------------------------------------------
 	*/
