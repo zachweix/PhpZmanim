@@ -24,8 +24,8 @@ use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PhpZmanim\Calendar\ComprehensiveZmanimCalendar;
 use PhpZmanim\GeoLocation;
+use PhpZmanim\Zmanim;
 
 /**
  * A comprehensive regression net over every zero-argument zman method of ComprehensiveZmanimCalendar,
@@ -54,11 +54,11 @@ class ComprehensiveZmanimCalendarTest extends TestCase
 	|--------------------------------------------------------------------------
 	*/
 
-	private function fixtureCalendar(): ComprehensiveZmanimCalendar
+	private function fixtureCalendar(): Zmanim
 	{
 		$geo = GeoLocation::create(self::NJ['lat'], self::NJ['lon'], self::NJ['elev'], self::NJ['tz']);
 
-		return new ComprehensiveZmanimCalendar(2017, 10, 17, $geo);
+		return new Zmanim(2017, 10, 17, $geo);
 	}
 
 	private function assertInstant(?string $expectedIso, ?Carbon $actual): void

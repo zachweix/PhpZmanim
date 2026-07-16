@@ -24,7 +24,7 @@ use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PhpZmanim\Calendar\ZmanimCalendar;
+use PhpZmanim\Zmanim;
 use PhpZmanim\GeoLocation;
 
 /**
@@ -49,16 +49,16 @@ class ZmanimCalendarTest extends TestCase
 	|--------------------------------------------------------------------------
 	*/
 
-	private function fixtureCalendar(): ZmanimCalendar
+	private function fixtureCalendar(): Zmanim
 	{
 		return $this->calendarFor(2017, 10, 17);
 	}
 
-	private function calendarFor(int $year, int $month, int $day): ZmanimCalendar
+	private function calendarFor(int $year, int $month, int $day): Zmanim
 	{
 		$geo = GeoLocation::create(self::NJ['lat'], self::NJ['lon'], self::NJ['elev'], self::NJ['tz']);
 
-		return new ZmanimCalendar($year, $month, $day, $geo);
+		return new Zmanim($year, $month, $day, $geo);
 	}
 
 	/**
@@ -99,8 +99,8 @@ class ZmanimCalendarTest extends TestCase
 			'sof zman shma MGA 72' => ['getSofZmanShmaMGA', '2017-10-17T13:19:53.352746510Z'],
 			'sof zman tfila GRA' => ['getSofZmanTfilaGRA', '2017-10-17T14:51:14.002600466Z'],
 			'sof zman tfila MGA 72' => ['getSofZmanTfilaMGA', '2017-10-17T14:27:14.002600466Z'],
-			'chatzos hayom' => ['getChatzos', '2017-10-17T16:42:12.781249470Z'],
-			'chatzos as half day' => ['getChatzosAsHalfDay', '2017-10-17T16:41:55.302308378Z'],
+			'chatzos hayom' => ['getChatzosHayom', '2017-10-17T16:42:12.781249470Z'],
+			'chatzos as half day' => ['getChatzosHayomAsHalfDay', '2017-10-17T16:41:55.302308378Z'],
 			'chatzos halayla' => ['getChatzosHalayla', '2017-10-18T04:42:06.833038724Z'],
 			'mincha gedola GRA' => ['getMinchaGedolaGRA', '2017-10-17T17:09:35.627235356Z'],
 			'mincha ketana GRA' => ['getMinchaKetanaGRA', '2017-10-17T19:55:37.576797224Z'],

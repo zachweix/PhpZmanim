@@ -24,11 +24,11 @@ use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PhpZmanim\Calendar\AstronomicalCalendar;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\NoaaCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
 use PhpZmanim\GeoLocation;
+use PhpZmanim\Zmanim;
 
 class AstronomicalCalendarTest extends TestCase
 {
@@ -49,11 +49,11 @@ class AstronomicalCalendarTest extends TestCase
 	|--------------------------------------------------------------------------
 	*/
 
-	private function cal(int $year, int $month, int $day, array $loc, ?AstronomicalCalculator $calculator = null): AstronomicalCalendar
+	private function cal(int $year, int $month, int $day, array $loc, ?AstronomicalCalculator $calculator = null): Zmanim
 	{
 		$geo = GeoLocation::create($loc['lat'], $loc['lon'], $loc['elev'], $loc['tz']);
 
-		return new AstronomicalCalendar($year, $month, $day, $geo, $calculator);
+		return new Zmanim($year, $month, $day, $geo, $calculator);
 	}
 
 	/**
@@ -275,14 +275,14 @@ class AstronomicalCalendarTest extends TestCase
 	#[Test]
 	public function defaultsToNoaaCalculator(): void
 	{
-		$this->assertInstanceOf(NoaaCalculator::class, (new AstronomicalCalendar())->getAstronomicalCalculator());
+		$this->assertInstanceOf(NoaaCalculator::class, Zmanim::create()->getAstronomicalCalculator());
 	}
 
 	#[Test]
 	public function setDateRejectsPartialDate(): void
 	{
 		$this->expectException(\InvalidArgumentException::class);
-		(new AstronomicalCalendar())->setDate(2017, 10);
+		Zmanim::create()->setDate(2017, 10);
 	}
 
 	#[Test]
