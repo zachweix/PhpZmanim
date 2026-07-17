@@ -41,7 +41,7 @@ trait MinchaKetana
 	public function getSamuchLeMinchaKetana(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($this->getChatzos(), $endOfDay, 3);
+			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $endOfDay, 3);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9);
@@ -50,7 +50,7 @@ trait MinchaKetana
 	public function getMinchaKetana(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($this->getChatzos(), $endOfDay, 3.5);
+			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $endOfDay, 3.5);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 9.5);

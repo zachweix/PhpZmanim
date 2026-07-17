@@ -47,7 +47,7 @@ trait Chametz
 		}
 
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzos(), 5);
+			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzosHayom(), 5);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 5);

@@ -23,7 +23,6 @@
 namespace PhpZmanim\Zman;
 
 use Carbon\Carbon;
-use InvalidArgumentException;
 use PhpZmanim\Zman;
 
 /**
@@ -47,20 +46,8 @@ trait Noon
 
 	// The following are from ZmanimCalendar
 
-	public function getChatzos(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
+	public function getChatzos(Carbon $startOfDay, Carbon $endOfDay): Carbon|null
 	{
-		if (is_null($startOfDay) && is_null($endOfDay)) {
-			if ($this->useAstronomicalChatzos) {
-				return $this->getSunTransit();
-			}
-
-			return $this->getChatzosHayomAsHalfDay() ?? $this->getSunTransit();
-		}
-
-		if (is_null($startOfDay) || is_null($endOfDay)) {
-			throw new InvalidArgumentException('You must either provide a startOfDay and endOfDay or leave them all blank');
-		}
-
 		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
 
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * 6);
@@ -73,7 +60,11 @@ trait Noon
 
 	public function getChatzosHayom(): Carbon|null
 	{
-		return $this->getChatzos();
+		if ($this->useAstronomicalChatzos) {
+			return $this->getSunTransit();
+		}
+
+		return $this->getChatzosHayomAsHalfDay() ?? $this->getSunTransit();
 	}
 
 	// The following are from ComprehensiveZmanimCalendar

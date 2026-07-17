@@ -197,8 +197,7 @@ $zman->getSofZmanTfilaGRASunriseToFixedLocalChatzos();
 #### Chatzos (midday)
 
 ```php
-$zman->getChatzos();                 // astronomical (solar transit) chatzos
-$zman->getChatzosHayom();
+$zman->getChatzosHayom();            // astronomical (solar transit) chatzos
 $zman->getChatzosHayomAsHalfDay();   // halfway between sunrise and sunset
 $zman->getFixedLocalChatzosHayom();  // fixed local chatzos
 ```
