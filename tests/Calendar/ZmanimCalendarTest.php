@@ -91,7 +91,7 @@ class ZmanimCalendarTest extends TestCase
 	{
 		return [
 			'alos 16.1 degrees' => ['getAlosHashachar', '2017-10-17T09:49:30.219906135Z'],
-			'alos 72' => ['getAlos72', '2017-10-17T09:57:51.403184642Z'],
+			'alos 72' => ['getAlos72Minutes', '2017-10-17T09:57:51.403184642Z'],
 			'sof zman shma GRA' => ['getSofZmanShmaGRA', '2017-10-17T13:55:53.352746510Z'],
 			'sof zman shma MGA 72' => ['getSofZmanShmaMGA', '2017-10-17T13:19:53.352746510Z'],
 			'sof zman tfila GRA' => ['getSofZmanTfilaGRA', '2017-10-17T14:51:14.002600466Z'],
@@ -103,7 +103,7 @@ class ZmanimCalendarTest extends TestCase
 			'mincha ketana GRA' => ['getMinchaKetanaGRA', '2017-10-17T19:55:37.576797224Z'],
 			'plag hamincha GRA' => ['getPlagHaminchaGRA', '2017-10-17T21:04:48.389114669Z'],
 			'candle lighting' => ['getCandleLighting', '2017-10-17T21:55:59.201432122Z'],
-			'tzais 72' => ['getTzais72', '2017-10-17T23:25:59.201432122Z'],
+			'tzais 72' => ['getTzais72Minutes', '2017-10-17T23:25:59.201432122Z'],
 			'tzais geonim 8.5 degrees' => ['getTzais', '2017-10-17T22:54:29.772724455Z'],
 		];
 	}

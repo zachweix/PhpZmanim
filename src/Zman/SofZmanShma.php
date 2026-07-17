@@ -55,7 +55,7 @@ trait SofZmanShma
 
 	public function getSofZmanShmaMGA(): Carbon|null
 	{
-		return $this->getSofZmanShma($this->getAlos72(), $this->getTzais72(), true);
+		return $this->getSofZmanShma($this->getAlos72Minutes(), $this->getTzais72Minutes(), true);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar

@@ -15,7 +15,7 @@ use PhpZmanim\JewishDate;
 // Zmanim for a date and location
 $zman = Zman::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_York');
 $zman->getSunrise()->format('Y-m-d\TH:i:sP');  // 2019-02-22T06:39:45-05:00
-$zman->getTzais72()->format('Y-m-d\TH:i:sP');   // 2019-02-22T18:52:39-05:00
+$zman->getTzais72Minutes()->format('Y-m-d\TH:i:sP');   // 2019-02-22T18:52:39-05:00
 
 // The Jewish calendar
 $jewishDate = JewishDate::createFromDate(2023, 9, 30);  // from a Gregorian date
@@ -69,7 +69,7 @@ $zman->getSunset();
 $zman->getSofZmanShmaGRA();
 $zman->getChatzos();
 $zman->getPlagHaminchaGRA();
-$zman->getTzais72();
+$zman->getTzais72Minutes();
 ```
 
 The arguments to `Zman::create()` are, in order:
