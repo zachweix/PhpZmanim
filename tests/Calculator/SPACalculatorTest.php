@@ -86,126 +86,126 @@ class SPACalculatorTest extends TestCase
 	public static function sunriseProvider(): array
 	{
 		return [
-			'NJ Standard Date' => ['2017-10-17', self::NJ, 11.13593689],
-			'LA Standard Date' => ['2017-10-17', self::LA, 14.00756754],
-			'Jerusalem Hist. Date' => ['1955-02-26', self::JERUSALEM, 4.11873932],
-			'Norway Polar Solstice' => ['2017-06-21', self::NORWAY, false],
-			'Sydney Leap Day' => ['2020-02-29', self::SYDNEY, 19.68293661],
-			'Macapa Equator New Year' => ['2000-01-01', self::MACAPA, 9.38998685],
-			'Suva Fiji Solstice' => ['2023-06-21', self::SUVA, 18.60534965],
-			'Ushuaia Southern Winter' => ['2017-06-21', self::USHUAIA, 12.95741199],
-			'NJ Future DeltaT' => ['2100-07-04', self::NJ, 9.44912615],
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 11.13593689],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 14.00756754],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 4.11873932],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 19.68293661],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 9.38998685],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 18.60534965],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 12.95741199],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 9.44912615],
 		];
 	}
 
 	public static function sunsetProvider(): array
 	{
 		return [
-			'NJ Standard Date' => ['2017-10-17', self::NJ, 22.24099415],
-			'LA Standard Date' => ['2017-10-17', self::LA, 1.31843857],
-			'Jerusalem Hist. Date' => ['1955-02-26', self::JERUSALEM, 15.64512300],
-			'Norway Polar Solstice' => ['2017-06-21', self::NORWAY, false],
-			'Sydney Leap Day' => ['2020-02-29', self::SYDNEY, 8.56366884],
-			'Macapa Equator New Year' => ['2000-01-01', self::MACAPA, 21.53102552],
-			'Suva Fiji Solstice' => ['2023-06-21', self::SUVA, 5.65791427],
-			'Ushuaia Southern Winter' => ['2017-06-21', self::USHUAIA, 20.21191830],
-			'NJ Future DeltaT' => ['2100-07-04', self::NJ, 0.58028674],
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 22.24099415],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 1.31843857],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 15.64512300],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 8.56366884],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 21.53102552],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 5.65791427],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 20.21191830],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 0.58028674],
 		];
 	}
 
 	public static function noonProvider(): array
 	{
 		return [
-			'NJ Standard Date' => ['2017-10-17', self::NJ, 16.69350885],
-			'LA Standard Date' => ['2017-10-17', self::LA, 19.66696009],
-			'Jerusalem Hist. Date' => ['1955-02-26', self::JERUSALEM, 9.87817106],
-			'Norway Polar Solstice' => ['2017-06-21', self::NORWAY, 11.42056214],
-			'Sydney Leap Day' => ['2020-02-29', self::SYDNEY, 2.12799525],
-			'Macapa Equator New Year' => ['2000-01-01', self::MACAPA, 15.46051831],
-			'Suva Fiji Solstice' => ['2023-06-21', self::SUVA, 0.13165740],
-			'Ushuaia Southern Winter' => ['2017-06-21', self::USHUAIA, 16.58459266],
-			'NJ Future DeltaT' => ['2100-07-04', self::NJ, 17.01689317],
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 16.69350885],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 19.66696009],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 9.87817106],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, 11.42056214],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 2.12799525],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 15.46051831],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 0.13165740],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 16.58459266],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 17.01689317],
 		];
 	}
 
 	public static function midnightProvider(): array
 	{
 		return [
-			'NJ Standard Date' => ['2017-10-17', self::NJ, 4.69189152],
-			'LA Standard Date' => ['2017-10-17', self::LA, 7.66535335],
-			'Jerusalem Hist. Date' => ['1955-02-26', self::JERUSALEM, 21.87680310],
-			'Norway Polar Solstice' => ['2017-06-21', self::NORWAY, 23.42238534],
-			'Sydney Leap Day' => ['2020-02-29', self::SYDNEY, 14.12642351],
-			'Macapa Equator New Year' => ['2000-01-01', self::MACAPA, 3.46446119],
-			'Suva Fiji Solstice' => ['2023-06-21', self::SUVA, 12.13348552],
-			'Ushuaia Southern Winter' => ['2017-06-21', self::USHUAIA, 4.58641480],
-			'NJ Future DeltaT' => ['2100-07-04', self::NJ, 5.01835716],
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 4.69189152],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 7.66535335],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 21.87680310],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, 23.42238534],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 14.12642351],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 3.46446119],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 12.13348552],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 4.58641480],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 5.01835716],
 		];
 	}
 
 	public static function timeAtAzimuthProvider(): array
 	{
 		return [
-			'NJ East' => ['2017-10-17', self::NJ, 90.0, 9.96630382],
-			'NJ West' => ['2017-10-17', self::NJ, 270.0, 23.43696229],
-			'LA East' => ['2017-10-17', self::LA, 90.0, 12.71802376],
-			'LA West' => ['2017-10-17', self::LA, 270.0, 2.63792595],
-			'Sydney East' => ['2020-02-29', self::SYDNEY, 90.0, 20.92601636],
-			'Sydney West' => ['2020-02-29', self::SYDNEY, 270.0, 7.34685680],
-			'Macapa East No Cross' => ['2000-01-01', self::MACAPA, 90.0, false],
-			'Polar East' => ['2017-06-21', self::NORWAY, 90.0, 6.01986373],
+			'NJ East' => ['2017-10-17', self::$NJ, 90.0, 9.96630382],
+			'NJ West' => ['2017-10-17', self::$NJ, 270.0, 23.43696229],
+			'LA East' => ['2017-10-17', self::$LA, 90.0, 12.71802376],
+			'LA West' => ['2017-10-17', self::$LA, 270.0, 2.63792595],
+			'Sydney East' => ['2020-02-29', self::$SYDNEY, 90.0, 20.92601636],
+			'Sydney West' => ['2020-02-29', self::$SYDNEY, 270.0, 7.34685680],
+			'Macapa East No Cross' => ['2000-01-01', self::$MACAPA, 90.0, false],
+			'Polar East' => ['2017-06-21', self::$NORWAY, 90.0, 6.01986373],
 		];
 	}
 
 	public static function solarElevationProvider(): array
 	{
 		return [
-			'NJ Noon' => ['2017-10-17 12:00:00', self::NJ, 8.24142367],
-			'NJ Evening' => ['2017-10-17 18:30:00', self::NJ, 33.57165658],
-			'LA Evening' => ['2017-10-17 20:00:00', self::LA, 46.19391692],
-			'Polar Midnight' => ['2017-06-21 00:00:00', self::NORWAY, 3.98549481],
-			'Sydney Morning' => ['2020-02-29 20:00:00', self::SYDNEY, 2.89087872],
-			'Macapa Local Noon' => ['2000-01-01 15:00:00', self::MACAPA, 65.99118480],
-			'Suva Afternoon' => ['2023-06-21 02:00:00', self::SUVA, 40.24649656],
+			'NJ Noon' => ['2017-10-17 12:00:00', self::$NJ, 8.24142367],
+			'NJ Evening' => ['2017-10-17 18:30:00', self::$NJ, 33.57165658],
+			'LA Evening' => ['2017-10-17 20:00:00', self::$LA, 46.19391692],
+			'Polar Midnight' => ['2017-06-21 00:00:00', self::$NORWAY, 3.98549481],
+			'Sydney Morning' => ['2020-02-29 20:00:00', self::$SYDNEY, 2.89087872],
+			'Macapa Local Noon' => ['2000-01-01 15:00:00', self::$MACAPA, 65.99118480],
+			'Suva Afternoon' => ['2023-06-21 02:00:00', self::$SUVA, 40.24649656],
 		];
 	}
 
 	public static function solarAzimuthProvider(): array
 	{
 		return [
-			'NJ Noon' => ['2017-10-17 12:00:00', self::NJ, 110.13757333],
-			'NJ Evening' => ['2017-10-17 18:30:00', self::NJ, 212.62157928],
-			'LA Evening' => ['2017-10-17 20:00:00', self::LA, 187.12533185],
-			'Polar Midnight' => ['2017-06-21 00:00:00', self::NORWAY, 8.01127958],
-			'Sydney Morning' => ['2020-02-29 20:00:00', self::SYDNEY, 97.32308776],
-			'Macapa Local Noon' => ['2000-01-01 15:00:00', self::MACAPA, 164.22300003],
-			'Suva Afternoon' => ['2023-06-21 02:00:00', self::SUVA, 325.62786587],
+			'NJ Noon' => ['2017-10-17 12:00:00', self::$NJ, 110.13757333],
+			'NJ Evening' => ['2017-10-17 18:30:00', self::$NJ, 212.62157928],
+			'LA Evening' => ['2017-10-17 20:00:00', self::$LA, 187.12533185],
+			'Polar Midnight' => ['2017-06-21 00:00:00', self::$NORWAY, 8.01127958],
+			'Sydney Morning' => ['2020-02-29 20:00:00', self::$SYDNEY, 97.32308776],
+			'Macapa Local Noon' => ['2000-01-01 15:00:00', self::$MACAPA, 164.22300003],
+			'Suva Afternoon' => ['2023-06-21 02:00:00', self::$SUVA, 325.62786587],
 		];
 	}
 
 	public static function sunriseZenithProvider(): array
 	{
 		return [
-			'NJ Civil' => ['2017-10-17', self::NJ, 96.0, 10.70943974],
-			'NJ Nautical' => ['2017-10-17', self::NJ, 102.0, 10.17613961],
-			'NJ Astronomical' => ['2017-10-17', self::NJ, 108.0, 9.64457480],
-			'Sydney Civil' => ['2020-02-29', self::SYDNEY, 96.0, 19.27874463],
+			'NJ Civil' => ['2017-10-17', self::$NJ, 96.0, 10.70943974],
+			'NJ Nautical' => ['2017-10-17', self::$NJ, 102.0, 10.17613961],
+			'NJ Astronomical' => ['2017-10-17', self::$NJ, 108.0, 9.64457480],
+			'Sydney Civil' => ['2020-02-29', self::$SYDNEY, 96.0, 19.27874463],
 		];
 	}
 
 	public static function sunriseNoElevationProvider(): array
 	{
 		return [
-			'NJ No Elev Adj' => ['2017-10-17', self::NJ, 11.17344334],
-			'Jerusalem No Elev Adj' => ['1955-02-26', self::JERUSALEM, 4.18885558],
+			'NJ No Elev Adj' => ['2017-10-17', self::$NJ, 11.17344334],
+			'Jerusalem No Elev Adj' => ['1955-02-26', self::$JERUSALEM, 4.18885558],
 		];
 	}
 
 	public static function deltaTOffProvider(): array
 	{
 		return [
-			'NJ dT off' => ['2017-10-17', self::NJ, 11.13586818],
-			'Jerusalem dT off' => ['1955-02-26', self::JERUSALEM, 4.11871824],
+			'NJ dT off' => ['2017-10-17', self::$NJ, 11.13586818],
+			'Jerusalem dT off' => ['1955-02-26', self::$JERUSALEM, 4.11871824],
 		];
 	}
 
@@ -279,7 +279,7 @@ class SPACalculatorTest extends TestCase
 		$this->expectException(\InvalidArgumentException::class);
 		SPACalculator::create()->getTimeAtAzimuth(
 			Carbon::parse('2017-10-17'),
-			$this->geo(self::NJ),
+			$this->geo(self::$NJ),
 			123.0
 		);
 	}

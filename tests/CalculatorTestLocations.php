@@ -27,12 +27,12 @@
  */
 trait CalculatorTestLocations
 {
-	const NJ = ['lat' => 41.1181036, 'lon' => -74.0840691, 'elev' => 167];
-	const LA = ['lat' => 34.0201613, 'lon' => -118.6919095, 'elev' => 71];
-	const JERUSALEM = ['lat' => 31.7962994, 'lon' => 35.1053185, 'elev' => 754];
-	const NORWAY = ['lat' => 70.1498248, 'lon' => 9.1456867, 'elev' => 0];
-	const SYDNEY = ['lat' => -33.8688, 'lon' => 151.2093, 'elev' => 58];
-	const MACAPA = ['lat' => 0.0349, 'lon' => -51.0694, 'elev' => 15];
-	const SUVA = ['lat' => -18.1416, 'lon' => 178.4419, 'elev' => 6];
-	const USHUAIA = ['lat' => -54.8019, 'lon' => -68.3030, 'elev' => 23];
+	protected static array $NJ = ['lat' => 41.1181036, 'lon' => -74.0840691, 'elev' => 167];
+	protected static array $LA = ['lat' => 34.0201613, 'lon' => -118.6919095, 'elev' => 71];
+	protected static array $JERUSALEM = ['lat' => 31.7962994, 'lon' => 35.1053185, 'elev' => 754];
+	protected static array $NORWAY = ['lat' => 70.1498248, 'lon' => 9.1456867, 'elev' => 0];
+	protected static array $SYDNEY = ['lat' => -33.8688, 'lon' => 151.2093, 'elev' => 58];
+	protected static array $MACAPA = ['lat' => 0.0349, 'lon' => -51.0694, 'elev' => 15];
+	protected static array $SUVA = ['lat' => -18.1416, 'lon' => 178.4419, 'elev' => 6];
+	protected static array $USHUAIA = ['lat' => -54.8019, 'lon' => -68.3030, 'elev' => 23];
 }

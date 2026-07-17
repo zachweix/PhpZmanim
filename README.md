@@ -1,5 +1,7 @@
 # PhpZmanim
 
+[![Tests](https://github.com/zachweix/PhpZmanim/actions/workflows/tests.yml/badge.svg)](https://github.com/zachweix/PhpZmanim/actions/workflows/tests.yml)
+
 A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) by Eliyahu Hershfeld (source at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). It calculates halachic times (_zmanim_) for any date and location, and provides a full Jewish calendar (dates, holidays, parsha, daf yomi, molad, and more).
 
 Because this is a port, the [KosherJava documentation](https://kosherjava.com) remains the canonical reference for the meaning of every zman and calendar method. This README is the quick start; see [docs/USAGE.md](docs/USAGE.md) for detailed usage.

@@ -38,11 +38,11 @@ trait DafYomi
 {
 	// The following are from YomiCalculator / YerushalmiYomiCalculator
 
-	const DAF_YOMI_BAVLI_JULIAN_START_DAY = 2423673; // September 11, 1923
-	const SHEKALIM_JULIAN_CHANGE_DAY = 2442587;       // June 24, 1975
+	private static int $DAF_YOMI_BAVLI_JULIAN_START_DAY = 2423673; // September 11, 1923
+	private static int $SHEKALIM_JULIAN_CHANGE_DAY = 2442587;       // June 24, 1975
 
-	const DAF_YOMI_YERUSHALMI_WHOLE_SHAS_DAFS = 1554;
-	const DAF_YOMI_YERUSHALMI_BLATT_PER_MASECHTA = [
+	private static int $DAF_YOMI_YERUSHALMI_WHOLE_SHAS_DAFS = 1554;
+	private static array $DAF_YOMI_YERUSHALMI_BLATT_PER_MASECHTA = [
 		68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
 		19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13,
 	];
@@ -57,17 +57,17 @@ trait DafYomi
 
 		$julianDay = self::getJulianDay($this->gregorianYear, $this->gregorianMonth, $this->gregorianDayOfMonth);
 
-		if ($julianDay < self::DAF_YOMI_BAVLI_JULIAN_START_DAY) {
+		if ($julianDay < self::$DAF_YOMI_BAVLI_JULIAN_START_DAY) {
 			throw new \InvalidArgumentException(sprintf('%d-%02d-%02d is prior to organized Daf Yomi Bavli cycles that started on September 11, 1923',
 				$this->gregorianYear, $this->gregorianMonth, $this->gregorianDayOfMonth));
 		}
 
-		if ($julianDay >= self::SHEKALIM_JULIAN_CHANGE_DAY) {
-			$cycleNo = 8 + intdiv($julianDay - self::SHEKALIM_JULIAN_CHANGE_DAY, 2711);
-			$dafNo = ($julianDay - self::SHEKALIM_JULIAN_CHANGE_DAY) % 2711;
+		if ($julianDay >= self::$SHEKALIM_JULIAN_CHANGE_DAY) {
+			$cycleNo = 8 + intdiv($julianDay - self::$SHEKALIM_JULIAN_CHANGE_DAY, 2711);
+			$dafNo = ($julianDay - self::$SHEKALIM_JULIAN_CHANGE_DAY) % 2711;
 		} else {
-			$cycleNo = 1 + intdiv($julianDay - self::DAF_YOMI_BAVLI_JULIAN_START_DAY, 2702);
-			$dafNo = ($julianDay - self::DAF_YOMI_BAVLI_JULIAN_START_DAY) % 2702;
+			$cycleNo = 1 + intdiv($julianDay - self::$DAF_YOMI_BAVLI_JULIAN_START_DAY, 2702);
+			$dafNo = ($julianDay - self::$DAF_YOMI_BAVLI_JULIAN_START_DAY) % 2702;
 		}
 
 		// Shekalim was 13 daf for the first 7 cycles (before the Vilna Shas change).
@@ -126,7 +126,7 @@ trait DafYomi
 		$total = self::daysBetween($prevCycle, $requested) - self::getYerushalmiNumOfSpecialDays($prevCycle, $requested);
 
 		$masechta = 0;
-		foreach (self::DAF_YOMI_YERUSHALMI_BLATT_PER_MASECHTA as $blattCount) {
+		foreach (self::$DAF_YOMI_YERUSHALMI_BLATT_PER_MASECHTA as $blattCount) {
 			if ($total < $blattCount) {
 				return new Daf(MasechtaYerushalmi::from($masechta), $total + 1);
 			}
@@ -149,7 +149,7 @@ trait DafYomi
 	 */
 	private static function getYerushalmiNextCycleStart(Carbon $cycleStart): Carbon
 	{
-		$endDate = $cycleStart->copy()->addDays(self::DAF_YOMI_YERUSHALMI_WHOLE_SHAS_DAFS - 1);
+		$endDate = $cycleStart->copy()->addDays(self::$DAF_YOMI_YERUSHALMI_WHOLE_SHAS_DAFS - 1);
 		$specialDays = self::getYerushalmiNumOfSpecialDays($cycleStart, $endDate);
 
 		while ($specialDays > 0) {
