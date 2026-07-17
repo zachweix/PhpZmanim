@@ -42,7 +42,7 @@ trait MinchaGedola
 	public function getMinchaGedola(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($this->getChatzos(), $endOfDay, 0.5);
+			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $endOfDay, 0.5);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 6.5);

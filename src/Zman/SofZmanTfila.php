@@ -42,7 +42,7 @@ trait SofZmanTfila
 	public function getSofZmanTfila(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzos(), 4);
+			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzosHayom(), 4);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 4);

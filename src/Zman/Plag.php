@@ -41,7 +41,7 @@ trait Plag
 	public function getPlagHamincha(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
-			return $this->getHalfDayBasedZman($this->getChatzos(), $endOfDay, 4.75);
+			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $endOfDay, 4.75);
 		}
 
 		return $this->getShaahZmanisBasedZman($startOfDay, $endOfDay, 10.75);

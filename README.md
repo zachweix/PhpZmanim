@@ -1,5 +1,6 @@
 # PhpZmanim
 
+[![Latest Stable Version](https://img.shields.io/packagist/v/zachweix/php-zmanim.svg)](https://packagist.org/packages/zachweix/php-zmanim)
 [![Tests](https://github.com/zachweix/PhpZmanim/actions/workflows/tests.yml/badge.svg)](https://github.com/zachweix/PhpZmanim/actions/workflows/tests.yml)
 
 A PHP port of the [KosherJava Zmanim API](https://kosherjava.com) by Eliyahu Hershfeld (source at the [KosherJava Zmanim project](https://github.com/KosherJava/zmanim)). It calculates halachic times (_zmanim_) for any date and location, and provides a full Jewish calendar (dates, holidays, parsha, daf yomi, molad, and more).
@@ -67,7 +68,7 @@ $zman = Zman::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_Y
 $zman->getSunrise();          // a Carbon instance
 $zman->getSunset();
 $zman->getSofZmanShmaGRA();
-$zman->getChatzos();
+$zman->getChatzosHayom();
 $zman->getPlagHaminchaGRA();
 $zman->getTzais72Minutes();
 ```
