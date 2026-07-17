@@ -44,18 +44,12 @@ trait Tzais
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_8_POINT_5);
 	}
 
-	public function getTzais72(): Carbon|null
+	public function getTzais72Minutes(): Carbon|null
 	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 72 * Zman::MINUTE_MILLIS);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-
-	public function getTzais72Minutes(): Carbon|null
-	{
-		return $this->getTzais72();
-	}
 
 	public function getTzaisGeonim8Point5Degrees(): Carbon|null
 	{

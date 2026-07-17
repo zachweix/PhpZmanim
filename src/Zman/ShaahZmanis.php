@@ -51,8 +51,8 @@ trait ShaahZmanis
 
 	public function getShaahZmanisMGA(): float|null
 	{
-		$startOfDay = $this->getAlos72();
-		$endOfDay = $this->getTzais72();
+		$startOfDay = $this->getAlos72Minutes();
+		$endOfDay = $this->getTzais72Minutes();
 		if (is_null($startOfDay) || is_null($endOfDay)) {
 			return null;
 		}

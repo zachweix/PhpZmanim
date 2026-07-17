@@ -96,7 +96,7 @@ If you have a lot of code that relies on the property style, you can restore it 
 ```php
 use PhpZmanim\Zman;
 
-class MyZman extends Zman
+class Zmanim extends Zman
 {
     public function __get(string $name)
     {
@@ -111,7 +111,7 @@ class MyZman extends Zman
 }
 
 // create() returns your subclass, so property access works again:
-$zman = MyZman::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_York');
+$zman = Zmanim::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_York');
 $zman->sunset;  // same as $zman->getSunset()
 ```
 
@@ -140,11 +140,13 @@ $zman->setAstronomicalCalculator(MeeusCalculator::create());
 | `getChatzosAsHalfDay()` | `getChatzosHayomAsHalfDay()` |
 | `getFixedLocalChatzos()` | `getFixedLocalChatzosHayom()` |
 | `getAlos60()` | `getAlos60Minutes()` |
+| `getAlos72()` | `getAlos72Minutes()` |
 | `getAlos90()` | `getAlos90Minutes()` |
 | `getAlos96()` | `getAlos96Minutes()` |
 | `getAlos120()` | `getAlos120Minutes()` |
 | `getTzais50()` | `getTzais50Minutes()` |
 | `getTzais60()` | `getTzais60Minutes()` |
+| `getTzais72()` | `getTzais72Minutes()` |
 | `getTzais90()` | `getTzais90Minutes()` |
 | `getTzais96()` | `getTzais96Minutes()` |
 | `getTzais120()` | `getTzais120Minutes()` |
@@ -153,8 +155,6 @@ $zman->setAstronomicalCalculator(MeeusCalculator::create());
 | `getSofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees()` | `getSofZmanShmaAlos16Point1DegreesToTzaisGeonim7Point083Degrees()` |
 | `getShaahZmanisAlos16Point1ToTzais3Point7()` | `getShaahZmanisAlos16Point1DegreesToTzaisGeonim3Point7Degrees()` |
 | `getShaahZmanisAlos16Point1ToTzais3Point8()` | `getShaahZmanisAlos16Point1DegreesToTzaisGeonim3Point8Degrees()` |
-
-> Note: `getAlos72()`, `getTzais72()`, etc. are unchanged. v4 also *adds* `getAlos72Minutes()`/`getTzais72Minutes()` as explicit aliases.
 
 ### Removed methods
 
@@ -288,7 +288,7 @@ $jewishDate->isTachanunRecitedShacharis();
 
 The runtime predicates keep the same names (`isTachanunRecitedShacharis`, `isTachanunRecitedMincha`, `isVeseinTalUmatarRecited`, `isMashivHaruachRecited`, `isHallelRecited`, `isYaalehVeyavoRecited`, …).
 
-The **configuration flags** were also static in v3 and are now per-instance. Their setters keep the same names, but the boolean getters gained a `getIs` prefix:
+The **configuration flags** were also static in v3 and are now per-instance. Their setters keep the same names, but the boolean getters gained a `get` prefix:
 
 | v3 (static getter) | v4 (instance getter) |
 |--------------------|----------------------|

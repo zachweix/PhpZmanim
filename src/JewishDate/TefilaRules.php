@@ -294,7 +294,7 @@ trait TefilaRules
 	|--------------------------------------------------------------------------
 	*/
 
-	public function getIsTachanunRecitedEndOfTishrei(): bool
+	public function getTachanunRecitedEndOfTishrei(): bool
 	{
 		return $this->tachanunRecitedEndOfTishrei;
 	}
@@ -306,7 +306,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedWeekAfterShavuos(): bool
+	public function getTachanunRecitedWeekAfterShavuos(): bool
 	{
 		return $this->tachanunRecitedWeekAfterShavuos;
 	}
@@ -318,7 +318,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecited13SivanOutOfIsrael(): bool
+	public function getTachanunRecited13SivanOutOfIsrael(): bool
 	{
 		return $this->tachanunRecited13SivanOutOfIsrael;
 	}
@@ -330,7 +330,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedPesachSheni(): bool
+	public function getTachanunRecitedPesachSheni(): bool
 	{
 		return $this->tachanunRecitedPesachSheni;
 	}
@@ -342,7 +342,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecited15IyarOutOfIsrael(): bool
+	public function getTachanunRecited15IyarOutOfIsrael(): bool
 	{
 		return $this->tachanunRecited15IyarOutOfIsrael;
 	}
@@ -354,7 +354,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedMinchaErevLagBaomer(): bool
+	public function getTachanunRecitedMinchaErevLagBaomer(): bool
 	{
 		return $this->tachanunRecitedMinchaErevLagBaomer;
 	}
@@ -366,7 +366,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedShivasYemeiHamiluim(): bool
+	public function getTachanunRecitedShivasYemeiHamiluim(): bool
 	{
 		return $this->tachanunRecitedShivasYemeiHamiluim;
 	}
@@ -378,7 +378,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedWeekOfHod(): bool
+	public function getTachanunRecitedWeekOfHod(): bool
 	{
 		return $this->tachanunRecitedWeekOfHod;
 	}
@@ -390,7 +390,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedWeekOfPurim(): bool
+	public function getTachanunRecitedWeekOfPurim(): bool
 	{
 		return $this->tachanunRecitedWeekOfPurim;
 	}
@@ -402,7 +402,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedFridays(): bool
+	public function getTachanunRecitedFridays(): bool
 	{
 		return $this->tachanunRecitedFridays;
 	}
@@ -414,7 +414,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedSundays(): bool
+	public function getTachanunRecitedSundays(): bool
 	{
 		return $this->tachanunRecitedSundays;
 	}
@@ -426,7 +426,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsTachanunRecitedMinchaAllYear(): bool
+	public function getTachanunRecitedMinchaAllYear(): bool
 	{
 		return $this->tachanunRecitedMinchaAllYear;
 	}
@@ -438,7 +438,7 @@ trait TefilaRules
 		return $this;
 	}
 
-	public function getIsMizmorLesodaRecitedErevYomKippurAndPesach(): bool
+	public function getMizmorLesodaRecitedErevYomKippurAndPesach(): bool
 	{
 		return $this->mizmorLesodaRecitedErevYomKippurAndPesach;
 	}

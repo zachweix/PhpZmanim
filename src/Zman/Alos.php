@@ -44,17 +44,12 @@ trait Alos
 		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_16_POINT_1);
 	}
 
-	public function getAlos72(): Carbon|null
+	public function getAlos72Minutes(): Carbon|null
 	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -72 * Zman::MINUTE_MILLIS);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getAlos72Minutes(): Carbon|null
-	{
-		return $this->getAlos72();
-	}
 
 	public function getAlos16Point1Degrees(): Carbon|null
 	{
