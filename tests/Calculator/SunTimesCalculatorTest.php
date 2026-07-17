@@ -2,7 +2,7 @@
 
 /**
  * Zmanim PHP API
- * Copyright (C) 2019-2023 Zachary Weixelbaum
+ * Copyright (C) 2019-2026 Zachary Weixelbaum
  *
  * This library is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -22,71 +22,257 @@
 
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
-use PhpZmanim\Geo\GeoLocation;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PhpZmanim\GeoLocation;
 use PhpZmanim\Calculator\AstronomicalCalculator;
 use PhpZmanim\Calculator\SunTimesCalculator;
 
-class SunTimesCalculatorTest extends TestCase {
+class SunTimesCalculatorTest extends TestCase
+{
+	use CalculatorTestLocations;
 
-	/** 
-	 * @test
+	/*
+	|--------------------------------------------------------------------------
+	| CONSTANTS
+	|--------------------------------------------------------------------------
+	*/
+
+	private const ZENITH = AstronomicalCalculator::GEOMETRIC_ZENITH;
+
+	/*
+	|--------------------------------------------------------------------------
+	| HELPERS
+	|--------------------------------------------------------------------------
+	*/
+
+	/**
+	 * Build a GeoLocation from a labeled ['lat', 'lon', 'elev'] array. Named
+	 * arguments keep the call self-documenting against GeoLocation::create()'s
+	 * (latitude, longitude, elevation, timezone, locationName) signature.
 	 */
-	public function testCalculatorName() {
-		$sunTimesCalculator = new SunTimesCalculator();
-		$this->assertEquals($sunTimesCalculator->getCalculatorName(), "US Naval Almanac Algorithm");
+	private function geo(array $loc): GeoLocation
+	{
+		return GeoLocation::create(
+			latitude: $loc['lat'],
+			longitude: $loc['lon'],
+			elevation: $loc['elev'],
+		);
 	}
 
-	/** 
-	 * @test
+	/**
+	 * Assert a UTC-hour result: an exact NaN when the event does not occur
+	 * (expected === false), otherwise equal to 8 decimals.
 	 */
-	public function testGetUTCSunrise() {
-		$sunTimesCalculator = new SunTimesCalculator();
-
-		$tests = [
-			['2017-10-17', 41.1181036, -74.0840691, 0.167, 11.16276401],
-			['1955-02-26', 31.7962994, 35.1053185, 0.754, 4.17848602],
-			['2017-06-21', 70.1498248, 9.1456867, 0, false],
-		];
-
-		foreach ($tests as $test) {
-			$calendar = Carbon::parse($test[0]);
-			$geo = new GeoLocation("", $test[1], $test[2], $test[3], "America/New_York");
-
-			$sunrise = $sunTimesCalculator->getUTCSunrise($calendar, $geo, AstronomicalCalculator::GEOMETRIC_ZENITH, true);
-			if (is_nan($sunrise)) {
-				$sunrise = false;
-			} else {
-				$sunrise = round($sunrise, 8);
-			}
-
-			$this->assertEquals($sunrise, $test[4]);
+	private function assertUtcHour($expected, float $actual): void
+	{
+		if ($expected === false) {
+			$this->assertNan($actual);
+		} else {
+			$this->assertEqualsWithDelta($expected, $actual, 1e-8);
 		}
 	}
 
-	/** 
-	 * @test
-	 */
-	public function testGetUTCSunset() {
-		$sunTimesCalculator = new SunTimesCalculator();
+	/*
+	|--------------------------------------------------------------------------
+	| DATA PROVIDERS
+	|--------------------------------------------------------------------------
+	| Expected values are KosherJava ground truth (SunTimesCalculator). Cases span
+	| both hemispheres, the equator, the dateline, polar no-event, a leap day, a
+	| year boundary and a future date. The USNO algorithm returns NaN for noon and
+	| midnight at the polar location, unlike the other calculators. String keys
+	| label each case.
+	*/
 
-		$tests = [
-			['2017-10-17', 41.1181036, -74.0840691, 0.167, 22.21747591],
-			['1955-02-26', 31.7962994, 35.1053185, 0.754, 15.58295081],
-			['2017-06-21', 70.1498248, 9.1456867, 0, false],
+	public static function sunriseProvider(): array
+	{
+		return [
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 11.12643745],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 14.00076197],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 4.11037446],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 19.68725081],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 9.39464043],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 18.60351329],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 12.95527929],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 9.43972880],
 		];
+	}
 
-		foreach ($tests as $test) {
-			$calendar = Carbon::parse($test[0]);
-			$geo = new GeoLocation("", $test[1], $test[2], $test[3], "America/New_York");
+	public static function sunsetProvider(): array
+	{
+		return [
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 22.25383390],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 1.32889810],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 15.65101844],
+			'Norway Polar Solstice' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 8.56114080],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 21.53593703],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 5.65641338],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 20.20896383],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 0.57971462],
+		];
+	}
 
-			$sunset = $sunTimesCalculator->getUTCSunset($calendar, $geo, AstronomicalCalculator::GEOMETRIC_ZENITH, true);
-			if (is_nan($sunset)) {
-				$sunset = false;
-			} else {
-				$sunset = round($sunset, 8);
-			}
+	public static function noonProvider(): array
+	{
+		return [
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 16.69011947],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 19.66482200],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 9.88071908],
+			'Norway Polar No Noon' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 2.12420286],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 15.46529012],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 0.12996327],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 16.58212152],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 17.00973685],
+		];
+	}
 
-			$this->assertEquals($sunset, $test[4]);
-		}
+	public static function midnightProvider(): array
+	{
+		return [
+			'NJ Standard Date' => ['2017-10-17', self::$NJ, 4.69011947],
+			'LA Standard Date' => ['2017-10-17', self::$LA, 7.66482200],
+			'Jerusalem Hist. Date' => ['1955-02-26', self::$JERUSALEM, 21.88071908],
+			'Norway Polar No Midnight' => ['2017-06-21', self::$NORWAY, false],
+			'Sydney Leap Day' => ['2020-02-29', self::$SYDNEY, 14.12420286],
+			'Macapa Equator New Year' => ['2000-01-01', self::$MACAPA, 3.46529012],
+			'Suva Fiji Solstice' => ['2023-06-21', self::$SUVA, 12.12996327],
+			'Ushuaia Southern Winter' => ['2017-06-21', self::$USHUAIA, 4.58212152],
+			'NJ Future DeltaT' => ['2100-07-04', self::$NJ, 5.00973685],
+		];
+	}
+
+	public static function sunriseZenithProvider(): array
+	{
+		return [
+			'NJ Civil' => ['2017-10-17', self::$NJ, 96.0, 10.70056986],
+			'NJ Nautical' => ['2017-10-17', self::$NJ, 102.0, 10.16784691],
+			'NJ Astronomical' => ['2017-10-17', self::$NJ, 108.0, 9.63665090],
+			'Sydney Civil' => ['2020-02-29', self::$SYDNEY, 96.0, 19.28346936],
+		];
+	}
+
+	public static function sunriseNoElevationProvider(): array
+	{
+		return [
+			'NJ No Elev Adj' => ['2017-10-17', self::$NJ, 11.16388056],
+			'Jerusalem No Elev Adj' => ['1955-02-26', self::$JERUSALEM, 4.18050398],
+		];
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SUNRISE / SUNSET
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	#[DataProvider('sunriseProvider')]
+	public function getUTCSunrise(string $date, array $location, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCSunrise(
+			Carbon::parse($date), $this->geo($location), self::ZENITH, true
+		);
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	#[Test]
+	#[DataProvider('sunsetProvider')]
+	public function getUTCSunset(string $date, array $location, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCSunset(
+			Carbon::parse($date), $this->geo($location), self::ZENITH, true
+		);
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| NOON / MIDNIGHT
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	#[DataProvider('noonProvider')]
+	public function getUTCNoon(string $date, array $location, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCNoon(Carbon::parse($date), $this->geo($location));
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	#[Test]
+	#[DataProvider('midnightProvider')]
+	public function getUTCMidnight(string $date, array $location, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCMidnight(Carbon::parse($date), $this->geo($location));
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| ZENITH / ELEVATION FLAG VARIATIONS
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	#[DataProvider('sunriseZenithProvider')]
+	public function getUTCSunriseAtZenith(string $date, array $location, float $zenith, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCSunrise(
+			Carbon::parse($date), $this->geo($location), $zenith, true
+		);
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	#[Test]
+	#[DataProvider('sunriseNoElevationProvider')]
+	public function getUTCSunriseWithoutElevationAdjustment(string $date, array $location, $expected): void
+	{
+		$actual = SunTimesCalculator::create()->getUTCSunrise(
+			Carbon::parse($date), $this->geo($location), self::ZENITH, false
+		);
+		$this->assertUtcHour($expected, $actual);
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| UNSUPPORTED OPERATIONS
+	|--------------------------------------------------------------------------
+	| SunTimesCalculator does not implement these; each must throw.
+	*/
+
+	#[Test]
+	public function getTimeAtAzimuth(): void
+	{
+		$this->expectException(\BadMethodCallException::class);
+		SunTimesCalculator::create()->getTimeAtAzimuth(
+			Carbon::parse('2017-10-17'),
+			$this->geo(self::$NJ),
+			90.0
+		);
+	}
+
+	#[Test]
+	public function getSolarElevation(): void
+	{
+		$this->expectException(\BadMethodCallException::class);
+		SunTimesCalculator::create()->getSolarElevation(
+			Carbon::parse('2017-10-17'),
+			$this->geo(self::$NJ),
+			90.0
+		);
+	}
+
+	#[Test]
+	public function getSolarAzimuth(): void
+	{
+		$this->expectException(\BadMethodCallException::class);
+		SunTimesCalculator::create()->getSolarAzimuth(
+			Carbon::parse('2017-10-17'),
+			$this->geo(self::$NJ),
+			90.0
+		);
 	}
 }
