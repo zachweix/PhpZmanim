@@ -137,6 +137,7 @@ $zman->setAstronomicalCalculator(MeeusCalculator::create());
 | `isUseElevation()` | `getUseElevation()` |
 | `isUseAstronomicalChatzos()` | `getUseAstronomicalChatzos()` |
 | `isUseAstronomicalChatzosForOtherZmanim()` | `getUseAstronomicalChatzosForOtherZmanim()` |
+| `getChatzos` | `getChatzosHayom()` |
 | `getChatzosAsHalfDay()` | `getChatzosHayomAsHalfDay()` |
 | `getFixedLocalChatzos()` | `getFixedLocalChatzosHayom()` |
 | `getAlos60()` | `getAlos60Minutes()` |
