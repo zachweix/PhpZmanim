@@ -39,7 +39,7 @@ trait MinchaGedola
 {
 	// The following are from ZmanimCalendar
 
-	public function getMinchaGedola(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
+	public function getMinchaGedola(Carbon $startOfDay, Carbon $endOfDay, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
 			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $endOfDay, 0.5);

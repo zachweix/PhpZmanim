@@ -39,7 +39,7 @@ trait Tzais
 {
 	// The following are from ZmanimCalendar
 
-	public function getTzais(): Carbon|null
+	public function getTzaisGeonim8Point5Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_8_POINT_5);
 	}
@@ -50,11 +50,6 @@ trait Tzais
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getTzaisGeonim8Point5Degrees(): Carbon|null
-	{
-		return $this->getTzais();
-	}
 
 	public function getTzais50Minutes(): Carbon|null
 	{

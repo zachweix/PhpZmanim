@@ -90,12 +90,12 @@ class ZmanimCalendarTest extends TestCase
 	public static function zmanimProvider(): array
 	{
 		return [
-			'alos 16.1 degrees' => ['getAlosHashachar', '2017-10-17T09:49:30.219906135Z'],
+			'alos 16.1 degrees' => ['getAlos16Point1Degrees', '2017-10-17T09:49:30.219906135Z'],
 			'alos 72' => ['getAlos72Minutes', '2017-10-17T09:57:51.403184642Z'],
 			'sof zman shma GRA' => ['getSofZmanShmaGRA', '2017-10-17T13:55:53.352746510Z'],
-			'sof zman shma MGA 72' => ['getSofZmanShmaMGA', '2017-10-17T13:19:53.352746510Z'],
+			'sof zman shma MGA 72' => ['getSofZmanShmaMGA72Minutes', '2017-10-17T13:19:53.352746510Z'],
 			'sof zman tfila GRA' => ['getSofZmanTfilaGRA', '2017-10-17T14:51:14.002600466Z'],
-			'sof zman tfila MGA 72' => ['getSofZmanTfilaMGA', '2017-10-17T14:27:14.002600466Z'],
+			'sof zman tfila MGA 72' => ['getSofZmanTfilaMGA72Minutes', '2017-10-17T14:27:14.002600466Z'],
 			'chatzos hayom' => ['getChatzosHayom', '2017-10-17T16:42:12.781249470Z'],
 			'chatzos as half day' => ['getChatzosHayomAsHalfDay', '2017-10-17T16:41:55.302308378Z'],
 			'chatzos halayla' => ['getChatzosHalayla', '2017-10-18T04:42:06.833038724Z'],
@@ -104,7 +104,7 @@ class ZmanimCalendarTest extends TestCase
 			'plag hamincha GRA' => ['getPlagHaminchaGRA', '2017-10-17T21:04:48.389114669Z'],
 			'candle lighting' => ['getCandleLighting', '2017-10-17T21:55:59.201432122Z'],
 			'tzais 72' => ['getTzais72Minutes', '2017-10-17T23:25:59.201432122Z'],
-			'tzais geonim 8.5 degrees' => ['getTzais', '2017-10-17T22:54:29.772724455Z'],
+			'tzais geonim 8.5 degrees' => ['getTzaisGeonim8Point5Degrees', '2017-10-17T22:54:29.772724455Z'],
 		];
 	}
 
@@ -114,7 +114,7 @@ class ZmanimCalendarTest extends TestCase
 		// GRA: PT55M20.649853956S, MGA 72: PT1H7M20.649853956S.
 		return [
 			'shaah zmanis GRA' => ['getShaahZmanisGra', 3320649.853956],
-			'shaah zmanis MGA 72' => ['getShaahZmanisMGA', 4040649.853956],
+			'shaah zmanis MGA 72' => ['getShaahZmanis72Minutes', 4040649.853956],
 		];
 	}
 
@@ -191,7 +191,7 @@ class ZmanimCalendarTest extends TestCase
 		// Erev Shabbos (Friday)
 		$erevShabbos = $this->calendarFor(2024, 11, 8);
 		$sunset = $erevShabbos->getSunset();
-		$tzais = $erevShabbos->getTzais();
+		$tzais = $erevShabbos->getTzaisGeonim8Point5Degrees();
 
 		// Before sunset on Friday - not yet assur
 		$this->assertFalse($erevShabbos->isAssurBemlacha($sunset->copy()->subMinutes(30), $tzais, false));
@@ -203,7 +203,7 @@ class ZmanimCalendarTest extends TestCase
 
 		// Shabbos day
 		$shabbos = $this->calendarFor(2024, 11, 9);
-		$tzaisShabbos = $shabbos->getTzais();
+		$tzaisShabbos = $shabbos->getTzaisGeonim8Point5Degrees();
 		// During Shabbos day (before tzais) - assur
 		$this->assertTrue($shabbos->isAssurBemlacha($tzaisShabbos->copy()->subHours(6), $tzaisShabbos, false));
 		// After tzais on Shabbos - not assur (Shabbos ends)
@@ -211,7 +211,7 @@ class ZmanimCalendarTest extends TestCase
 
 		// Regular weekday (Thursday) - never assur
 		$weekday = $this->calendarFor(2024, 11, 7);
-		$tzaisWeekday = $weekday->getTzais();
+		$tzaisWeekday = $weekday->getTzaisGeonim8Point5Degrees();
 		$this->assertFalse($weekday->isAssurBemlacha($tzaisWeekday->copy()->subMinutes(30), $tzaisWeekday, false));
 		$this->assertFalse($weekday->isAssurBemlacha($tzaisWeekday->copy()->addMinutes(10), $tzaisWeekday, false));
 

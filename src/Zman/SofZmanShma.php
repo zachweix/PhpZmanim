@@ -39,7 +39,7 @@ trait SofZmanShma
 {
 	// The following are from ZmanimCalendar
 
-	public function getSofZmanShma(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
+	public function getSofZmanShma(Carbon $startOfDay, Carbon $endOfDay, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
 			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzosHayom(), 3);
@@ -53,17 +53,12 @@ trait SofZmanShma
 		return $this->getSofZmanShma($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset(), true);
 	}
 
-	public function getSofZmanShmaMGA(): Carbon|null
+	public function getSofZmanShmaMGA72Minutes(): Carbon|null
 	{
 		return $this->getSofZmanShma($this->getAlos72Minutes(), $this->getTzais72Minutes(), true);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getSofZmanShmaMGA72Minutes(): Carbon|null
-	{
-		return $this->getSofZmanShmaMGA();
-	}
 
 	public function getSofZmanShmaMGA72MinutesZmanis(): Carbon|null
 	{

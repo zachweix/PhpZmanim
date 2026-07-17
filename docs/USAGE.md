@@ -117,7 +117,6 @@ $zman->getEndAstronomicalTwilight();    // sun's zenith at 108 degrees
 #### Alos Hashachar (dawn)
 
 ```php
-$zman->getAlosHashachar();
 $zman->getAlos16Point1Degrees();
 $zman->getAlos18Degrees();
 $zman->getAlos19Degrees();
@@ -150,7 +149,6 @@ $zman->getMisheyakir12Point85Degrees();
 
 ```php
 $zman->getSofZmanShmaGRA();
-$zman->getSofZmanShmaMGA();
 $zman->getSofZmanShmaMGA16Point1Degrees();
 $zman->getSofZmanShmaMGA18Degrees();
 $zman->getSofZmanShmaMGA19Point8Degrees();
@@ -177,7 +175,6 @@ $zman->getSofZmanShmaMGA90MinutesToFixedLocalChatzos();
 
 ```php
 $zman->getSofZmanTfilaGRA();
-$zman->getSofZmanTfilaMGA();
 $zman->getSofZmanTfilaMGA16Point1Degrees();
 $zman->getSofZmanTfilaMGA18Degrees();
 $zman->getSofZmanTfilaMGA19Point8Degrees();
@@ -280,7 +277,6 @@ $zman->getBainHashmashosYereim2Point1Degrees();
 #### Tzais (nightfall)
 
 ```php
-$zman->getTzais();                       // sunset offset by 8.5 degrees
 $zman->getTzais16Point1Degrees();
 $zman->getTzais18Degrees();
 $zman->getTzais19Point8Degrees();
@@ -330,7 +326,6 @@ A _shaah zmanis_ is a halachic hour — one-twelfth of the day, whose length var
 
 ```php
 $zman->getShaahZmanisGra();
-$zman->getShaahZmanisMGA();
 $zman->getShaahZmanisBaalHatanya();
 $zman->getShaahZmanisAteretTorah();
 $zman->getShaahZmanis16Point1Degrees();

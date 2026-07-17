@@ -49,7 +49,7 @@ trait ShaahZmanis
 		return $this->getTemporalHour($startOfDay, $endOfDay);
 	}
 
-	public function getShaahZmanisMGA(): float|null
+	public function getShaahZmanis72Minutes(): float|null
 	{
 		$startOfDay = $this->getAlos72Minutes();
 		$endOfDay = $this->getTzais72Minutes();
@@ -61,11 +61,6 @@ trait ShaahZmanis
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getShaahZmanis72Minutes(): float|null
-	{
-		return $this->getShaahZmanisMGA();
-	}
 
 	public function getShaahZmanis19Point8Degrees(): float|null
 	{

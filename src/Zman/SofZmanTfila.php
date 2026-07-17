@@ -53,17 +53,12 @@ trait SofZmanTfila
 		return $this->getSofZmanTfila($this->getElevationAdjustedSunrise(), $this->getElevationAdjustedSunset(), true);
 	}
 
-	public function getSofZmanTfilaMGA(): Carbon|null
+	public function getSofZmanTfilaMGA72Minutes(): Carbon|null
 	{
 		return $this->getSofZmanTfila($this->getAlos72Minutes(), $this->getTzais72Minutes(), true);
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getSofZmanTfilaMGA72Minutes(): Carbon|null
-	{
-		return $this->getSofZmanTfilaMGA();
-	}
 
 	public function getSofZmanTfilaMGA72MinutesZmanis(): Carbon|null
 	{

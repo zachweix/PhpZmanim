@@ -39,7 +39,7 @@ trait Alos
 {
 	// The following are from ZmanimCalendar
 
-	public function getAlosHashachar(): Carbon|null
+	public function getAlos16Point1Degrees(): Carbon|null
 	{
 		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_16_POINT_1);
 	}
@@ -50,11 +50,6 @@ trait Alos
 	}
 
 	// The following are from ComprehensiveZmanimCalendar
-
-	public function getAlos16Point1Degrees(): Carbon|null
-	{
-		return $this->getAlosHashachar();
-	}
 
 	public function getAlos60Minutes(): Carbon|null
 	{
