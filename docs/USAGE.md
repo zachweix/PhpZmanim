@@ -653,3 +653,42 @@ $jewishDate->format()->english($options)->yomTov();  // Sukkot
 Keying by enum class matters: `MasechtaBavli` and `MasechtaYerushalmi` share many case names, so a `MasechtaYerushalmi` entry changes only the Yerushalmi output and leaves Bavli alone. Unknown enum classes and unknown case names both throw, so a misspelled case name is caught immediately.
 
 Anything you don't pass keeps its default, and you only need to include the entries you actually want to change.
+
+#### Going straight to a language formatter
+
+`format()` also accepts a language formatter class, which skips the `english()` / `hebrew()` step and hands you that formatter directly. Options go in the second argument:
+
+```php
+use PhpZmanim\JewishDate\Formatter\Hebrew;
+use PhpZmanim\JewishDate\Formatter\English;
+
+$jewishDate->format(Hebrew::class)->date();   // ט״ו תשרי תשפ״ד
+$jewishDate->format(English::class)->date();  // 15 Tishrei, 5784
+
+$jewishDate->format(Hebrew::class, ['useGershGershayim' => false])->date();  // טו תשרי תשפד
+```
+
+These are the same two calls:
+
+```php
+$jewishDate->format()->hebrew($options);
+$jewishDate->format(Hebrew::class, $options);
+```
+
+The fluent form reads better when you are writing the call by hand. The class form is for when the language is a variable — a user preference, a config value, a request parameter — and you would otherwise be branching on it:
+
+```php
+$formatter = $user->prefersHebrew ? Hebrew::class : English::class;
+
+$jewishDate->format($formatter)->date();
+$jewishDate->format($formatter)->yomTov();
+```
+
+Passing no argument still gives you the `JewishDateFormatter`, so existing code is unaffected.
+
+Anything that isn't a `LanguageFormatter` subclass throws an `InvalidArgumentException`, and option keys are validated exactly as they are on `english()` / `hebrew()`:
+
+```php
+$jewishDate->format(\DateTime::class);  // InvalidArgumentException: must be a ... LanguageFormatter subclass
+$jewishDate->format(Hebrew::class, ['useGershGershyim' => false]);  // InvalidArgumentException: Unknown formatter option
+```
