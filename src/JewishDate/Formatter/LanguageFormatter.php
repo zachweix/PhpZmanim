@@ -22,6 +22,8 @@
 
 namespace PhpZmanim\JewishDate\Formatter;
 
+use InvalidArgumentException;
+use UnitEnum;
 use PhpZmanim\JewishDate;
 use PhpZmanim\Torah\MasechtaYerushalmi;
 use PhpZmanim\Torah\Nameable;
@@ -34,9 +36,77 @@ use PhpZmanim\Torah\YomTov;
  */
 abstract class LanguageFormatter
 {
+	protected readonly array $options;
+
 	public function __construct(
-		protected readonly JewishDate $date
-	) {}
+		protected readonly JewishDate $date,
+		array $options = []
+	) {
+		$defaults = static::defaultOptions();
+
+		$unknown = array_diff_key($options, $defaults);
+		if ($unknown !== []) {
+			throw new InvalidArgumentException(sprintf(
+				'Unknown formatter option%s: %s. Valid options are: %s.',
+				count($unknown) === 1 ? '' : 's',
+				implode(', ', array_keys($unknown)),
+				implode(', ', array_keys($defaults))
+			));
+		}
+
+		$this->options = array_replace($defaults, $options);
+		$this->validateOptions();
+	}
+
+	protected static function defaultOptions(): array
+	{
+		return ['names' => []];
+	}
+
+	protected function validateOptions(): void
+	{
+		if (!is_array($this->options['names'])) {
+			throw new InvalidArgumentException('The "names" option must be an array keyed by enum class name.');
+		}
+
+		foreach ($this->options['names'] as $enum => $overrides) {
+			if (!is_string($enum) || !enum_exists($enum)) {
+				throw new InvalidArgumentException(sprintf(
+					'The "names" option must be keyed by enum class name, e.g. YomTov::class; got "%s".',
+					is_string($enum) ? $enum : gettype($enum)
+				));
+			}
+			if (!is_array($overrides)) {
+				throw new InvalidArgumentException(sprintf(
+					'The "names" entry for %s must be an array of case name => label.',
+					$enum
+				));
+			}
+			$cases = array_column($enum::cases(), 'name');
+			$unknown = array_diff(array_keys($overrides), $cases);
+			if ($unknown !== []) {
+				throw new InvalidArgumentException(sprintf(
+					'Unknown %s case%s in "names": %s.',
+					$enum,
+					count($unknown) === 1 ? '' : 's',
+					implode(', ', $unknown)
+				));
+			}
+		}
+	}
+
+	protected function expectList(string $option, int $count): void
+	{
+		$value = $this->options[$option];
+		if (!is_array($value) || count($value) !== $count) {
+			throw new InvalidArgumentException(sprintf(
+				'The "%s" option must be an array of exactly %d entries, %s given.',
+				$option,
+				$count,
+				is_array($value) ? count($value) . ' entries' : gettype($value)
+			));
+		}
+	}
 
 	/*
 	|--------------------------------------------------------------------------
@@ -120,7 +190,7 @@ abstract class LanguageFormatter
 
 	abstract public function dayOfWeek(): string;
 
-	abstract protected function name(Nameable $value): string;
+	abstract protected function translate(Nameable $value): string;
 
 	abstract protected function formatNumber(int $number): string;
 
@@ -159,6 +229,18 @@ abstract class LanguageFormatter
 	 */
 	protected function withDate(JewishDate $date): static
 	{
-		return new static($date);
+		return new static($date, $this->options);
+	}
+
+	protected function name(Nameable $value): string
+	{
+		if ($value instanceof UnitEnum) {
+			$override = $this->options['names'][$value::class][$value->name] ?? null;
+			if ($override !== null) {
+				return $override;
+			}
+		}
+
+		return $this->translate($value);
 	}
 }

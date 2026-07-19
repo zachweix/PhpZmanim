@@ -62,7 +62,7 @@ trait MinchaGedola
 
 	public function getMinchaGedola72Minutes(): Carbon|null
 	{
-		if ($this->getUseAstronomicalChatzosForOtherZmanim()) {
+		if ($this->useAstronomicalChatzosForOtherZmanim) {
 			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $this->getTzais72Minutes(), 0.5);
 		}
 
@@ -71,7 +71,7 @@ trait MinchaGedola
 
 	public function getMinchaGedola16Point1Degrees(): Carbon|null
 	{
-		if ($this->getUseAstronomicalChatzosForOtherZmanim()) {
+		if ($this->useAstronomicalChatzosForOtherZmanim) {
 			return $this->getHalfDayBasedZman($this->getChatzosHayom(), $this->getTzais16Point1Degrees(), 0.5);
 		}
 

@@ -202,8 +202,8 @@ class GeoLocation
 		$a = 6378137;
 		$b = 6356752.3142;
 		$f = 1 / 298.257223563;
-		$L = deg2rad($geoLocation->getLongitude() - $this->getLongitude());
-		$U1 = atan((1 - $f) * tan(deg2rad($this->getLatitude())));
+		$L = deg2rad($geoLocation->getLongitude() - $this->longitude);
+		$U1 = atan((1 - $f) * tan(deg2rad($this->latitude)));
 		$U2 = atan((1 - $f) * tan(deg2rad($geoLocation->getLatitude())));
 		$sinU1 = sin($U1);
 		$cosU1 = cos($U1);
@@ -281,9 +281,9 @@ class GeoLocation
 
 	public function getRhumbLineBearing(GeoLocation $geoLocation): float
 	{
-		$dLon = deg2rad($geoLocation->getLongitude() - $this->getLongitude());
+		$dLon = deg2rad($geoLocation->getLongitude() - $this->longitude);
 		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + M_PI / 4)
-				/ tan(deg2rad($this->getLatitude()) / 2 + M_PI / 4));
+				/ tan(deg2rad($this->latitude) / 2 + M_PI / 4));
 		if (abs($dLon) > M_PI) {
 			$dLon = $dLon > 0 ? -(2 * M_PI - $dLon) : (2 * M_PI + $dLon);
 		}
@@ -293,14 +293,14 @@ class GeoLocation
 	public function getRhumbLineDistance(GeoLocation $geoLocation): float
 	{
 		$earthRadius = 6378137;
-		$dLat = deg2rad($geoLocation->getLatitude()) - deg2rad($this->getLatitude());
-		$dLon = abs(deg2rad($geoLocation->getLongitude()) - deg2rad($this->getLongitude()));
+		$dLat = deg2rad($geoLocation->getLatitude()) - deg2rad($this->latitude);
+		$dLon = abs(deg2rad($geoLocation->getLongitude()) - deg2rad($this->longitude));
 		$dPhi = log(tan(deg2rad($geoLocation->getLatitude()) / 2 + M_PI / 4)
-				/ tan(deg2rad($this->getLatitude()) / 2 + M_PI / 4));
+				/ tan(deg2rad($this->latitude) / 2 + M_PI / 4));
 		$q = $dLat / $dPhi;
 
 		if (!is_finite($q)) {
-			$q = cos(deg2rad($this->getLatitude()));
+			$q = cos(deg2rad($this->latitude));
 		}
 
 		if ($dLon > M_PI) {

@@ -76,9 +76,9 @@ Each setter returns the `Zman` instance, so calls can be chained.
 The default engine is the `NoaaCalculator`. Four are available:
 
 - `PhpZmanim\Calculator\NoaaCalculator` (default)
-- `PhpZmanim\Calculator\MeeusCalculator`
-- `PhpZmanim\Calculator\SPACalculator`
-- `PhpZmanim\Calculator\SunTimesCalculator`
+- `PhpZmanim\Calculator\MeeusCalculator` — the high-accuracy method of Jean Meeus
+- `PhpZmanim\Calculator\SPACalculator` — the NREL Solar Position Algorithm, the most accurate option
+- `PhpZmanim\Calculator\SunTimesCalculator` — **deprecated**; a legacy algorithm retained for backward compatibility and as a reference for validating historically calculated times. Prefer one of the above for new code.
 
 Select one with the `create()` factory, either at construction or afterward:
 
@@ -90,9 +90,28 @@ $zman = Zman::create(2019, 2, 22, 40.0721087, -74.2400243, 39.57, 'America/New_Y
 $zman->setAstronomicalCalculator(MeeusCalculator::create());
 ```
 
+#### Tuning a calculator
+
+Every calculator exposes the constants it uses. Each setter returns the calculator, so calls can be chained:
+
+```php
+$calculator = MeeusCalculator::create();
+
+$calculator->getRefraction();               // atmospheric refraction, in degrees (default 34/60)
+$calculator->getSolarRadius();              // solar radius, in degrees (default 16/60)
+$calculator->getEarthRadius();              // earth radius, in KM (default 6371.0088)
+$calculator->getUseApparentSolarRadius();   // use the seasonally varying solar radius (default true)
+
+$calculator->setUseApparentSolarRadius(false);
+```
+
+Note that `setSolarRadius()` turns off the apparent solar radius, since supplying an explicit radius implies a fixed one. Call `setUseApparentSolarRadius(true)` afterwards if you want it back on.
+
 ### Full list of zmanim
 
 Every method below takes no arguments, returns a Carbon, and is called on a `Zman` instance (e.g. `$zman->getSunrise()`). See the [KosherJava documentation](https://kosherjava.com) for what each one represents.
+
+> **Some zmanim are deprecated.** Following KosherJava, a number of these methods carry an `@deprecated` docblock. In almost every case this does **not** mean the method will be removed — it means the zman is *lechumra* only, because it returns a time so early or so late that relying on it *lekula* can lead to a real halachic problem. Your editor will show these as struck through. Read the docblock before using one; it explains the specific risk. The deprecated zmanim are the `getPlagHamincha*` variants listed below (except `getPlagHamincha60Minutes`), `getPlagAlosToSunset`, `getAlos120Minutes`, `getAlos120Zmanis`, `getAlos26Degrees`, `getTzais120Minutes`, `getTzais120Zmanis`, `getTzais26Degrees`, the four narrow `getTzaisGeonim*` degree variants (3.7, 3.8, 4.42, 4.66), and `getMisheyakir12Point85Degrees`. Separately, `getSunriseSolarDipFromOffset()` and `getSunsetSolarDipFromOffset()` are deprecated for performance — use `getSolarElevation()` instead.
 
 #### Sunrise & dawn twilight
 
@@ -253,11 +272,17 @@ $zman->getPlagHaminchaBaalHatanya();
 $zman->getPlagHaminchaGRAFixedLocalChatzosToSunset();
 ```
 
-#### Candle lighting
+#### Candle lighting & melacha
 
 ```php
 $zman->getCandleLighting();  // sea-level sunset minus the candle-lighting offset (default 18 minutes)
+
+// Is melacha forbidden at a given moment? Unlike the zmanim above, this takes arguments
+// and returns a bool rather than a Carbon.
+$zman->isAssurBemelacha($currentTime, $tzais, $inIsrael);
 ```
+
+`JewishDate` has a day-level counterpart, `isAssurBemelacha()`, which takes no time arguments and answers for the day as a whole.
 
 #### Bain Hashmashos (twilight)
 
@@ -322,10 +347,10 @@ $zman->getSunTransit();  // the moment the sun crosses the local meridian
 
 ### Shaah Zmanim (temporal hours)
 
-A _shaah zmanis_ is a halachic hour — one-twelfth of the day, whose length varies with the season and the opinion used. Unlike the zmanim above, these methods **do not return a Carbon**. Each returns a **`float`: the length of one shaah zmanis in milliseconds.** For example, `getShaahZmanisGra()` might return `3299103.85` (about 55 minutes). Divide by `60000` for minutes.
+A _shaah zmanis_ is a halachic hour — one-twelfth of the day, whose length varies with the season and the opinion used. Unlike the zmanim above, these methods **do not return a Carbon**. Each returns a **`float`: the length of one shaah zmanis in milliseconds.** For example, `getShaahZmanisGRA()` might return `3299103.85` (about 55 minutes). Divide by `60000` for minutes.
 
 ```php
-$zman->getShaahZmanisGra();
+$zman->getShaahZmanisGRA();
 $zman->getShaahZmanisBaalHatanya();
 $zman->getShaahZmanisAteretTorah();
 $zman->getShaahZmanis16Point1Degrees();
@@ -440,6 +465,16 @@ Both give the same day. With no arguments, `JewishDate::create()` uses today. Pa
 $jewishDate = JewishDate::create(5784, 7, 15, true);  // in Israel
 ```
 
+### Configuration
+
+```php
+$jewishDate->setInIsrael(true);            // use the Israel holiday schedule (default false)
+$jewishDate->setIsMukafChoma(true);        // treat the location as a walled city for Purim (default false)
+$jewishDate->setUseModernHolidays(true);   // recognize Yom Haatzmaut, Yom Hazikaron, etc. (default false)
+```
+
+Each has a matching getter (`getInIsrael()`, `getIsMukafChoma()`, `getUseModernHolidays()`), and each setter returns the `JewishDate` instance, so calls can be chained.
+
 ### Calendar information
 
 ```php
@@ -470,6 +505,25 @@ $jewishDate->getDafYomiYerushalmi();   // a Daf value object, or null on Yom Kip
 
 `getDafYomiBavli()` returns a `Daf` value object; read it with `getMasechta()` (a masechta enum) and `getDaf()` (the page number), or format it directly (see below).
 
+### Molad and tekufa
+
+```php
+$jewishDate->getMolad();               // a JewishDate carrying the molad's day, hours and chalakim
+$jewishDate->getMoladAsCarbon();       // the molad as a Carbon instant
+$jewishDate->getTekufaAsCarbon(false); // the tekufa as a Carbon instant, or null if not a tekufa day
+```
+
+**These return Jerusalem standard time (`GMT+2`), not your own timezone.** The molad and the tekufa are defined as Jerusalem quantities, so there is no other sensible anchor — but it means calling `format()` on the result shows Jerusalem wall-clock time. The instant itself is correct; to read it where you are, change the timezone on the Carbon object:
+
+```php
+$molad = JewishDate::createFromDate(2024, 1, 11)->getMoladAsCarbon();
+
+$molad->format('Y-m-d H:i:s T');                              // 2024-01-11 08:24:16 GMT+0200
+$molad->setTimezone('America/New_York')->format('Y-m-d H:i:s T'); // 2024-01-11 01:24:16 EST
+```
+
+Note that the offset is a fixed `GMT+2` rather than `Asia/Jerusalem`, so it deliberately does not follow Israeli daylight saving — the molad is reckoned in standard time. This matches KosherJava.
+
 ### Moving between dates
 
 ```php
@@ -478,7 +532,7 @@ $jewishDate->subDays(1);
 $jewishDate->addMonthsJewish(1);
 $jewishDate->addYearsJewish(1);
 $jewishDate->addMonthsGregorian(1);
-$jewishDate->addYearsJewish(1);
+$jewishDate->addYearsGregorian(1);
 ```
 
 ### Formatting
@@ -543,3 +597,59 @@ JewishDate::create(5784, 7, 1)->format()->hebrew()->kviah();  // זחג
 ```
 
 Because it is Hebrew-specific, `->english()->kviah()` does not exist.
+
+#### Customizing the output
+
+`hebrew()` and `english()` each accept an optional array of options. The formatter stays immutable — the options apply to the formatter you get back, and nothing is stored on the `JewishDate`:
+
+```php
+$jewishDate->format()->english(['shabbos' => 'Shabbat'])->dayOfWeek();  // Shabbat
+$jewishDate->format()->hebrew(['useGershGershayim' => false])->date();  // טו תשרי תשפד
+```
+
+Shared by both languages:
+
+| Option | Type | Default | Effect |
+|--------|------|---------|--------|
+| `months` | array of 14 | the built-in list | Month names, Nissan through Adar I. Must have exactly 14 entries |
+| `names` | array | `[]` | Overrides for holiday, parsha and masechta names — see below |
+
+Hebrew only:
+
+| Option | Type | Default | Effect |
+|--------|------|---------|--------|
+| `daysOfWeek` | array of 7 | the built-in list | Day names, Sunday first. Must have exactly 7 entries |
+| `omerPrefix` | string | `ב` | The letter prefixed to "עומר" |
+| `useGershGershayim` | bool | `true` | Add geresh/gershayim marks to numbers |
+| `useFinalFormLetters` | bool | `false` | Use a final-form letter when a year ends in a round ten (`תש״פ` → `תש״ף`) |
+| `useLongHebrewYears` | bool | `false` | Include the thousands prefix in years (`תשפ״ד` → `ה׳ תשפ״ד`) |
+
+English only:
+
+| Option | Type | Default | Effect |
+|--------|------|---------|--------|
+| `shabbos` | string | `Shabbos` | What `dayOfWeek()` returns on Shabbos |
+
+**Unknown option keys throw an `InvalidArgumentException`**, so a typo fails loudly instead of being silently ignored. Options are checked per language — passing `useGershGershayim` to `english()` is an error, because it means nothing there.
+
+Note that `useFinalFormLetters` follows KosherJava's rule: the substitution happens only when the number ends in a round ten *and* is not one of the short forms Hebrew writes with a single letter. In practice that means years like 5780 (`תש״פ` → `תש״ף`), never a day of the month — day 20 stays `כ׳` and does not become `ך׳`.
+
+##### Renaming holidays, parshiyos and masechtos
+
+Those names live on the `Parshah`, `YomTov`, `MasechtaBavli` and `MasechtaYerushalmi` enums, so the `names` option overrides them by enum class and case name:
+
+```php
+use PhpZmanim\Torah\YomTov;
+use PhpZmanim\Torah\MasechtaYerushalmi;
+
+$options = ['names' => [
+    YomTov::class => ['SUCCOS' => 'Sukkot', 'SHAVUOS' => 'Shavuot'],
+    MasechtaYerushalmi::class => ['BERACHOS' => 'Brachot'],
+]];
+
+$jewishDate->format()->english($options)->yomTov();  // Sukkot
+```
+
+Keying by enum class matters: `MasechtaBavli` and `MasechtaYerushalmi` share many case names, so a `MasechtaYerushalmi` entry changes only the Yerushalmi output and leaves Bavli alone. Unknown enum classes and unknown case names both throw, so a misspelled case name is caught immediately.
+
+Anything you don't pass keeps its default, and you only need to include the entries you actually want to change.

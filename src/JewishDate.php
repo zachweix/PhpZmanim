@@ -236,7 +236,7 @@ class JewishDate
 		return $this;
 	}
 
-	public function isUseModernHolidays(): bool
+	public function getUseModernHolidays(): bool
 	{
 		return $this->useModernHolidays;
 	}

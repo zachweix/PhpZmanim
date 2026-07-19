@@ -39,6 +39,9 @@ trait Misheyakir
 {
 	// The following are from ComprehensiveZmanimCalendar
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getMisheyakir12Point85Degrees(): Carbon|null
 	{
 		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_12_POINT_85);

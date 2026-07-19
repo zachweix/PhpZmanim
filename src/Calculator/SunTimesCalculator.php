@@ -26,6 +26,9 @@ use BadMethodCallException;
 use Carbon\Carbon;
 use PhpZmanim\GeoLocation;
 
+/**
+ * @deprecated See KosherJava for details.
+ */
 class SunTimesCalculator extends AstronomicalCalculator
 {
 	/*

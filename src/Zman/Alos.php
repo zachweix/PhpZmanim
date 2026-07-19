@@ -66,6 +66,9 @@ trait Alos
 		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -96 * Zman::MINUTE_MILLIS);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getAlos120Minutes(): Carbon|null
 	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunrise(), -120 * Zman::MINUTE_MILLIS);
@@ -86,6 +89,9 @@ trait Alos
 		return $this->getZmanisBasedOffset(-1.6);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getAlos120Zmanis(): Carbon|null
 	{
 		return $this->getZmanisBasedOffset(-2.0);
@@ -106,6 +112,9 @@ trait Alos
 		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_19_POINT_8);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getAlos26Degrees(): Carbon|null
 	{
 		return $this->getSunriseOffsetByDegrees(Zman::ZENITH_26_DEGREES);

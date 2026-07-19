@@ -212,4 +212,48 @@ class MoladTest extends TestCase
 			'ordinary 2000-01-01' => [2000, 1, 1,  false],
 		];
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| RETURNED TIMEZONE
+	|--------------------------------------------------------------------------
+	| The instants above are the Java ground truth. Java hands these back as a
+	| zone-less java.time.Instant, so the timezone the Carbon carries is a PHP
+	| representation detail — pinned here because it is documented behavior and
+	| because switching to Asia/Jerusalem would silently shift summer moldos.
+	*/
+
+	#[Test]
+	public function moladAndTekufaAreReturnedInJerusalemStandardTime(): void
+	{
+		$molad = JewishDate::create(5784, 7, 1)->getMoladAsCarbon();
+
+		$this->assertSame(7200, $molad->getOffset());
+		$this->assertSame('2023-09-15 05:28:03.504', $molad->format('Y-m-d H:i:s.v'));
+
+		$tekufa = JewishDate::createFromDate(2024, 4, 7)->getTekufaAsCarbon(false);
+		$this->assertNotNull($tekufa);
+		$this->assertSame(7200, $tekufa->getOffset());
+	}
+
+	#[Test]
+	public function moladUsesAFixedOffsetAndDoesNotFollowIsraeliDst(): void
+	{
+		// Av 5784 falls in August. Asia/Jerusalem would be +3 there; a fixed GMT+2 stays +2,
+		// which is correct since the molad is reckoned in standard time.
+		$summer = JewishDate::create(5784, 5, 1)->getMoladAsCarbon();
+
+		$this->assertSame(7200, $summer->getOffset());
+		$this->assertSame('2024-08-04T23:32:40.170Z', $summer->copy()->utc()->format('Y-m-d\TH:i:s.v\Z'));
+	}
+
+	#[Test]
+	public function moladCanBeRenderedInAnotherTimezoneWithoutChangingTheInstant(): void
+	{
+		$molad = JewishDate::create(5784, 7, 1)->getMoladAsCarbon();
+		$newYork = $molad->copy()->setTimezone('America/New_York');
+
+		$this->assertTrue($molad->equalTo($newYork));
+		$this->assertSame('2023-09-14 23:28:03', $newYork->format('Y-m-d H:i:s'));
+	}
 }

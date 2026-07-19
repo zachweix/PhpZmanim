@@ -31,27 +31,44 @@ class English extends LanguageFormatter
 	const MONTHS = ["Nissan", "Iyar", "Sivan", "Tammuz", "Av", "Elul", "Tishrei", "Cheshvan",
 		"Kislev", "Teves", "Shevat", "Adar", "Adar II", "Adar I"];
 
+	const SHABBOS = "Shabbos";
+
+	protected static function defaultOptions(): array
+	{
+		return array_replace(parent::defaultOptions(), [
+			'months' => self::MONTHS,
+			'shabbos' => self::SHABBOS,
+		]);
+	}
+
+	protected function validateOptions(): void
+	{
+		parent::validateOptions();
+		$this->expectList('months', 14);
+	}
+
 	public function month(): string
 	{
 		$month = $this->date->getJewishMonth();
+		$months = $this->options['months'];
 
 		if ($this->date->isJewishLeapYear() && $month == JewishDate::ADAR) {
-			return self::MONTHS[13]; // Adar I, not Adar, in a leap year
+			return $months[13]; // Adar I, not Adar, in a leap year
 		}
 
-		return self::MONTHS[$month - 1];
+		return $months[$month - 1];
 	}
 
 	public function dayOfWeek(): string
 	{
 		if ($this->date->getDayOfWeek() == 7) {
-			return "Shabbos";
+			return $this->options['shabbos'];
 		}
 
 		return $this->date->toCarbon()->format('l');
 	}
 
-	protected function name(Nameable $value): string
+	protected function translate(Nameable $value): string
 	{
 		return $value->english();
 	}

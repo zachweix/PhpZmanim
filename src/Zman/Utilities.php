@@ -73,6 +73,9 @@ trait Utilities
 			->setTimezone($this->geoLocation->getTimezone());
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getSunriseSolarDipFromOffset(float $minutes): float
 	{
 		if ($minutes == 0.0) {
@@ -108,6 +111,9 @@ trait Utilities
 		return $degrees;
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getSunsetSolarDipFromOffset(float $minutes): float
 	{
 		if ($minutes == 0.0) {
@@ -159,7 +165,7 @@ trait Utilities
 
 	public function getZmanisBasedOffset(float $hours): Carbon|null
 	{
-		$shaahZmanis = $this->getShaahZmanisGra();
+		$shaahZmanis = $this->getShaahZmanisGRA();
 		if (is_null($shaahZmanis) || $hours == 0) {
 			return null;
 		}

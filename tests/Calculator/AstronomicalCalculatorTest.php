@@ -95,4 +95,57 @@ class AstronomicalCalculatorTest extends TestCase
 		$this->assertEquals($calculator->getRefraction(), 0.5);
 		$this->assertEquals($copy->getRefraction(), 0.9);
 	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| TUNING CONSTANTS
+	|--------------------------------------------------------------------------
+	| Defaults and the setSolarRadius() side effect are ground truth from
+	| KosherJava's AstronomicalCalculator (getRefraction/getSolarRadius/
+	| getEarthRadius/isUseApparentSolarRadius/setSolarRadius).
+	*/
+
+	#[Test]
+	public function tuningConstantDefaultsMatchJava(): void
+	{
+		$calculator = NoaaCalculator::create();
+
+		$this->assertEqualsWithDelta(0.5666666666666667, $calculator->getRefraction(), 1e-15);
+		$this->assertEqualsWithDelta(0.26666666666666666, $calculator->getSolarRadius(), 1e-15);
+		$this->assertEqualsWithDelta(6371.0088, $calculator->getEarthRadius(), 1e-15);
+		$this->assertTrue($calculator->getUseApparentSolarRadius());
+	}
+
+	#[Test]
+	public function setSolarRadiusTurnsOffTheApparentSolarRadius(): void
+	{
+		$calculator = NoaaCalculator::create();
+		$this->assertTrue($calculator->getUseApparentSolarRadius());
+
+		$calculator->setSolarRadius(0.5);
+
+		$this->assertEqualsWithDelta(0.5, $calculator->getSolarRadius(), 1e-15);
+		$this->assertFalse($calculator->getUseApparentSolarRadius());
+
+		// and it can be turned back on
+		$calculator->setUseApparentSolarRadius(true);
+		$this->assertTrue($calculator->getUseApparentSolarRadius());
+	}
+
+	#[Test]
+	public function useApparentSolarRadiusSetterIsFluent(): void
+	{
+		$calculator = NoaaCalculator::create();
+
+		$this->assertSame($calculator, $calculator->setUseApparentSolarRadius(false));
+		$this->assertFalse($calculator->getUseApparentSolarRadius());
+	}
+
+	#[Test]
+	public function setSolarRadiusRejectsNegativeValues(): void
+	{
+		$this->expectException(InvalidArgumentException::class);
+
+		NoaaCalculator::create()->setSolarRadius(-1.0);
+	}
 }
