@@ -39,7 +39,7 @@ trait AteretTorah
 {
 	public function getTzaisAteretTorah(): Carbon|null
 	{
-		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->getAteretTorahSunsetOffset() * Zman::MINUTE_MILLIS);
+		return $this->getTimeOffset($this->getElevationAdjustedSunset(), $this->ateretTorahSunsetOffset * Zman::MINUTE_MILLIS);
 	}
 
 	public function getSofZmanShmaAteretTorah(): Carbon|null

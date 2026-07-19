@@ -59,66 +59,105 @@ trait Plag
 		return $this->getPlagHamincha($this->getAlos60Minutes(), $this->getTzais60Minutes(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha72Minutes(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos72Minutes(), $this->getTzais72Minutes(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha72MinutesZmanis(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos72Zmanis(), $this->getTzais72Zmanis(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha90Minutes(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos90Minutes(), $this->getTzais90Minutes(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha90MinutesZmanis(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos90Zmanis(), $this->getTzais90Zmanis(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha96Minutes(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos96Minutes(), $this->getTzais96Minutes(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha96MinutesZmanis(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos96Zmanis(), $this->getTzais96Zmanis(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha120Minutes(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos120Minutes(), $this->getTzais120Minutes(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha120MinutesZmanis(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos120Zmanis(), $this->getTzais120Zmanis(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha16Point1Degrees(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos16Point1Degrees(), $this->getTzais16Point1Degrees(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha18Degrees(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos18Degrees(), $this->getTzais18Degrees(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha19Point8Degrees(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos19Point8Degrees(), $this->getTzais19Point8Degrees(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagHamincha26Degrees(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos26Degrees(), $this->getTzais26Degrees(), true);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getPlagAlosToSunset(): Carbon|null
 	{
 		return $this->getPlagHamincha($this->getAlos16Point1Degrees(), $this->getElevationAdjustedSunset(), false);

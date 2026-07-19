@@ -56,7 +56,7 @@ trait Holidays
 				if (($day == 22 && $this->inIsrael) || ($day == 23 && !$this->inIsrael)) {
 					return YomTov::ISRU_CHAG;
 				}
-				if ($this->isUseModernHolidays()
+				if ($this->useModernHolidays
 					&& (($day == 26 && $dayOfWeek == 5)
 						|| ($day == 28 && $dayOfWeek == 2)
 						|| ($day == 27 && $dayOfWeek != 1 && $dayOfWeek != 6))) {
@@ -64,12 +64,12 @@ trait Holidays
 				}
 				break;
 			case JewishDate::IYAR:
-				if ($this->isUseModernHolidays()
+				if ($this->useModernHolidays
 					&& (($day == 4 && $dayOfWeek == 3)
 						|| (($day == 3 || $day == 2) && $dayOfWeek == 4) || ($day == 5 && $dayOfWeek == 2))) {
 					return YomTov::YOM_HAZIKARON;
 				}
-				if ($this->isUseModernHolidays()
+				if ($this->useModernHolidays
 					&& (($day == 5 && $dayOfWeek == 4)
 						|| (($day == 4 || $day == 3) && $dayOfWeek == 5) || ($day == 6 && $dayOfWeek == 3))) {
 					return YomTov::YOM_HAATZMAUT;
@@ -80,7 +80,7 @@ trait Holidays
 				if ($day == 18) {
 					return YomTov::LAG_BAOMER;
 				}
-				if ($this->isUseModernHolidays() && $day == 28) {
+				if ($this->useModernHolidays && $day == 28) {
 					return YomTov::YOM_YERUSHALAYIM;
 				}
 				break;

@@ -113,7 +113,7 @@ class ZmanimCalendarTest extends TestCase
 		// KosherJava returns a Duration; the PHP port returns the length in milliseconds.
 		// GRA: PT55M20.649853956S, MGA 72: PT1H7M20.649853956S.
 		return [
-			'shaah zmanis GRA' => ['getShaahZmanisGra', 3320649.853956],
+			'shaah zmanis GRA' => ['getShaahZmanisGRA', 3320649.853956],
 			'shaah zmanis MGA 72' => ['getShaahZmanis72Minutes', 4040649.853956],
 		];
 	}
@@ -186,7 +186,7 @@ class ZmanimCalendarTest extends TestCase
 	*/
 
 	#[Test]
-	public function isAssurBemlacha(): void
+	public function isAssurBemelacha(): void
 	{
 		// Erev Shabbos (Friday)
 		$erevShabbos = $this->calendarFor(2024, 11, 8);
@@ -194,29 +194,29 @@ class ZmanimCalendarTest extends TestCase
 		$tzais = $erevShabbos->getTzaisGeonim8Point5Degrees();
 
 		// Before sunset on Friday - not yet assur
-		$this->assertFalse($erevShabbos->isAssurBemlacha($sunset->copy()->subMinutes(30), $tzais, false));
+		$this->assertFalse($erevShabbos->isAssurBemelacha($sunset->copy()->subMinutes(30), $tzais, false));
 		// After sunset on Friday - assur (Shabbos begins)
 		$afterSunset = $sunset->copy()->addMinutes(10);
-		$this->assertTrue($erevShabbos->isAssurBemlacha($afterSunset, $tzais, false));
+		$this->assertTrue($erevShabbos->isAssurBemelacha($afterSunset, $tzais, false));
 		// After tzais on Friday - still assur (during Shabbos)
-		$this->assertTrue($erevShabbos->isAssurBemlacha($tzais->copy()->addMinutes(10), $tzais, false));
+		$this->assertTrue($erevShabbos->isAssurBemelacha($tzais->copy()->addMinutes(10), $tzais, false));
 
 		// Shabbos day
 		$shabbos = $this->calendarFor(2024, 11, 9);
 		$tzaisShabbos = $shabbos->getTzaisGeonim8Point5Degrees();
 		// During Shabbos day (before tzais) - assur
-		$this->assertTrue($shabbos->isAssurBemlacha($tzaisShabbos->copy()->subHours(6), $tzaisShabbos, false));
+		$this->assertTrue($shabbos->isAssurBemelacha($tzaisShabbos->copy()->subHours(6), $tzaisShabbos, false));
 		// After tzais on Shabbos - not assur (Shabbos ends)
-		$this->assertFalse($shabbos->isAssurBemlacha($tzaisShabbos->copy()->addMinutes(10), $tzaisShabbos, false));
+		$this->assertFalse($shabbos->isAssurBemelacha($tzaisShabbos->copy()->addMinutes(10), $tzaisShabbos, false));
 
 		// Regular weekday (Thursday) - never assur
 		$weekday = $this->calendarFor(2024, 11, 7);
 		$tzaisWeekday = $weekday->getTzaisGeonim8Point5Degrees();
-		$this->assertFalse($weekday->isAssurBemlacha($tzaisWeekday->copy()->subMinutes(30), $tzaisWeekday, false));
-		$this->assertFalse($weekday->isAssurBemlacha($tzaisWeekday->copy()->addMinutes(10), $tzaisWeekday, false));
+		$this->assertFalse($weekday->isAssurBemelacha($tzaisWeekday->copy()->subMinutes(30), $tzaisWeekday, false));
+		$this->assertFalse($weekday->isAssurBemelacha($tzaisWeekday->copy()->addMinutes(10), $tzaisWeekday, false));
 
 		// Shabbos behaves the same in Israel and the Diaspora
-		$this->assertTrue($erevShabbos->isAssurBemlacha($afterSunset, $tzais, true));
-		$this->assertTrue($erevShabbos->isAssurBemlacha($afterSunset, $tzais, false));
+		$this->assertTrue($erevShabbos->isAssurBemelacha($afterSunset, $tzais, true));
+		$this->assertTrue($erevShabbos->isAssurBemelacha($afterSunset, $tzais, false));
 	}
 }

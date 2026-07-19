@@ -46,7 +46,7 @@ trait Melacha
 	}
 
 	// Note that jewishCalendar may change and this will need to change too
-	public function isAssurBemlacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
+	public function isAssurBemelacha(Carbon $currentTime, Carbon $tzais, bool $inIsrael): bool
 	{
 		$jewishDate = new JewishDate();
 		$jewishDate->setGregorianDate($this->date->year, $this->date->month, $this->date->day);

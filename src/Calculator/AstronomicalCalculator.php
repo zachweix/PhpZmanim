@@ -46,7 +46,7 @@ abstract class AstronomicalCalculator
 		private float $refraction = 34 / 60.0,
 		private float $solarRadius = 16 / 60.0,
 		private float $earthRadius = 6371.0088,
-		public bool $useApparentSolarRadius = true
+		private bool $useApparentSolarRadius = true
 	) {}
 
 	public static function create(): self
@@ -112,6 +112,18 @@ abstract class AstronomicalCalculator
 		return $this;
 	}
 
+	public function getUseApparentSolarRadius(): bool
+	{
+		return $this->useApparentSolarRadius;
+	}
+
+	public function setUseApparentSolarRadius(bool $useApparentSolarRadius): self
+	{
+		$this->useApparentSolarRadius = $useApparentSolarRadius;
+
+		return $this;
+	}
+
 	/*
 	|--------------------------------------------------------------------------
 	| ABSTRACT FUNCTIONS
@@ -153,9 +165,9 @@ abstract class AstronomicalCalculator
 		$adjustedZenith = $zenith;
 		if ($zenith == self::GEOMETRIC_ZENITH) {
 			if ($this->useApparentSolarRadius && !is_null($date)) {
-				$adjustedZenith += $this->getApparentSolarRadius($date) + $this->getRefraction() + $this->getElevationAdjustment($elevation);
+				$adjustedZenith += $this->getApparentSolarRadius($date) + $this->refraction + $this->getElevationAdjustment($elevation);
 			} else {
-				$adjustedZenith = $zenith + ($this->getSolarRadius() + $this->getRefraction() + $this->getElevationAdjustment($elevation));
+				$adjustedZenith = $zenith + ($this->solarRadius + $this->refraction + $this->getElevationAdjustment($elevation));
 			}
 		}
 		return $adjustedZenith;

@@ -39,13 +39,13 @@ class JewishDateFormatter
 		private readonly JewishDate $date
 	) {}
 
-	public function hebrew(): Hebrew
+	public function hebrew(array $options = []): Hebrew
 	{
-		return new Hebrew($this->date);
+		return new Hebrew($this->date, $options);
 	}
 
-	public function english(): English
+	public function english(array $options = []): English
 	{
-		return new English($this->date);
+		return new English($this->date, $options);
 	}
 }

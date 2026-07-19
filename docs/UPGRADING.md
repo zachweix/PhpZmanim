@@ -128,6 +128,10 @@ use PhpZmanim\Calculator\MeeusCalculator;
 $zman->setAstronomicalCalculator(MeeusCalculator::create());
 ```
 
+`SunTimesCalculator` is now marked **deprecated**, following KosherJava. It still works and there is no plan to remove it — it stays useful as a reference for validating historically calculated times — but it implements a legacy algorithm. Prefer `SPACalculator` (most accurate), `MeeusCalculator`, or the default `NoaaCalculator` for new code.
+
+Calculators also expose their tuning constants through getters and setters — `getRefraction()`, `getSolarRadius()`, `getEarthRadius()`, and `getUseApparentSolarRadius()`, each with a matching setter that returns the calculator so calls can be chained.
+
 ### Renamed methods
 
 | v3 | v4 |
@@ -137,6 +141,7 @@ $zman->setAstronomicalCalculator(MeeusCalculator::create());
 | `isUseElevation()` | `getUseElevation()` |
 | `isUseAstronomicalChatzos()` | `getUseAstronomicalChatzos()` |
 | `isUseAstronomicalChatzosForOtherZmanim()` | `getUseAstronomicalChatzosForOtherZmanim()` |
+| `isAssurBemlacha()` | `isAssurBemelacha()` (the v3 name was missing an `e`) |
 | `getChatzos()` | `getChatzosHayom()` |
 | `getChatzosAsHalfDay()` | `getChatzosHayomAsHalfDay()` |
 | `getFixedLocalChatzos()` | `getFixedLocalChatzosHayom()` |
@@ -158,6 +163,7 @@ $zman->setAstronomicalCalculator(MeeusCalculator::create());
 | `getPlagAlos16Point1ToTzaisGeonim7Point083Degrees()` | `getPlagAlos16Point1DegreesToTzaisGeonim7Point083Degrees()` |
 | `getSofZmanShmaMGA()` | `getSofZmanShmaMGA72Minutes()` |
 | `getSofZmanShmaAlos16Point1ToTzaisGeonim7Point083Degrees()` | `getSofZmanShmaAlos16Point1DegreesToTzaisGeonim7Point083Degrees()` |
+| `getShaahZmanisGra()` | `getShaahZmanisGRA()` |
 | `getShaahZmanisMGA()` | `getShaahZmanis72Minutes()` |
 | `getShaahZmanisAlos16Point1ToTzais3Point7()` | `getShaahZmanisAlos16Point1DegreesToTzaisGeonim3Point7Degrees()` |
 | `getShaahZmanisAlos16Point1ToTzais3Point8()` | `getShaahZmanisAlos16Point1DegreesToTzaisGeonim3Point8Degrees()` |
@@ -243,6 +249,7 @@ Holiday and calendar predicates (`isSuccos()`, `isRoshChodesh()`, `getDayOfOmer(
 |----|----|
 | `getGregorianCalendar()` | `toCarbon()` |
 | `getMoladAsDate()` | `getMoladAsCarbon()` |
+| `isUseModernHolidays()` | `getUseModernHolidays()` |
 | `isGregorianLeapYear()` | *(now internal)* |
 | `getLastDayOfGregorianMonth()` | *(now internal)* |
 | `getChalakimSinceMoladTohu()` | *(now internal)* |
@@ -354,11 +361,46 @@ Method mapping:
 
 Where `{lang}` is `hebrew` or `english`.
 
-The formatting **options** on the old formatter no longer exist — the output is now fixed. These have no v4 equivalent:
+### Formatter options
 
-`setUseGershGershayim()`, `setUseFinalFormLetters()`, `setUseLongHebrewYears()`, `setLongWeekFormat()`, `setHebrewOmerPrefix()`, `setTransliteratedMonthList()`, `setTransliteratedHolidayList()`, `setTransliteratedParshiosList()`, `setTransliteratedShabbosDayOfWeek()`.
+The old formatter's dozen-odd setters are gone. Instead, `hebrew()` and `english()` take an optional **options array**, so the formatter stays immutable — there is no stateful object to configure and hand around:
 
-Hebrew output uses gershayim, short (no-thousands) years, and non-final letter forms; English output uses a fixed Ashkenazi transliteration.
+```php
+// v3
+$f = new HebrewDateFormatter();
+$f->setHebrewFormat(true);
+$f->setUseGershGershayim(false);
+$f->format($jewishDate);
+
+// v4
+$jewishDate->format()->hebrew(['useGershGershayim' => false])->date();
+```
+
+| v3 setter | v4 option |
+|-----------|-----------|
+| `setUseGershGershayim($b)` | `hebrew(['useGershGershayim' => $b])` |
+| `setUseFinalFormLetters($b)` | `hebrew(['useFinalFormLetters' => $b])` |
+| `setUseLongHebrewYears($b)` | `hebrew(['useLongHebrewYears' => $b])` |
+| `setHebrewOmerPrefix($s)` | `hebrew(['omerPrefix' => $s])` |
+| `setHebrewMonthList($a)` | `hebrew(['months' => $a])` |
+| `setTransliteratedMonthList($a)` | `english(['months' => $a])` |
+| `setTransliteratedShabbosDayOfWeek($s)` | `english(['shabbos' => $s])` |
+| `setTransliteratedHolidayList($a)` | `names` keyed by `YomTov::class` |
+| `setTransliteratedParshiosList($a)` | `names` keyed by `Parshah::class` |
+| `setLongWeekFormat($b)` | `hebrew(['daysOfWeek' => $a])` — supply the forms you want |
+| `setHebrewFormat($b)` | choose `->hebrew()` or `->english()` |
+
+Holiday, parsha and masechta names now live on enums, so they are overridden by enum class and case name rather than by positional array:
+
+```php
+use PhpZmanim\Torah\YomTov;
+
+$jewishDate->format()->english(['names' => [
+    YomTov::class => ['SUCCOS' => 'Sukkot'],
+]])->yomTov();  // Sukkot
+```
+
+This is safer than v3's positional lists — an unknown option key, enum class, or case name throws an `InvalidArgumentException` rather than silently doing nothing or shifting every name by one. See the [usage guide](USAGE.md#customizing-the-output) for the full option list.
 
 ---
 
@@ -370,5 +412,13 @@ Not required for migration, but worth knowing:
 - Yerushalmi daf yomi via `$jewishDate->getDafYomiYerushalmi()`.
 - Erev Pesach chametz zmanim, high-latitude "polar" zmanim, and a split between `getChatzosHayom()` (midday) and `getChatzosHalayla()` (midnight).
 - `PhpZmanim\Torah\Parshah` and `PhpZmanim\Torah\YomTov` enums with `->hebrew()` / `->english()`.
+
+### Deprecation markers
+
+v4 carries over KosherJava's `@Deprecated` annotations as PHP `@deprecated` docblocks, so your editor will strike through the affected calls. **Nothing was removed, and almost none of it is scheduled for removal.** For the zmanim, the marker is a halachic warning rather than a lifecycle signal: these methods return times so early or so late that they should be relied on *lechumra* only, and using them *lekula* can lead to a real problem. The docblock on each one explains its specific risk.
+
+Marked in v4: the `getPlagHamincha*` variants (except `getPlagHamincha60Minutes`), `getPlagAlosToSunset`, `getAlos120Minutes`, `getAlos120Zmanis`, `getAlos26Degrees`, `getTzais120Minutes`, `getTzais120Zmanis`, `getTzais26Degrees`, `getTzaisGeonim3Point7Degrees`, `getTzaisGeonim3Point8Degrees`, `getTzaisGeonim4Point42Degrees`, `getTzaisGeonim4Point66Degrees`, `getMisheyakir12Point85Degrees`, and the `SunTimesCalculator` class.
+
+Two are deprecated for ordinary technical reasons instead: `getSunriseSolarDipFromOffset()` and `getSunsetSolarDipFromOffset()` are slow and should never be called in a loop — use `getSolarElevation()`.
 
 See the [detailed usage guide](USAGE.md) for the full v4 API.

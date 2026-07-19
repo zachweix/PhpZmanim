@@ -71,6 +71,9 @@ trait Tzais
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 96 * Zman::MINUTE_MILLIS);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzais120Minutes(): Carbon|null
 	{
 		return $this->getTimeOffset($this->getElevationAdjustedSunset(), 120 * Zman::MINUTE_MILLIS);
@@ -91,6 +94,9 @@ trait Tzais
 		return $this->getZmanisBasedOffset(1.6);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzais120Zmanis(): Carbon|null
 	{
 		return $this->getZmanisBasedOffset(2.0);
@@ -111,26 +117,41 @@ trait Tzais
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_19_POINT_8);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzais26Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_26_DEGREES);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzaisGeonim3Point7Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_3_POINT_7);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzaisGeonim3Point8Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_3_POINT_8);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzaisGeonim4Point42Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_4_POINT_42);
 	}
 
+	/**
+	 * @deprecated See KosherJava for details.
+	 */
 	public function getTzaisGeonim4Point66Degrees(): Carbon|null
 	{
 		return $this->getSunsetOffsetByDegrees(Zman::ZENITH_4_POINT_66);

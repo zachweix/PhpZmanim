@@ -38,7 +38,7 @@ trait ShaahZmanis
 {
 	// The following are from ZmanimCalendar
 
-	public function getShaahZmanisGra(): float|null
+	public function getShaahZmanisGRA(): float|null
 	{
 		$startOfDay = $this->getElevationAdjustedSunrise();
 		$endOfDay = $this->getElevationAdjustedSunset();

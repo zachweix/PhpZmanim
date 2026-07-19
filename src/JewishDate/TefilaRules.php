@@ -87,7 +87,7 @@ trait TefilaRules
 					|| (($this->isJewishLeapYear() || $month != JewishDate::ADAR)
 							&& (!$this->isJewishLeapYear() || $month != JewishDate::ADAR_II))
 					|| $day <= 10 || $day >= 18)
-			&& (!$this->isUseModernHolidays() || ($yomTov !== YomTov::YOM_HAATZMAUT
+			&& (!$this->useModernHolidays || ($yomTov !== YomTov::YOM_HAATZMAUT
 					&& $yomTov !== YomTov::YOM_YERUSHALAYIM))
 			&& ($this->tachanunRecitedWeekOfHod || $month != JewishDate::IYAR || $day <= 13 || $day >= 21);
 	}
@@ -225,7 +225,7 @@ trait TefilaRules
 				}
 				break;
 			case JewishDate::IYAR: // modern holidays
-				if ($this->isUseModernHolidays() && ($yomTov === YomTov::YOM_HAATZMAUT
+				if ($this->useModernHolidays && ($yomTov === YomTov::YOM_HAATZMAUT
 						|| $yomTov === YomTov::YOM_YERUSHALAYIM)) {
 					return true;
 				}

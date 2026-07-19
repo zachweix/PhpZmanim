@@ -28,39 +28,54 @@ use PhpZmanim\Torah\YomTov;
 
 class Hebrew extends LanguageFormatter
 {
-	const GERESH = "\327\263";
-	const GERSHAYIM = "\327\264";
+	const GERESH = "׳";
+	const GERSHAYIM = "״";
 
-	const MONTHS = ["\327\240\327\231\327\241\327\237", "\327\220\327\231\327\231\327\250",
-		"\327\241\327\231\327\225\327\237", "\327\252\327\236\327\225\327\226", "\327\220\327\221", "\327\220\327\234\327\225\327\234",
-		"\327\252\327\251\327\250\327\231", "\327\227\327\251\327\225\327\237", "\327\233\327\241\327\234\327\225",
-		"\327\230\327\221\327\252", "\327\251\327\221\327\230", "\327\220\327\223\327\250", "\327\220\327\223\327\250 \327\221",
-		"\327\220\327\223\327\250 \327\220"];
+	const MONTHS = ["ניסן", "אייר", "סיון", "תמוז", "אב", "אלול", "תשרי", "חשון",
+		"כסלו", "טבת", "שבט", "אדר", "אדר ב", "אדר א"];
 
-	const DAYS_OF_WEEK = ["\327\250\327\220\327\251\327\225\327\237", "\327\251\327\240\327\231",
-		"\327\251\327\234\327\231\327\251\327\231", "\327\250\327\221\327\231\327\242\327\231", "\327\227\327\236\327\231\327\251\327\231",
-		"\327\251\327\251\327\231", "\327\251\327\221\327\252"];
+	const DAYS_OF_WEEK = ["ראשון", "שני", "שלישי", "רביעי", "חמישי", "ששי", "שבת"];
 
-	const OMER_PREFIX = "\327\221";
+	const OMER_PREFIX = "ב";
+
+	protected static function defaultOptions(): array
+	{
+		return array_replace(parent::defaultOptions(), [
+			'months' => self::MONTHS,
+			'daysOfWeek' => self::DAYS_OF_WEEK,
+			'omerPrefix' => self::OMER_PREFIX,
+			'useGershGershayim' => true,
+			'useFinalFormLetters' => false,
+			'useLongHebrewYears' => false,
+		]);
+	}
+
+	protected function validateOptions(): void
+	{
+		parent::validateOptions();
+		$this->expectList('months', 14);
+		$this->expectList('daysOfWeek', 7);
+	}
 
 	public function month(): string
 	{
 		$month = $this->date->getJewishMonth();
 		$isLeapYear = $this->date->isJewishLeapYear();
+		$months = $this->options['months'];
 
 		if ($isLeapYear && $month == JewishDate::ADAR) {
-			return self::MONTHS[13] . self::GERESH; // Adar I, not Adar, in a leap year
+			return $months[13] . self::GERESH; // Adar I, not Adar, in a leap year
 		}
 		if ($isLeapYear && $month == JewishDate::ADAR_II) {
-			return self::MONTHS[12] . self::GERESH;
+			return $months[12] . self::GERESH;
 		}
 
-		return self::MONTHS[$month - 1];
+		return $months[$month - 1];
 	}
 
 	public function dayOfWeek(): string
 	{
-		return self::DAYS_OF_WEEK[$this->date->getDayOfWeek() - 1];
+		return $this->options['daysOfWeek'][$this->date->getDayOfWeek() - 1];
 	}
 
 	/**
@@ -87,13 +102,13 @@ class Hebrew extends LanguageFormatter
 		}
 
 		$returnValue = $this->hebrewNumber($roshHashanaDayOfWeek);
-		$returnValue .= ($kviah == JewishDate::CHASERIM ? "\327\227" : ($kviah == JewishDate::SHELAIMIM ? "\327\251" : "\327\233"));
+		$returnValue .= ($kviah == JewishDate::CHASERIM ? "ח" : ($kviah == JewishDate::SHELAIMIM ? "ש" : "כ"));
 		$returnValue .= $this->hebrewNumber($pesachDayOfWeek);
 
 		return str_replace(self::GERESH, "", $returnValue);
 	}
 
-	protected function name(Nameable $value): string
+	protected function translate(Nameable $value): string
 	{
 		return $value->hebrew();
 	}
@@ -115,7 +130,7 @@ class Hebrew extends LanguageFormatter
 
 	protected function formatOmer(int $omer): string
 	{
-		return $this->hebrewNumber($omer) . " " . self::OMER_PREFIX . "\327\242\327\225\327\236\327\250";
+		return $this->hebrewNumber($omer) . " " . $this->options['omerPrefix'] . "עומר";
 	}
 
 	/**
@@ -131,16 +146,14 @@ class Hebrew extends LanguageFormatter
 			throw new \InvalidArgumentException("numbers > 9999 can't be formatted");
 		}
 
-		$alafim = "\327\220\327\234\327\244\327\231\327\235";
-		$efes = "\327\220\327\244\327\241";
+		$alafim = "אלפים";
+		$efes = "אפס";
 
-		$jHundreds = ["", "\327\247", "\327\250", "\327\251", "\327\252", "\327\252\327\247", "\327\252\327\250",
-			"\327\252\327\251", "\327\252\327\252", "\327\252\327\252\327\247"];
-		$jTens = ["", "\327\231", "\327\233", "\327\234", "\327\236", "\327\240", "\327\241", "\327\242",
-			"\327\244", "\327\246"];
-		$tavTaz = ["\327\230\327\225", "\327\230\327\226"];
-		$jOnes = ["", "\327\220", "\327\221", "\327\222", "\327\223", "\327\224", "\327\225", "\327\226",
-			"\327\227", "\327\230"];
+		$jHundreds = ["", "ק", "ר", "ש", "ת", "תק", "תר", "תש", "תת", "תתק"];
+		$jTens = ["", "י", "כ", "ל", "מ", "נ", "ס", "ע", "פ", "צ"];
+		$jTenEnds = ["", "י", "ך", "ל", "ם", "ן", "ס", "ע", "ף", "ץ"];
+		$tavTaz = ["טו", "טז"];
+		$jOnes = ["", "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט"];
 
 		if ($number == 0) {
 			return $efes;
@@ -150,13 +163,27 @@ class Hebrew extends LanguageFormatter
 		$singleDigitNumber = ($shortNumber < 11 || ($shortNumber < 100 && $shortNumber % 10 == 0) || ($shortNumber <= 400 && $shortNumber % 100 == 0));
 		$thousands = intdiv($number, 1000);
 
+		$useGershGershayim = $this->options['useGershGershayim'];
+		$formatted = "";
+
 		if ($number % 1000 == 0) {
-			return $jOnes[$thousands] . self::GERESH . " " . $alafim;
+			$formatted = $jOnes[$thousands];
+			if ($useGershGershayim) {
+				$formatted .= self::GERESH;
+			}
+
+			return $formatted . " " . $alafim;
+		} elseif ($this->options['useLongHebrewYears'] && $number >= 1000) {
+			$formatted = $jOnes[$thousands];
+			if ($useGershGershayim) {
+				$formatted .= self::GERESH;
+			}
+			$formatted .= " ";
 		}
 
 		$number = $number % 1000;
 		$hundreds = intdiv($number, 100);
-		$formatted = $jHundreds[$hundreds];
+		$formatted .= $jHundreds[$hundreds];
 
 		$number = $number % 100;
 		if ($number == 15) {
@@ -165,16 +192,22 @@ class Hebrew extends LanguageFormatter
 			$formatted .= $tavTaz[1];
 		} else {
 			$tens = intdiv($number, 10);
-			$formatted .= $jTens[$tens];
-			if ($number % 10 != 0) {
+			if ($number % 10 == 0) {
+				$formatted .= !$singleDigitNumber && $this->options['useFinalFormLetters']
+					? $jTenEnds[$tens]
+					: $jTens[$tens];
+			} else {
+				$formatted .= $jTens[$tens];
 				$formatted .= $jOnes[$number % 10];
 			}
 		}
 
-		if ($singleDigitNumber) {
-			$formatted .= self::GERESH;
-		} else {
-			$formatted = substr_replace($formatted, self::GERSHAYIM, strlen($formatted) - 2, 0);
+		if ($useGershGershayim) {
+			if ($singleDigitNumber) {
+				$formatted .= self::GERESH;
+			} else {
+				$formatted = substr_replace($formatted, self::GERSHAYIM, strlen($formatted) - 2, 0);
+			}
 		}
 
 		return $formatted;
