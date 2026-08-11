@@ -22,12 +22,26 @@
 
 namespace PhpZmanim\JewishDate;
 
+use InvalidArgumentException;
 use PhpZmanim\JewishDate\Formatter\JewishDateFormatter;
+use PhpZmanim\JewishDate\Formatter\LanguageFormatter;
 
 trait Formatting
 {
-	public function format(): JewishDateFormatter
+	public function format(?string $language = null, array $options = []): JewishDateFormatter|LanguageFormatter
 	{
+		if (!is_null($language)) {
+			if (!is_subclass_of($language, LanguageFormatter::class)) {
+				throw new InvalidArgumentException(sprintf(
+					'The language must be a %s subclass, e.g. Hebrew::class; got "%s".',
+					LanguageFormatter::class,
+					$language
+				));
+			}
+
+			return new $language($this, $options);
+		}
+
 		return new JewishDateFormatter($this);
 	}
 }

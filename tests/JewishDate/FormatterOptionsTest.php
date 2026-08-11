@@ -24,6 +24,9 @@ use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PhpZmanim\JewishDate;
+use PhpZmanim\JewishDate\Formatter\English;
+use PhpZmanim\JewishDate\Formatter\Hebrew;
+use PhpZmanim\JewishDate\Formatter\LanguageFormatter;
 use PhpZmanim\Torah\MasechtaBavli;
 use PhpZmanim\Torah\MasechtaYerushalmi;
 use PhpZmanim\Torah\YomTov;
@@ -347,5 +350,77 @@ class FormatterOptionsTest extends TestCase
 		// a fresh formatter off the same JewishDate is unaffected
 		$this->assertSame('ט״ו תשרי תשפ״ד', $date->format()->hebrew()->date());
 		$this->assertSame('15 Tishrei, 5784', $date->format()->english()->date());
+	}
+
+	/*
+	|--------------------------------------------------------------------------
+	| SKIP FORMATTER CLASS - allow the user to give a language to get language formatter
+	|--------------------------------------------------------------------------
+	*/
+
+	#[Test]
+	public function giveLanguageToFormat(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+		$customized = $date->format(Hebrew::class, ['useGershGershayim' => false]);
+		$this->assertSame('טו תשרי תשפד', $customized->date());
+	}
+
+	#[Test]
+	public function languageClassMatchesTheFluentForm(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+
+		$this->assertSame($date->format()->hebrew()->date(), $date->format(Hebrew::class)->date());
+		$this->assertSame($date->format()->english()->date(), $date->format(English::class)->date());
+
+		$options = ['shabbos' => 'Shabbat'];
+		$this->assertSame(
+			$date->format()->english($options)->dayOfWeek(),
+			$date->format(English::class, $options)->dayOfWeek()
+		);
+	}
+
+	#[Test]
+	public function unknownOptionKeyStillThrowsWhenGivenALanguageClass(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage('Unknown formatter option: useGershGershyim');
+
+		$date->format(Hebrew::class, ['useGershGershyim' => false]);
+	}
+
+	#[Test]
+	public function classThatIsNotALanguageFormatterThrows(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage('must be a PhpZmanim\JewishDate\Formatter\LanguageFormatter subclass');
+
+		$date->format(DateTime::class);
+	}
+
+	#[Test]
+	public function classThatDoesNotExistThrows(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+
+		$this->expectException(InvalidArgumentException::class);
+		$this->expectExceptionMessage('got "Nope"');
+
+		$date->format('Nope');
+	}
+
+	#[Test]
+	public function abstractLanguageFormatterThrows(): void
+	{
+		$date = JewishDate::create(5784, 7, 15);
+
+		$this->expectException(InvalidArgumentException::class);
+
+		$date->format(LanguageFormatter::class);
 	}
 }
