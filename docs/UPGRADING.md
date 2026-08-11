@@ -256,7 +256,37 @@ Holiday and calendar predicates (`isSuccos()`, `isRoshChodesh()`, `getDayOfOmer(
 | `getJewishCalendarElapsedDays()` | *(now internal)* |
 | `__debugInfo()` | *(removed)* |
 
-v4 also adds `getYomTov()` (returns a `PhpZmanim\Torah\YomTov` enum; the older `getYomTovIndex()` is still available), `getTekufaAsCarbon()`, and `getDafYomiYerushalmi()`.
+v4 also adds `getYomTov()` (returns a `PhpZmanim\Torah\YomTov` enum), `getTekufaAsCarbon()`, and `getDafYomiYerushalmi()`.
+
+### `getYomTovIndex()` returns different numbers than v3
+
+`getYomTovIndex()` still exists, but **its values changed**, and nothing will warn you. It now returns the backing value of the `YomTov` enum, which is 1-based with `NONE = 0`. v3 mirrored KosherJava's constants, which are 0-based with `-1` for "no yom tov":
+
+| | no yom tov | `EREV_PESACH` | `PESACH` | `ROSH_HASHANA` | `YOM_KIPPUR` |
+|---|---|---|---|---|---|
+| v3 / KosherJava | `-1` | `0` | `1` | `10` | `13` |
+| v4 | `0` | `1` | `2` | `11` | `14` |
+
+Every index is **one higher** than it was. Code that compares the return value against a hard-coded number, a KosherJava constant, or a value stored in a database will silently match the wrong holiday:
+
+```php
+// v3 — broken in v4: 1 is now EREV_PESACH, not PESACH
+if ($jewishDate->getYomTovIndex() === 1) { /* ... */ }
+```
+
+Compare against the enum instead — it is the source of truth, and the comparison is total:
+
+```php
+use PhpZmanim\Torah\YomTov;
+
+if ($jewishDate->getYomTov() === YomTov::PESACH) { /* ... */ }
+if ($jewishDate->getYomTov() === YomTov::NONE)   { /* ... */ }
+
+// or use the predicate, which also covers chol hamoed
+if ($jewishDate->isPesach()) { /* ... */ }
+```
+
+If you must keep an integer — for a stored value or an external API — read it off the enum explicitly (`YomTov::PESACH->value`) so the intent survives, and remember it will not match a KosherJava index.
 
 ### Daf yomi
 

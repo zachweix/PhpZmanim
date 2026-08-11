@@ -149,13 +149,21 @@ trait Utilities
 		return $degrees;
 	}
 
-	protected function getTimeOffset(Carbon $time, float $offset): Carbon
+	protected function getTimeOffset(?Carbon $time, float $offset): Carbon|null
 	{
+		if (is_null($time)) {
+			return null;
+		}
+
 		return $time->copy()->addMicroseconds((int) round($offset * 1000));
 	}
 
-	protected function getTemporalHour(Carbon $startOfDay, Carbon $endOfDay): float
+	protected function getTemporalHour(?Carbon $startOfDay, ?Carbon $endOfDay): float|null
 	{
+		if (is_null($startOfDay) || is_null($endOfDay)) {
+			return null;
+		}
+
 		$startOfDayTotal = $startOfDay->getPreciseTimestamp();
 		$endOfDayTotal = $endOfDay->getPreciseTimestamp();
 

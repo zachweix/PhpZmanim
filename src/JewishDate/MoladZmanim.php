@@ -47,7 +47,7 @@ trait MoladZmanim
 			$molad->getMoladHours(), $molad->getMoladMinutes(), (int) $moladSeconds,
 			$yerushalayimStandardTZ
 		);
-		$cal->milliseconds = (int) (($moladSeconds - (int) $moladSeconds) * 1000);
+		$cal->microseconds = (int) (($moladSeconds - (int) $moladSeconds) * 1000000);
 
 		$cal->add(-1 * (int) $geo->getLocalMeanTimeOffset($cal), "milliseconds");
 

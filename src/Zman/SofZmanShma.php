@@ -39,7 +39,7 @@ trait SofZmanShma
 {
 	// The following are from ZmanimCalendar
 
-	public function getSofZmanShma(Carbon $startOfDay, Carbon $endOfDay, bool $synchronous = false): Carbon|null
+	public function getSofZmanShma(?Carbon $startOfDay = null, ?Carbon $endOfDay = null, bool $synchronous = false): Carbon|null
 	{
 		if ($this->useAstronomicalChatzosForOtherZmanim && $synchronous) {
 			return $this->getHalfDayBasedZman($startOfDay, $this->getChatzosHayom(), 3);

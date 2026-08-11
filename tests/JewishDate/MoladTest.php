@@ -127,6 +127,13 @@ class MoladTest extends TestCase
 			'Tekufas Teves 5785'   => [2025, 1,  6,  '2025-01-06T08:30:00.000Z',  '2025-01-06T08:09:03.504Z',  79],
 			'Tekufas Tammuz 5785'  => [2025, 7,  8,  '2025-07-07T23:30:00.000Z',  '2025-07-07T23:09:03.504Z',  262],
 			'Tekufas Nissan 5786'  => [2026, 4,  8,  '2026-04-07T22:00:00.000Z',  '2026-04-07T21:39:03.504Z',  171],
+
+			// Season changes less than 6 hours into the Hebrew day, so the tekufa lands on the
+			// previous Gregorian date. KosherJava threw a DateTimeException on these until the
+			// negative-hours fix; the port already rolled back correctly and now has ground truth.
+			'Tekufas Tammuz 5784'  => [2024, 7,  8,  '2024-07-07T17:30:00.000Z',  '2024-07-07T17:09:03.504Z',  262],
+			'Tekufas Nissan 5785'  => [2025, 4,  8,  '2025-04-07T16:00:00.000Z',  '2025-04-07T15:39:03.504Z',  171],
+			'Tekufas Teves 5787'   => [2027, 1,  7,  '2027-01-06T20:30:00.000Z',  '2027-01-06T20:09:03.504Z',  80],
 		];
 	}
 
@@ -158,31 +165,34 @@ class MoladTest extends TestCase
 
 	/*
 	|--------------------------------------------------------------------------
-	| TEKUFA — accepted divergence from Java
+	| MOLAD SUB-SECOND PRECISION
 	|--------------------------------------------------------------------------
-	| On these season-change days the Hebrew hour is < 6, so the LMT offset makes Java's
-	| LocalTime.of() hour negative and current KosherJava THROWS a DateTimeException. The
-	| PHP port deliberately anchors to gregorian midnight + addHours()/addMinutes() offset,
-	| which rolls back into the previous day instead of crashing, so it returns a Carbon.
-	| There is therefore no Java ground-truth value to pin these to; we only assert the port
-	| does not crash and yields a time.
+	| A chelek is 10/3 of a second, so the molad always carries a fraction of .0, .333... or
+	| .666... seconds. Java keeps it in nanoseconds; Carbon's resolution is microseconds, so the
+	| port pins Java's value truncated to the microsecond. Asserting at millisecond resolution
+	| (as the fixtures above do) would not notice the remainder being dropped entirely.
 	*/
 
 	#[Test]
-	#[DataProvider('tekufaJavaThrowsProvider')]
-	public function tekufaWhereJavaThrowsStillReturnsCarbon(int $gy, int $gmo, int $gd): void
+	#[DataProvider('moladMicrosecondProvider')]
+	public function moladKeepsMicrosecondPrecision(int $gy, int $gmo, int $gd, string $molad, string $sofBetweenMoldos): void
 	{
 		$date = JewishDate::createFromDate($gy, $gmo, $gd);
 
-		$this->assertInstanceOf(Carbon::class, $date->getTekufaAsCarbon(false));
-		$this->assertInstanceOf(Carbon::class, $date->getTekufaAsCarbon(true));
+		$this->assertSame($molad, $date->getMoladAsCarbon()->utc()->format('Y-m-d\TH:i:s.u\Z'));
+		$this->assertSame($sofBetweenMoldos, $date->getSofZmanKidushLevanaBetweenMoldos()->utc()->format('Y-m-d\TH:i:s.u\Z'));
 	}
 
-	public static function tekufaJavaThrowsProvider(): array
+	public static function moladMicrosecondProvider(): array
 	{
 		return [
-			'Tekufas Tammuz 5784' => [2024, 7, 8],
-			'Tekufas Nissan 5785' => [2025, 4, 8],
+			//                gy    gmo gd  getMoladAsCarbon()             getSofZmanKidushLevanaBetweenMoldos()
+			'remainder .666' => [2020, 1,  1,  '2019-12-26T17:41:30.170666Z', '2020-01-10T12:03:31.836666Z'],
+			'remainder .0'   => [2020, 2,  1,  '2020-01-25T06:25:33.504000Z', '2020-02-09T00:47:35.170000Z'],
+			'remainder .333' => [2020, 3,  1,  '2020-02-23T19:09:36.837333Z', '2020-03-09T13:31:38.503333Z'],
+			'2026 Teves'     => [2026, 1,  15, '2025-12-20T00:01:36.837333Z', '2026-01-03T18:23:38.503333Z'],
+			'2026 Tammuz'    => [2026, 6,  21, '2026-06-15T04:25:56.837333Z', '2026-06-29T22:47:58.503333Z'],
+			'2031 Cheshvan'  => [2031, 11, 4,  '2031-10-16T04:53:36.837333Z', '2031-10-30T23:15:38.503333Z'],
 		];
 	}
 

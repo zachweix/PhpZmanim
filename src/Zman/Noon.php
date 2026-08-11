@@ -46,9 +46,12 @@ trait Noon
 
 	// The following are from ZmanimCalendar
 
-	public function getChatzos(Carbon $startOfDay, Carbon $endOfDay): Carbon|null
+	public function getChatzos(?Carbon $startOfDay = null, ?Carbon $endOfDay = null): Carbon|null
 	{
 		$shaahZmanis = $this->getTemporalHour($startOfDay, $endOfDay);
+		if (is_null($shaahZmanis)) {
+			return null;
+		}
 
 		return $this->getTimeOffset($startOfDay, $shaahZmanis * 6);
 	}
